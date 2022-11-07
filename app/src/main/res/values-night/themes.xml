@@ -1,0 +1,45 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Theme.NextcloudPasswords" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">@color/background_color</item>
+        <item name="colorPrimaryVariant">@color/background_color</item>
+        <item name="colorOnPrimary">@color/normal_text_color</item>
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">@color/normal_text_color</item>
+        <item name="colorSecondaryVariant">@color/normal_text_color</item>
+        <item name="colorOnSecondary">@color/normal_text_color</item>
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor">@color/background_color</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <!--        <item name="android:windowTranslucentStatus">true</item>-->
+        <!--        <item name="android:windowTranslucentNavigation">true</item>-->
+        <!-- Customize your theme here. -->
+        <!--        <item name="android:windowActivityTransitions">false</item>-->
+        <!--        <item name="android:activityCloseEnterAnimation">@null</item>-->
+        <!--        <item name="android:activityCloseExitAnimation">@null</item>-->
+        <!--        <item name="android:activityOpenEnterAnimation">@null</item>-->
+        <!--        <item name="android:activityOpenExitAnimation">@null</item>-->
+        <!--        <item name="android:windowAnimationStyle">@null</item>-->
+        <!--        <item name="android:windowEnterTransition">@null</item>-->
+        <!--        <item name="android:windowExitTransition">@null</item>-->
+        <!--        <item name="android:windowSharedElementEnterTransition">@null</item>-->
+        <!--        <item name="android:windowSharedElementExitTransition">@null</item>-->
+        <item name="bottomSheetDialogTheme">@style/AppBottomSheetDialogTheme</item>
+<!--        <item name="snackbarStyle">@style/Widget.MaterialComponents.Snackbar.FullWidth</item>-->
+    </style>
+
+    <style name="AppBottomSheetDialogTheme"
+        parent="Theme.Design.Light.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/AppModalStyle</item>
+    </style>
+
+    <style name="AppModalStyle"
+        parent="Widget.Design.BottomSheet.Modal">
+        <item name="android:background">@drawable/rounded_dialog</item>
+    </style>
+
+    <style name="ToolbarColoredBackArrow" parent="Theme.NextcloudPasswords">
+        <item name="android:textColorSecondary">#FFFFFFFF</item>
+    </style>
+</resources>

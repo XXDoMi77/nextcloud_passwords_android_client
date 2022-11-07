@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+
+    <color name="transparent">#00000000</color>
+    <color name="background_color">#FFFFFFFF</color>
+    <color name="normal_text_color">#FF000000</color>
+    <color name="shaded_text_color">#5F000000</color>
+    <color name="password_card_background_color">#70FFFFFF</color>
+    <color name="password_edit_bottom_sheet_background">#FFFFFFFF</color>
+</resources>
