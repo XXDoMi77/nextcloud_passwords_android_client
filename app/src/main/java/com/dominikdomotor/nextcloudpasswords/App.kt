@@ -114,7 +114,11 @@ class App: Application() {
 		}
 
 		fun makeToast(message: String, length: Int) {
-			Looper.prepare()
+			try {
+				Looper.prepare()
+			}
+			catch (_: Exception){
+			}
 			Toast.makeText(instance, message, length).show()
 		}
 	}
