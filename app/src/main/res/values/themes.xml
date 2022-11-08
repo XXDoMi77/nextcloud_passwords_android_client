@@ -40,6 +40,7 @@
     </style>
 
     <style name="ToolbarColoredBackArrow" parent="Theme.NextcloudPasswords">
-        <item name="android:textColorSecondary">#FF000000</item>
+        <item name="android:textColorSecondary">@color/normal_text_color</item>
+        <item name="android:drawableTint">@color/normal_text_color</item>
     </style>
 </resources>
