@@ -149,6 +149,8 @@ class PasswordsRecyclerViewAdapter(private val activity: Activity) : RecyclerVie
 				reloadPasswords()
 			}
 			
+			println("Editable: " + loadedPasswordList[position].editable.toString())
+			
 			val myLinearLayout = view.findViewById<LinearLayout>(R.id.myLinearLayout)
 			
 			val viewRoot = view.findViewById<ViewGroup>(android.R.id.content)
@@ -200,44 +202,54 @@ class PasswordsRecyclerViewAdapter(private val activity: Activity) : RecyclerVie
 			myLinearLayout.addView(urlItem)
 			
 			var beingEdited = false
-			
-			view.findViewById<ImageButton>(R.id.imageButtonPencil).setOnClickListener {
-				beingEdited = !beingEdited
-				if (!beingEdited) {
-					nameItem.findViewById<EditText>(R.id.edittext_middle_left).isEnabled = false
-					nameItem.findViewById<EditText>(R.id.edittext_middle_left).background = null
-					usernameItem.findViewById<EditText>(R.id.edittext_middle_left).isEnabled = false
-					usernameItem.findViewById<EditText>(R.id.edittext_middle_left).background = null
-					passwordItem.findViewById<EditText>(R.id.edittext_middle_left).isEnabled = false
-					passwordItem.findViewById<EditText>(R.id.edittext_middle_left).background = null
-					urlItem.findViewById<EditText>(R.id.edittext_middle_left).isEnabled = false
-					urlItem.findViewById<EditText>(R.id.edittext_middle_left).background = null
-					
-					loadedPasswordList[position].label = nameItem.findViewById<EditText>(R.id.edittext_middle_left).text.toString()
-					loadedPasswordList[position].username = usernameItem.findViewById<EditText>(R.id.edittext_middle_left).text.toString()
-					loadedPasswordList[position].password = passwordItem.findViewById<EditText>(R.id.edittext_middle_left).text.toString()
-					loadedPasswordList[position].url = urlItem.findViewById<EditText>(R.id.edittext_middle_left).text.toString()
-					
-					
-					view.findViewById<ImageButton>(R.id.imageButtonPencil).drawable.setTint(Color.parseColor("#FFFFFF00"))
-					activity.updatePassword(loadedPasswordList[position]) {
-						view.findViewById<ImageButton>(R.id.imageButtonPencil).setImageResource(R.drawable.ic_baseline_edit_36)
-						when (loadedPasswordList[position].editable) {
-							true -> view.findViewById<ImageButton>(R.id.imageButtonPencil).drawable.setTint(Color.parseColor("#FF00FF00"))
-							false -> view.findViewById<ImageButton>(R.id.imageButtonPencil).drawable.setTint(Color.parseColor("#FFFF0000"))
+			when (loadedPasswordList[position].editable) {
+				true -> {
+					view.findViewById<ImageButton>(R.id.imageButtonPencil).drawable.setTint(Color.parseColor("#FF00FF00"))
+					view.findViewById<ImageButton>(R.id.imageButtonPencil).setOnClickListener {
+						beingEdited = !beingEdited
+						if (!beingEdited) {
+							nameItem.findViewById<EditText>(R.id.edittext_middle_left).isEnabled = false
+							nameItem.findViewById<EditText>(R.id.edittext_middle_left).background = null
+							usernameItem.findViewById<EditText>(R.id.edittext_middle_left).isEnabled = false
+							usernameItem.findViewById<EditText>(R.id.edittext_middle_left).background = null
+							passwordItem.findViewById<EditText>(R.id.edittext_middle_left).isEnabled = false
+							passwordItem.findViewById<EditText>(R.id.edittext_middle_left).background = null
+							urlItem.findViewById<EditText>(R.id.edittext_middle_left).isEnabled = false
+							urlItem.findViewById<EditText>(R.id.edittext_middle_left).background = null
+							
+							loadedPasswordList[position].label = nameItem.findViewById<EditText>(R.id.edittext_middle_left).text.toString()
+							loadedPasswordList[position].username = usernameItem.findViewById<EditText>(R.id.edittext_middle_left).text.toString()
+							loadedPasswordList[position].password = passwordItem.findViewById<EditText>(R.id.edittext_middle_left).text.toString()
+							loadedPasswordList[position].url = urlItem.findViewById<EditText>(R.id.edittext_middle_left).text.toString()
+							
+							
+							view.findViewById<ImageButton>(R.id.imageButtonPencil).drawable.setTint(Color.parseColor("#FFFFFF00"))
+							activity.updatePassword(loadedPasswordList[position]) {
+								view.findViewById<ImageButton>(R.id.imageButtonPencil).setImageResource(R.drawable.ic_baseline_edit_36)
+								when (loadedPasswordList[position].editable) {
+									true -> view.findViewById<ImageButton>(R.id.imageButtonPencil).drawable.setTint(Color.parseColor("#FF00FF00"))
+									false -> view.findViewById<ImageButton>(R.id.imageButtonPencil).drawable.setTint(Color.parseColor("#FFFF0000"))
+								}
+							}
+						} else {
+							nameItem.findViewById<EditText>(R.id.edittext_middle_left).isEnabled = true
+							nameItem.findViewById<EditText>(R.id.edittext_middle_left).background = nameItemOriginalDrawable
+							usernameItem.findViewById<EditText>(R.id.edittext_middle_left).isEnabled = true
+							usernameItem.findViewById<EditText>(R.id.edittext_middle_left).background = usernameItemOriginalDrawable
+							passwordItem.findViewById<EditText>(R.id.edittext_middle_left).isEnabled = true
+							passwordItem.findViewById<EditText>(R.id.edittext_middle_left).background = passwordItemOriginalDrawable
+							urlItem.findViewById<EditText>(R.id.edittext_middle_left).isEnabled = true
+							urlItem.findViewById<EditText>(R.id.edittext_middle_left).background = urlItemOriginalDrawable
+							view.findViewById<ImageButton>(R.id.imageButtonPencil).setImageResource(R.drawable.ic_baseline_save_36)
+							view.findViewById<ImageButton>(R.id.imageButtonPencil).drawable.setTint(Color.parseColor("#FF00FF00"))
 						}
 					}
-				} else {
-					nameItem.findViewById<EditText>(R.id.edittext_middle_left).isEnabled = true
-					nameItem.findViewById<EditText>(R.id.edittext_middle_left).background = nameItemOriginalDrawable
-					usernameItem.findViewById<EditText>(R.id.edittext_middle_left).isEnabled = true
-					usernameItem.findViewById<EditText>(R.id.edittext_middle_left).background = usernameItemOriginalDrawable
-					passwordItem.findViewById<EditText>(R.id.edittext_middle_left).isEnabled = true
-					passwordItem.findViewById<EditText>(R.id.edittext_middle_left).background = passwordItemOriginalDrawable
-					urlItem.findViewById<EditText>(R.id.edittext_middle_left).isEnabled = true
-					urlItem.findViewById<EditText>(R.id.edittext_middle_left).background = urlItemOriginalDrawable
-					view.findViewById<ImageButton>(R.id.imageButtonPencil).setImageResource(R.drawable.ic_baseline_save_36)
-					view.findViewById<ImageButton>(R.id.imageButtonPencil).drawable.setTint(Color.parseColor("#FF00FF00"))
+				}
+				false -> {
+					view.findViewById<ImageButton>(R.id.imageButtonPencil).drawable.setTint(Color.parseColor("#FFFF0000"))
+					view.findViewById<ImageButton>(R.id.imageButtonPencil).setOnClickListener {
+						App.makeToast(activity.getString(R.string.this_password_is_not_editable), Toast.LENGTH_LONG)
+					}
 				}
 			}
 			
@@ -246,11 +258,6 @@ class PasswordsRecyclerViewAdapter(private val activity: Activity) : RecyclerVie
 				1 -> view.findViewById<ImageButton>(R.id.imageButtonShield).drawable.setTint(Color.parseColor("#FFFFEA00"))
 				2 -> view.findViewById<ImageButton>(R.id.imageButtonShield).drawable.setTint(Color.parseColor("#FFFF0000"))
 				3 -> view.findViewById<ImageButton>(R.id.imageButtonShield).drawable.setTint(Color.parseColor("#FFFF0000"))
-			}
-			
-			when (loadedPasswordList[position].editable) {
-				true -> view.findViewById<ImageButton>(R.id.imageButtonPencil).drawable.setTint(Color.parseColor("#FF00FF00"))
-				false -> view.findViewById<ImageButton>(R.id.imageButtonPencil).drawable.setTint(Color.parseColor("#FFFF0000"))
 			}
 			
 			view.findViewById<ImageButton>(R.id.imageButtonShield).setOnClickListener {

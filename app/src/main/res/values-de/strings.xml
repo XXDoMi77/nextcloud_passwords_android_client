@@ -29,4 +29,5 @@
     <string name="password_successfully_updated">Passwort erfolgreich aktualisiert</string>
     <string name="please_enter_your_server_url">Bitte gebe den Server-URL ein</string>
     <string name="example_url">https://beispiel.de</string>
+    <string name="this_password_is_not_editable">Dieses Passwort kann nicht bearbeitet werden</string>
 </resources>
