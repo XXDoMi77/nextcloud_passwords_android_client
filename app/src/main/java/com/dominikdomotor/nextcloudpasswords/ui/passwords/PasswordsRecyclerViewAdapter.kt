@@ -89,6 +89,8 @@ class PasswordsRecyclerViewAdapter(private val activity: Activity) : RecyclerVie
 			if (loadedPasswordList[position].favicon.isNotEmpty()) {
 				val bitMap: Bitmap = BitmapFactory.decodeByteArray(loadedPasswordList[position].favicon, 0, loadedPasswordList[position].favicon.size)
 				holder.imageViewPasswordListviewItem.setImageBitmap(bitMap)
+			}else{
+				holder.imageViewPasswordListviewItem.setImageResource(R.drawable.icon_foreground_36)
 			}
 		} catch (e: Exception) {
 			e.printStackTrace()

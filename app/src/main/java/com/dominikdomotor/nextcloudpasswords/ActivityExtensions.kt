@@ -201,7 +201,7 @@ fun Activity.pullPasswordIcons(func: () -> Unit) {
 		val userCredentials = "$username:$token"
 		val basicAuth = "Basic " + String(Base64.getEncoder().encode(userCredentials.toByteArray()))
 		
-		val averageIndex: MutableList<Int> = mutableListOf()
+		var progress = 0
 		
 		val executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors())
 		passwords.forEachIndexed { index, password ->
@@ -219,20 +219,28 @@ fun Activity.pullPasswordIcons(func: () -> Unit) {
 								password.favicon = inputStream.readBytes()
 							}
 						}
-					}
-					println("Hello this is thread $index")
-					runOnUiThread {
-						averageIndex.add(index)
-						if (progressBar.progress < averageIndex.takeLast(10).average().toInt() + 7) {
-							progressBar.progress = averageIndex.takeLast(10).average().toInt() + 7
-							dialog.findViewById<TextView>(R.id.textview_progress)?.text = "${averageIndex.takeLast(10).average().toInt() + 7}/${passwords.size}"
+					}else{
+						val getFaviconURL = URL(server + "/index.php/apps/passwords/api/1.0/service/favicon/" + password.label + "/32")
+						with(getFaviconURL.openConnection() as HttpsURLConnection) {
+							setRequestProperty("Authorization", basicAuth)
+							requestMethod = "GET"
+							connectTimeout = 2000
+							readTimeout = 2000
+							println("\nSent $requestMethod request to URL : $getFaviconURL; Response Code : $responseCode")
+							if (responseCode in 200..299) {
+								password.favicon = inputStream.readBytes()
+							}
 						}
 					}
-					
+					println("Hello this is thread $index")
 				} catch (e: Exception) {
 					e.printStackTrace()
 				}
-				
+				progress++
+				runOnUiThread {
+					progressBar.progress = progress
+					dialog.findViewById<TextView>(R.id.textview_progress)?.text = "$progress/${passwords.size}"
+				}
 			}
 			executor.execute(worker)
 		}
