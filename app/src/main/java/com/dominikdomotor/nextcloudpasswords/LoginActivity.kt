@@ -84,6 +84,6 @@ class LoginActivity : AppCompatActivity() {
 			}
 		}
 		
-		findViewById<WebView>(R.id.login_webview).loadUrl(intent.getStringExtra("server_URL").toString() + "index.php/login/flow", map)
+		findViewById<WebView>(R.id.login_webview).loadUrl(intent.getStringExtra("server_URL").toString() + "/index.php/login/flow", map)
 	}
 }

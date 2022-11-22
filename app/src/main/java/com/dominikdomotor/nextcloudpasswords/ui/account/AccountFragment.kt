@@ -1,5 +1,6 @@
 package com.dominikdomotor.nextcloudpasswords.ui.account
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -75,7 +76,7 @@ class AccountFragment : Fragment() {
 						println("\nSent $requestMethod request to URL : $getPasswordListURL; Response Code : $responseCode")
 						if (responseCode in 200..299) {
 							requireActivity().runOnUiThread {
-								App.sharedPreferences().edit().clear().commit()
+								requireContext().getSharedPreferences(SPKeys.secure_storage, Context.MODE_PRIVATE).edit().clear().commit()
 								passwords = arrayOf(Password())
 								//requireActivity().deleteSharedPreferences(SPKeys.secure_storage)
 								val intent = Intent(activity, EnterServerURLActivity::class.java)
@@ -85,7 +86,7 @@ class AccountFragment : Fragment() {
 							}
 						} else if (responseCode == 401) {
 							requireActivity().runOnUiThread {
-								App.sharedPreferences().edit().clear().commit()
+								requireContext().getSharedPreferences(SPKeys.secure_storage, Context.MODE_PRIVATE).edit().clear().commit()
 								passwords = arrayOf(Password())
 								//requireActivity().deleteSharedPreferences(SPKeys.secure_storage)
 								val intent = Intent(activity, EnterServerURLActivity::class.java)

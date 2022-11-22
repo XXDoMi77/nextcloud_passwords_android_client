@@ -31,7 +31,10 @@ class EnterServerURLActivity : AppCompatActivity() {
 			if (!URLUtil.isValidUrl(urlInput.text.toString())) {
 				val toast = Toast.makeText(this, getString(R.string.not_a_valid_url_alert_message), Toast.LENGTH_LONG)
 				toast.show()
-				urlInput.setText(URLUtil.guessUrl(urlInput.text.toString().filter { !it.isWhitespace() }).replace("http://www.", "https://", true).replace("http:", "https:", true))
+				urlInput.setText(
+					URLUtil.guessUrl(urlInput.text.toString().filter { !it.isWhitespace() }).replace("http://www.", "https://", true)
+						.replace("http:", "https:", true)//.dropLastWhile { it == '/' || it.isWhitespace() }
+				)
 				urlInput.setSelection(urlInput.length())//placing cursor at the end of the tex
 				// whitespace at the end of the url results in the authentication process not working, so trying to remove them and letting the user know
 			} else if (urlInput.text.toString().contains(" ")) {
