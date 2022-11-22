@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Nextcloud Passwords</string>
+
+    <string name="on">on</string>
+    <string name="title_folders">Folders</string>
+    <string name="title_passwords">Passwords</string>
+    <string name="title_account">Account</string>
+    <string name="not_a_valid_url_alert_message">This is not a valid URL, did you mean?</string>
+    <string name="whitespaces_in_url_alert_message">The URL can\'t contain whitespaces, did you mean?</string>
+    <string name="logout">Logout</string>
+    <string name="password_list_fetch_successful">Successfully fetched all Passwords.</string>
+    <string name="share_list_fetch_successful">Successfully fetched share list.</string>
+    <string name="something_went_wrong_try_again">Something went wrong try again.</string>
+    <string name="successfully_logged_out">Successfully logged out.</string>
+    <string name="your_token_is_no_longer_valid_please_login_again">Your token is no longer valid, please log in again.</string>
+    <string name="reload_password_icons">Reload password icons</string>
+    <string name="clear_password_icon_cache">Clear password icon cache</string>
+    <string name="clear_password_cache">Clear password cache</string>
+    <string name="username">username</string>
+    <string name="copied_to_clipboard">copied to clipboard</string>
+    <string name="password">password</string>
+    <string name="name">Name</string>
+    <string name="url">URL</string>
+    <string name="the_password_is_secure">The password is secure</string>
+    <string name="the_password_is_either_outdated_or_a_duplicate">The password is either outdated or a duplicate</string>
+    <string name="the_password_is_insecure">The password is insecure</string>
+    <string name="the_security_status_of_the_password_was_not_checked">The security status of the password was not checked</string>
+    <string name="password_successfully_updated">Password successfully updated</string>
+    <string name="please_enter_your_server_url">Please enter your server URL</string>
+    <string name="example_url">https://example.com</string>
+</resources>

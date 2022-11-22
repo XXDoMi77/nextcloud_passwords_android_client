@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Nextcloud Passwörter</string>
+
+    <string name="on">auf</string>
+    <string name="title_folders">Ordner</string>
+    <string name="title_passwords">Passwörter</string>
+    <string name="title_account">Benutzer</string>
+    <string name="not_a_valid_url_alert_message">Dies ist keine gültige URL, meintest du?</string>
+    <string name="whitespaces_in_url_alert_message">Die URL darf keine Leerzeichen enthalten, meintest du?</string>
+    <string name="logout">Ausloggen</string>
+    <string name="password_list_fetch_successful">Alle Passwörter erfolgreich abgerufen.</string>
+    <string name="share_list_fetch_successful">Freigabeliste erfolgreich abgerufen.</string>
+    <string name="something_went_wrong_try_again">Irgendetwas stimmt nicht, versuche es erneut.</string>
+    <string name="successfully_logged_out">Erfolgreich abgemeldet.</string>
+    <string name="your_token_is_no_longer_valid_please_login_again">Dein Token ist nicht mehr gültig, bitte melde dich erneut an.</string>
+    <string name="reload_password_icons">Passwortsymbole neu laden</string>
+    <string name="clear_password_icon_cache">Passwort-Icon-Speicher leeren</string>
+    <string name="clear_password_cache">Passwort-Speicher leeren</string>
+    <string name="username">benutzername</string>
+    <string name="copied_to_clipboard">in die Zwischenablage kopiert</string>
+    <string name="password">passwort</string>
+    <string name="name">Name</string>
+    <string name="url">URL</string>
+    <string name="the_password_is_secure">Das Passwort ist sicher</string>
+    <string name="the_password_is_either_outdated_or_a_duplicate">Das Passwort ist entweder veraltet oder ein Duplikat</string>
+    <string name="the_password_is_insecure">Das Passwort ist unsicher</string>
+    <string name="the_security_status_of_the_password_was_not_checked">Der Sicherheitsstatus des Passworts wurde/ konnte nicht überprüft werden</string>
+    <string name="password_successfully_updated">Passwort erfolgreich aktualisiert</string>
+    <string name="please_enter_your_server_url">Bitte gebe den Server-URL ein</string>
+    <string name="example_url">https://beispiel.de</string>
+</resources>
