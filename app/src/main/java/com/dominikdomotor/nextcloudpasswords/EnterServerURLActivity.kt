@@ -10,6 +10,9 @@ import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.dominikdomotor.nextcloudpasswords.ui.dataclasses.API
+import java.net.URL
+import javax.net.ssl.HttpsURLConnection
 
 
 class EnterServerURLActivity : AppCompatActivity() {
@@ -44,10 +47,24 @@ class EnterServerURLActivity : AppCompatActivity() {
 				urlInput.setSelection(urlInput.length())//placing cursor at the end of the text
 				// if everything is ok with the entered url the next activity is opened and the server url is passed
 			} else if (URLUtil.isValidUrl(urlInput.text.toString())) {
-				val intent = Intent(this, LoginActivity::class.java)
-				intent.putExtra("server_URL", urlInput.text.toString())
-				finish()
-				startActivity(intent)
+				Thread {
+					val url = URL(urlInput.text.toString() + "/ocs/v1.php")
+					val httpConnection: HttpsURLConnection = url.openConnection() as HttpsURLConnection
+					httpConnection.requestMethod = "GET"
+					httpConnection.doOutput = false
+					if (httpConnection.responseCode in 200..299) {
+						runOnUiThread {
+							val intent = Intent(this, LoginActivity::class.java)
+							intent.putExtra("server_URL", urlInput.text.toString())
+							finish()
+							startActivity(intent)
+						}
+					} else {
+						App.makeToast(getString(R.string.this_URL_doesnt_seem_to_point_to_a_nextcloud_server), Toast.LENGTH_LONG)
+					}
+				}.start()
+				
+				
 			}
 		}
 		

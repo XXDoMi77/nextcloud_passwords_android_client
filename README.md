@@ -36,7 +36,6 @@ https://user-images.githubusercontent.com/27887974/200460287-6c0522c3-5134-4b2b-
 - Theming based on Nextcloud color
 
 ### Should be fixed:
-- Url in Login activity isn't checked whether it has a Nextcloud server running
 - Orientation should be fixed (not rotatable) maybe
 - If request, responds with "not authorized" logout and request new login
 
