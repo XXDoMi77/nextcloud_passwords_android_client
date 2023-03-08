@@ -16,6 +16,8 @@ https://user-images.githubusercontent.com/27887974/200460287-6c0522c3-5134-4b2b-
 ### Currently supported features:
 - Login
 - Logout
+- Deleting password
+- Adding and removing password from favorites
 - Pulling and showing passwords from server
 - Pulling and showing favicons from Nextcloud server (Multithreaded and nonblocking)
 - Editing label, username, password, url (only works with Internet connection)
@@ -23,7 +25,7 @@ https://user-images.githubusercontent.com/27887974/200460287-6c0522c3-5134-4b2b-
 - A very early version of Autofill, this will be changed for sure
 
 ### Not yet implemented, but planned:
-- Editing/ Viewing favorites
+- Viewing favorites
 - Viewing tags
 - Viewing notes
 - Viewing folders
@@ -33,7 +35,6 @@ https://user-images.githubusercontent.com/27887974/200460287-6c0522c3-5134-4b2b-
 - E2E encryption
 - More settings...
 - Better looking settings screen...
-- Theming based on Nextcloud color
 
 ### Should be fixed:
 - Orientation should be fixed (not rotatable) maybe
@@ -43,6 +44,7 @@ https://user-images.githubusercontent.com/27887974/200460287-6c0522c3-5134-4b2b-
 - Using multiple accounts
 - Sorting passwords by security
 - Viewing revisions of passwords
+- Theming based on Nextcloud color
 
 ### IDE
 Just open the project in Android Studio.
