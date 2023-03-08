@@ -31,4 +31,8 @@
     <string name="example_url">https://example.com</string>
     <string name="this_password_is_not_editable">This password is not editable</string>
     <string name="this_URL_doesnt_seem_to_point_to_a_nextcloud_server">This URL doesn\'t seem to point to a Nextcloud server</string>
+    <string name="password_successfully_deleted">Password successfully deleted</string>
+    <string name="are_you_sure">Are you sure?</string>
+    <string name="yes">Yes</string>
+    <string name="cancel">Cancel</string>
 </resources>

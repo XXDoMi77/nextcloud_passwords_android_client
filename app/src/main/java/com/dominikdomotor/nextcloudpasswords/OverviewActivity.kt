@@ -34,7 +34,7 @@ class OverviewActivity : AppCompatActivity() {
 			catch (e: Exception){
 				e.printStackTrace()
 			}
-			pullPasswords {
+			this.pullPasswords {
 				//TODO() recyclerview has to be notified of updated passwords somehow, don't know how to get it in this scope without a global variable... so for now I couldn't be bothered less
 			}
 		}

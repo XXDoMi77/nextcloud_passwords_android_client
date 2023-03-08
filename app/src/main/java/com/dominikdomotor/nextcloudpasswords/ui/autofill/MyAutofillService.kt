@@ -131,6 +131,8 @@ class MyAutofillService : AutofillService() {
 					println("asdasd2" + it.className)
 				}
 			}
+		}else if(applicationName.contains("nextcloud", true)){
+		
 		} else {
 			allViewNodes.forEach {
 				if (!firstEditTextFound && (it.hint == View.AUTOFILL_HINT_USERNAME || it.hint == View.AUTOFILL_HINT_EMAIL_ADDRESS || it.hint.toString().contains("mail", true) || it.hint.toString().contains("user", true) || it.hint.toString().contains("phone", true) || it.hint.toString().contains("phone", true) || it.isFocused || it.className?.contains("EditText") == true || it.className?.contains("AutoCompleteTextView") == true)) {

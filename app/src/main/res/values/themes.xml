@@ -6,7 +6,7 @@
         <item name="colorPrimaryVariant">@color/background_color</item>
         <item name="colorOnPrimary">@color/background_color</item>
         <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/normal_text_color</item>
+        <item name="colorSecondary">@color/navigation_menu_background</item>
         <item name="colorSecondaryVariant">@color/normal_text_color</item>
         <item name="colorOnSecondary">@color/normal_text_color</item>
         <!-- Status bar color. -->
@@ -43,4 +43,21 @@
         <item name="android:textColorSecondary">@color/normal_text_color</item>
         <item name="android:drawableTint">@color/normal_text_color</item>
     </style>
+
+    <style name="AlertDialogStyle" parent="Theme.AppCompat.DayNight.Dialog">
+        <!--        <item name="android:windowMinWidthMajor">200dp</item>-->
+        <!--        <item name="android:windowMinWidthMinor">200dp</item>-->
+        <item name="android:minHeight">46dp</item>
+        <item name="android:minWidth">80dp</item>
+
+
+        <item name="dialogCornerRadius">16dp</item>
+        <item name="android:background">@color/material_dynamic_neutral20</item>
+        <!--        <item name="android:colorAccent">#FF0000</item>-->
+<!--        <item name="android:titleTextColor">#00FF00</item>-->
+        <item name="android:textColorPrimary">#FFFFFF</item>
+        <!--        <item name="android:gravity">center</item>-->
+        <!--        <item name="android:justificationMode">inter_word</item>-->
+    </style>
+
 </resources>

@@ -1,29 +1,25 @@
 package com.dominikdomotor.nextcloudpasswords.ui.passwords
 
-import android.graphics.drawable.Drawable
-import android.opengl.Visibility
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
-import android.widget.Button
+import android.widget.AbsListView
 import android.widget.SearchView
 import androidx.activity.OnBackPressedCallback
-import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import androidx.appcompat.view.menu.ActionMenuItemView
-import androidx.core.content.ContextCompat
-import androidx.core.view.get
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.RecyclerView.SmoothScroller
 import com.dominikdomotor.nextcloudpasswords.*
 import com.dominikdomotor.nextcloudpasswords.databinding.FragmentPasswordsBinding
+import com.dominikdomotor.nextcloudpasswords.ui.dataclasses.Password
 import com.dominikdomotor.nextcloudpasswords.ui.dataclasses.SPKeys
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.gson.Gson
 import me.zhanghai.android.fastscroll.FastScrollerBuilder
-import me.zhanghai.android.fastscroll.PopupTextProvider
 
 
 class PasswordsFragment : Fragment() {
@@ -36,6 +32,12 @@ class PasswordsFragment : Fragment() {
 	private lateinit var passwordsRecyclerViewAdapter: PasswordsRecyclerViewAdapter
 	private lateinit var linearLayoutManager: LinearLayoutManager
 	
+	override fun onCreate(savedInstanceState: Bundle?) {
+		super.onCreate(savedInstanceState)
+		
+
+		
+	}
 	override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
 	): View {
 		
@@ -82,6 +84,8 @@ class PasswordsFragment : Fragment() {
 			}
 		}
 		
+		activity?.findViewById<SearchView>(R.id.search)?.maxWidth = Integer.MAX_VALUE
+		
 		activity?.findViewById<SearchView>(R.id.search)?.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
 			override fun onQueryTextSubmit(query: String): Boolean {
 				println("nah: $query")
@@ -116,6 +120,32 @@ class PasswordsFragment : Fragment() {
 //		ContextCompat.getDrawable(requireActivity(), R.drawable.icon_foreground_36)?.let { fastScrollerBuilder.setThumbDrawable(it) }
 		fastScrollerBuilder.useMd2Style()
 		fastScrollerBuilder.build()
+		
+		recyclerviewPasswords.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+			override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+				super.onScrolled(recyclerView, dx, dy)
+				if (dy > 0) {
+//					println("down")
+					activity?.findViewById<FloatingActionButton>(R.id.addPasswordActionButton)?.hide()
+					// Scrolling down
+				} else {
+//					println("up")
+				    activity?.findViewById<FloatingActionButton>(R.id.addPasswordActionButton)?.show()
+					// Scrolling up
+				}
+			}
+			
+//			override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+//				super.onScrollStateChanged(recyclerView, newState)
+//				if (newState == AbsListView.OnScrollListener.SCROLL_STATE_FLING) {
+//					// Do something
+//				} else if (newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL) {
+//					// Do something
+//				} else {
+//					// Do something
+//				}
+//			}
+		})
 		
 		if (passwords[0].id.isEmpty()){
 			if (App.sharedPreferences().contains(SPKeys.logged_in)) {

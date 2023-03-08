@@ -1,26 +1,24 @@
 package com.dominikdomotor.nextcloudpasswords.ui.passwords
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import android.content.DialogInterface
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.os.PersistableBundle
-import android.provider.DocumentsContract.Root
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
-import com.dominikdomotor.nextcloudpasswords.App
-import com.dominikdomotor.nextcloudpasswords.R
-import com.dominikdomotor.nextcloudpasswords.passwords
+import com.dominikdomotor.nextcloudpasswords.*
 import com.dominikdomotor.nextcloudpasswords.ui.dataclasses.Password
-import com.dominikdomotor.nextcloudpasswords.updatePassword
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
 import java.net.URI
@@ -59,7 +57,7 @@ class PasswordsRecyclerViewAdapter(private val activity: Activity) : RecyclerVie
 	fun filterPasswordList(filter: String) {
 		filterEnabled = true
 		searchQuery = filter
-		loadedPasswordList = ((passwords.filter { it.label.contains(filter, true) }).sortedBy { it.label.startsWith(filter, true) }).reversed().toTypedArray()
+		loadedPasswordList = ((passwords.filter { it.label.contains(filter, true)  || it.username.contains(filter, true) || it.url.contains(filter, true)}).sortedBy { it.label.startsWith(filter, true) }).reversed().toTypedArray()
 		activity.runOnUiThread {
 			this.notifyDataSetChanged()
 		}
@@ -123,7 +121,10 @@ class PasswordsRecyclerViewAdapter(private val activity: Activity) : RecyclerVie
 		
 		holder.constraintLayoutCardViewPassword.setOnClickListener {
 			// on below line we are creating a new bottom sheet dialog.
-			val dialog = BottomSheetDialog(activity)
+			val bottomSheetDialog = BottomSheetDialog(activity)
+			
+//			dialog.behavior.state = BottomSheetBehavior.STATE_EXPANDED
+			
 			
 			// on below line we are inflating a layout file which we have created.
 			val view = activity.layoutInflater.inflate(R.layout.password_edit_bottom_sheet, null)
@@ -133,21 +134,21 @@ class PasswordsRecyclerViewAdapter(private val activity: Activity) : RecyclerVie
 //			val btnClose = view.findViewById<Button>(R.id.idBtnDismiss)
 			
 			view.findViewById<ImageButton>(R.id.imageButtonClose).setOnClickListener {
-				dialog.dismiss()
+				bottomSheetDialog.dismiss()
 			}
 			// below line is use to set cancelable to avoid
 			// closing of dialog box when clicking on the screen.
-			dialog.setCancelable(true)
+			bottomSheetDialog.setCancelable(true)
 			
 			// on below line we are setting
 			// content view to our view.
-			dialog.setContentView(view)
+			bottomSheetDialog.setContentView(view)
 			
 			// on below line we are calling
 			// a show method to display a dialog.
-			dialog.show()
+			bottomSheetDialog.show()
 			
-			dialog.setOnDismissListener {
+			bottomSheetDialog.setOnDismissListener {
 				reloadPasswords()
 			}
 			
@@ -255,6 +256,28 @@ class PasswordsRecyclerViewAdapter(private val activity: Activity) : RecyclerVie
 				}
 			}
 			
+			
+			view.findViewById<ImageButton>(R.id.imageButtonStar).drawable.setTint(Color.parseColor("#ECA700"))
+			
+			if (loadedPasswordList[position].favorite){
+				print("\n\n\nIt's my favourite!\n\n\n")
+				view.findViewById<ImageButton>(R.id.imageButtonStar).setImageResource(R.drawable.ic_baseline_star_filled_36)
+				view.findViewById<ImageButton>(R.id.imageButtonStar).drawable.setTint(Color.parseColor("#ECA700"))
+			}
+			
+			view.findViewById<ImageButton>(R.id.imageButtonStar).setOnClickListener{
+				if (loadedPasswordList[position].favorite){
+					loadedPasswordList[position].favorite = false
+					view.findViewById<ImageButton>(R.id.imageButtonStar).setImageResource(R.drawable.ic_baseline_star_border_36)
+					view.findViewById<ImageButton>(R.id.imageButtonStar).drawable.setTint(Color.parseColor("#ECA700"))
+				} else{
+					loadedPasswordList[position].favorite = true
+					view.findViewById<ImageButton>(R.id.imageButtonStar).setImageResource(R.drawable.ic_baseline_star_filled_36)
+					view.findViewById<ImageButton>(R.id.imageButtonStar).drawable.setTint(Color.parseColor("#ECA700"))
+				}
+				activity.updatePassword(loadedPasswordList[position]){}
+			}
+			
 			when (loadedPasswordList[position].status) {
 				0 -> view.findViewById<ImageButton>(R.id.imageButtonShield).drawable.setTint(Color.parseColor("#FF00FF00"))
 				1 -> view.findViewById<ImageButton>(R.id.imageButtonShield).drawable.setTint(Color.parseColor("#FFFFEA00"))
@@ -269,6 +292,28 @@ class PasswordsRecyclerViewAdapter(private val activity: Activity) : RecyclerVie
 					2 -> App.makeToast(activity.getString(R.string.the_password_is_insecure), Toast.LENGTH_LONG)
 					3 -> App.makeToast(activity.getString(R.string.the_security_status_of_the_password_was_not_checked), Toast.LENGTH_LONG)
 				}
+			}
+			
+			view.findViewById<ImageButton>(R.id.imageButtonTrashcan).setOnClickListener {
+				
+				val dialogClickListener: DialogInterface.OnClickListener = DialogInterface.OnClickListener { dialog, which ->
+					when (which) {
+						DialogInterface.BUTTON_POSITIVE -> {
+							bottomSheetDialog.cancel()
+							activity.deletePassword(loadedPasswordList[position]){
+								activity.runOnUiThread{
+									this.reloadPasswords()
+								}
+							}
+						}
+						DialogInterface.BUTTON_NEGATIVE -> {}
+					}
+				}
+				
+				val builder: AlertDialog.Builder = AlertDialog.Builder(activity, R.style.AlertDialogStyle)
+				builder.setMessage(R.string.are_you_sure).setPositiveButton(R.string.yes, dialogClickListener)
+					.setNegativeButton(R.string.cancel, dialogClickListener)
+					.show()
 			}
 		}
 //		holder.textviewPasswordLabel.text = list1[position]

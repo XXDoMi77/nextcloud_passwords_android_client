@@ -57,7 +57,7 @@ object API {
 		}
 		object Delete{
 			const val url: String = "$passwordsPath/api/1.0/password/delete"
-			const val method: String = "DEL"
+			const val method: String = "DELETE"
 			val headers: kotlin.collections.List<Pair<String, String>> = listOf(Pair("Content-Type", "application/json"), Pair("Connection","keep-alive"))
 			const val doOutput: Boolean = true
 			

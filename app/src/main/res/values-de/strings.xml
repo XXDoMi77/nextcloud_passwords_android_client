@@ -30,4 +30,9 @@
     <string name="please_enter_your_server_url">Bitte gebe den Server-URL ein</string>
     <string name="example_url">https://beispiel.de</string>
     <string name="this_password_is_not_editable">Dieses Passwort kann nicht bearbeitet werden</string>
+    <string name="this_URL_doesnt_seem_to_point_to_a_nextcloud_server">Diese URL scheint nicht auf einen Nextcloud-Server zu verweisen</string>
+    <string name="password_successfully_deleted">Passwort erfolgreich gelöscht</string>
+    <string name="are_you_sure">Bist du sicher?</string>
+    <string name="yes">Ja</string>
+    <string name="cancel">Abbrechen</string>
 </resources>

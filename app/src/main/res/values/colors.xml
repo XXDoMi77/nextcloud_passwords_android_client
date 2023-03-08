@@ -3,11 +3,17 @@
     <color name="teal_200">#FF03DAC5</color>
     <color name="teal_700">#FF018786</color>
 
+    <color name="toolbar_color">#0082C9</color>
+    <color name="accent_color">#2695D1</color>
+    <color name="navigation_menu_background">#0082C9</color>
+    <color name="ripple_color">#99FFFFFF</color>
+    <color name="add_password_floating_action_button">#2695D1</color>
     <color name="transparent">#00000000</color>
     <color name="background_color">#FFFFFFFF</color>
     <color name="normal_text_color">#FF000000</color>
     <color name="shaded_text_color">#5F000000</color>
     <color name="password_card_background_color">#70FFFFFF</color>
-    <color name="password_edit_bottom_sheet_background">#FFFFFFFF</color>
+    <color name="password_edit_bottom_sheet_background">#FFFFFF</color>
+    <color name="password_edit_bottom_sheet_stroke">#FFFFFF</color>
     <color name="red">#FFFF0000</color>
 </resources>
