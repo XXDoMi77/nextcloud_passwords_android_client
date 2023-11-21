@@ -18,8 +18,8 @@
         tools:layout="@layout/fragment_passwords" />
 
     <fragment
-        android:id="@+id/navigation_account"
-        android:name="com.dominikdomotor.nextcloudpasswords.ui.account.AccountFragment"
+        android:id="@+id/navigation_settings"
+        android:name="com.dominikdomotor.nextcloudpasswords.ui.settings.SettingsFragment"
         android:label="@string/title_account"
-        tools:layout="@layout/fragment_account_and_settings" />
+        tools:layout="@layout/fragment_settings" />
 </navigation>

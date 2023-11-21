@@ -2,15 +2,14 @@ package com.dominikdomotor.nextcloudpasswords
 
 import android.annotation.SuppressLint
 import android.content.Intent
-import android.content.SharedPreferences
+import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.appcompat.app.AppCompatActivity
-import androidx.security.crypto.EncryptedSharedPreferences
-import androidx.security.crypto.MasterKeys
 import com.dominikdomotor.nextcloudpasswords.ui.dataclasses.SPKeys
+import java.util.Locale
 
 
 class LoginActivity : AppCompatActivity() {
@@ -28,7 +27,24 @@ class LoginActivity : AppCompatActivity() {
 		map["OCS-APIREQUEST"] = "true"
 		
 		//enabling javascript and setting user agent which will be the name of the token
-		myWebView.settings.userAgentString = "Nextcloud Passwords App " + getString(R.string.on) + " " + Settings.Secure.getString(contentResolver, "bluetooth_name")
+		
+		myWebView.settings.userAgentString = "Nextcloud Passwords App " + getString(R.string.on)
+		try {
+			if (Build.BRAND.isNotEmpty())
+				myWebView.settings.userAgentString += " " + Build.BRAND.toString()
+					.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString() }
+			else
+			if (Build.MANUFACTURER.isNotEmpty())
+				myWebView.settings.userAgentString += " " + Build.MANUFACTURER.toString()
+					.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString() }
+			if (Build.MODEL.isNotEmpty())
+				myWebView.settings.userAgentString += " " + Build.MODEL.toString()
+			else
+			if (Build.DEVICE.isNotEmpty())
+				myWebView.settings.userAgentString += " " + Build.DEVICE.toString()
+		} catch (e:Exception){
+			e.printStackTrace()
+		}
 		myWebView.settings.javaScriptEnabled = true
 		
 		//opens the password overview screen
@@ -48,10 +64,17 @@ class LoginActivity : AppCompatActivity() {
 //			println("Received token, username: $username\t token: $token")
 			
 			try {
-				App.sharedPreferences().edit().putString(SPKeys.server, server).apply()
-				App.sharedPreferences().edit().putString(SPKeys.username, username).apply()
-				App.sharedPreferences().edit().putString(SPKeys.token, token).apply()
-				App.sharedPreferences().edit().putBoolean(SPKeys.logged_in, true).apply()
+				this.runOnUiThread{
+					SharedPreferencesManager.getSharedPreferences().edit().putString(SPKeys.server, server).commit()
+					SharedPreferencesManager.getSharedPreferences().edit().putString(SPKeys.username, username).commit()
+					SharedPreferencesManager.getSharedPreferences().edit().putString(SPKeys.token, token).commit()
+					SharedPreferencesManager.getSharedPreferences().edit().putBoolean(SPKeys.logged_in, true).commit()
+					
+					println("1234" + SharedPreferencesManager.getSharedPreferences().getString(SPKeys.server, SPKeys.not_found))
+					println("1234" + SharedPreferencesManager.getSharedPreferences().getString(SPKeys.username, SPKeys.not_found))
+					println("4567" + SharedPreferencesManager.getSharedPreferences().getString(SPKeys.token, SPKeys.not_found))
+					println("1234" + SharedPreferencesManager.getSharedPreferences().getString(SPKeys.logged_in, SPKeys.not_found))
+				}
 				
 			} catch (exception: Exception) {
 				println(exception)

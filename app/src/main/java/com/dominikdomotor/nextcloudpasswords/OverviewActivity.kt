@@ -1,8 +1,8 @@
 package com.dominikdomotor.nextcloudpasswords
 
 import android.content.Intent
-import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.widget.Switch
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
@@ -11,6 +11,7 @@ import com.dominikdomotor.nextcloudpasswords.ui.dataclasses.Password
 import com.dominikdomotor.nextcloudpasswords.ui.dataclasses.SPKeys
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.gson.Gson
+//import com.ionspin.kotlin.crypto.LibsodiumInitializer
 
 class OverviewActivity : AppCompatActivity() {
 	
@@ -20,24 +21,41 @@ class OverviewActivity : AppCompatActivity() {
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
 		
+		SharedPreferencesManager.init(this)
+		PasswordManager.init(this)
+//		EncryptionManager.init()
+//		LibsodiumInitializer.initializeWithCallback {}
+		
+		//write default values for Settings to SharedPreferences if they don't yet exist
+		if (!SharedPreferencesManager.getSharedPreferences().contains(SPKeys.settings_password_length)){
+			SharedPreferencesManager.getSharedPreferences().edit().putString(SPKeys.settings_password_length, "20").apply()
+		}
+		if (!SharedPreferencesManager.getSharedPreferences().contains(SPKeys.settings_include_symbols_number)){
+			SharedPreferencesManager.getSharedPreferences().edit().putString(SPKeys.settings_include_symbols_number, "1").apply()
+		}
+		if (!SharedPreferencesManager.getSharedPreferences().contains(SPKeys.settings_exclude_similar_numbers)){
+			SharedPreferencesManager.getSharedPreferences().edit().putBoolean(SPKeys.settings_exclude_similar_numbers, true).apply()
+		}
+		
 		//checking if user is logged in
-		if (!App.sharedPreferences().getBoolean("logged_in", false)) {
+		if (!SharedPreferencesManager.getSharedPreferences().getBoolean("logged_in", false)) {
+			println("Switching to EnterServerURLActivity")
 			val intent = Intent(this, EnterServerURLActivity::class.java)
 			finish()
 			startActivity(intent)
-		}
-		
-		if (App.sharedPreferencesAreInitialized()) {
+		} else {
 			try {
-				passwords = Gson().fromJson(App.sharedPreferences().getString(SPKeys.passwords, SPKeys.not_found), Array<Password>::class.java).sortedBy { it.label }.toTypedArray()
+				PasswordManager.init(this)
 			}
 			catch (e: Exception){
 				e.printStackTrace()
 			}
-			this.pullPasswords {
-				//TODO() recyclerview has to be notified of updated passwords somehow, don't know how to get it in this scope without a global variable... so for now I couldn't be bothered less
-			}
+//			PasswordManager.pullPasswords(this) {
+//				//TODO() recyclerview has to be notified of updated passwords somehow, don't know how to get it in this scope without a global variable... so for now I couldn't be bothered less
+//			}
 		}
+		
+
 		
 		binding = ActivityOverviewBinding.inflate(layoutInflater)
 		supportActionBar?.hide()

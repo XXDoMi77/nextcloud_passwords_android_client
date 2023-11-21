@@ -10,4 +10,8 @@ object SPKeys{
 	const val logged_in:String = "logged_in"
 	const val passwords: String = "passwords"
 	const val shares: String = "shares"
+	const val partners: String = "partners"
+	const val settings_password_length: String = "settings_password_length"
+	const val settings_include_symbols_number: String = "settings_include_symbols_number"
+	const val settings_exclude_similar_numbers: String = "settings_exclude_similar_numbers"
 }

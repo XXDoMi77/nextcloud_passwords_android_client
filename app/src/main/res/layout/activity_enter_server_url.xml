@@ -71,7 +71,7 @@
             app:layout_constraintStart_toEndOf="@+id/URL_input"
             app:layout_constraintTop_toTopOf="@+id/URL_input"
             app:layout_constraintVertical_bias="0.0"
-            app:srcCompat="@drawable/ic_baseline_arrow_forward_ios_36"
+            app:srcCompat="@drawable/icon_arrow_forward_36"
             app:tint="@color/normal_text_color" />
 
         <TextView

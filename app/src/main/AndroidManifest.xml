@@ -2,16 +2,14 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" />
+    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" tools:ignore="QueryAllPackagesPermission" />
 
 <!--    <uses-permission android:name="android.permission.BIND_AUTOFILL_SERVICE"/>-->
 
 
     <application
-        android:name="com.dominikdomotor.nextcloudpasswords.App"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -20,12 +18,13 @@
         android:roundIcon="@mipmap/launcher_icon_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.NextcloudPasswords"
-        tools:targetApi="31">
+        tools:targetApi="33">
         <service
             android:name=".ui.autofill.MyAutofillService"
             android:exported="true"
             android:label="Nextcloud Passwords"
-            android:permission="android.permission.BIND_AUTOFILL_SERVICE">
+            android:permission="android.permission.BIND_AUTOFILL_SERVICE"
+            android:process=":autofill_process">
             <meta-data
                 android:name="android.autofill"
                 android:resource="@xml/service_configuration" />

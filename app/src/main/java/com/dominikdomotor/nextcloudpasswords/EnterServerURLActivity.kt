@@ -32,8 +32,9 @@ class EnterServerURLActivity : AppCompatActivity() {
 		fun openLoginActivity() {
 			// trying to guess the url
 			if (!URLUtil.isValidUrl(urlInput.text.toString())) {
-				val toast = Toast.makeText(this, getString(R.string.not_a_valid_url_alert_message), Toast.LENGTH_LONG)
-				toast.show()
+				runOnUiThread{
+					Toast.makeText(this, getString(R.string.not_a_valid_url_alert_message), Toast.LENGTH_LONG).show()
+				}
 				urlInput.setText(
 					URLUtil.guessUrl(urlInput.text.toString().filter { !it.isWhitespace() }).replace("http://www.", "https://", true)
 						.replace("http:", "https:", true)//.dropLastWhile { it == '/' || it.isWhitespace() }
@@ -41,8 +42,9 @@ class EnterServerURLActivity : AppCompatActivity() {
 				urlInput.setSelection(urlInput.length())//placing cursor at the end of the tex
 				// whitespace at the end of the url results in the authentication process not working, so trying to remove them and letting the user know
 			} else if (urlInput.text.toString().contains(" ")) {
-				val toast = Toast.makeText(this, getString(R.string.whitespaces_in_url_alert_message), Toast.LENGTH_LONG)
-				toast.show()
+				runOnUiThread{
+					Toast.makeText(this, getString(R.string.whitespaces_in_url_alert_message), Toast.LENGTH_LONG).show()
+				}
 				urlInput.setText(urlInput.text.toString().filter { !it.isWhitespace() })
 				urlInput.setSelection(urlInput.length())//placing cursor at the end of the text
 				// if everything is ok with the entered url the next activity is opened and the server url is passed
@@ -62,10 +64,14 @@ class EnterServerURLActivity : AppCompatActivity() {
 								startActivity(intent)
 							}
 						} else {
-							App.makeToast(getString(R.string.this_URL_doesnt_seem_to_point_to_a_nextcloud_server), Toast.LENGTH_LONG)
+							runOnUiThread{
+								Toast.makeText(this, getString(R.string.this_URL_doesnt_seem_to_point_to_a_nextcloud_server), Toast.LENGTH_LONG).show()
+							}
 						}
 					} catch (e: Exception) {
-						App.makeToast(getString(R.string.this_URL_doesnt_seem_to_point_to_a_nextcloud_server), Toast.LENGTH_LONG)
+						runOnUiThread {
+							Toast.makeText(this, getString(R.string.this_URL_doesnt_seem_to_point_to_a_nextcloud_server), Toast.LENGTH_LONG).show()
+						}
 					}
 				}.start()
 			}

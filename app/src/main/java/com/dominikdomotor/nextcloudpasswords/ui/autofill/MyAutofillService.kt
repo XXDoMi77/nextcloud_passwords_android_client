@@ -1,262 +1,291 @@
 package com.dominikdomotor.nextcloudpasswords.ui.autofill
 
-import android.R
+import android.*
 import android.app.assist.AssistStructure
 import android.app.assist.AssistStructure.ViewNode
-import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
+import android.os.Build
 import android.os.CancellationSignal
 import android.service.autofill.*
-import android.view.View
+import android.text.InputType
 import android.view.autofill.AutofillId
 import android.view.autofill.AutofillValue
 import android.widget.RemoteViews
-import com.dominikdomotor.nextcloudpasswords.App
-import com.dominikdomotor.nextcloudpasswords.passwords
-import com.dominikdomotor.nextcloudpasswords.ui.dataclasses.Password
-import com.dominikdomotor.nextcloudpasswords.ui.dataclasses.SPKeys
-import com.google.gson.Gson
+import android.widget.Toast
+import com.dominikdomotor.nextcloudpasswords.PasswordManager
+import com.dominikdomotor.nextcloudpasswords.SharedPreferencesManager
+import com.dominikdomotor.nextcloudpasswords.ui.dataclasses.HintWords
 
 
 class MyAutofillService : AutofillService() {
 	
-	lateinit var usernameId: AutofillId
-	lateinit var passwordId: AutofillId
-	
-	
-	private val allViewNodes = mutableListOf<ViewNode>()
-	private var webViewUrl: String = String()
-	
-//	private var allViewNodes: MutableList<ViewNode> = mutableListOf()
+	private var usernameIds: MutableList<AutofillId> = mutableListOf()
+	private var passwordIds: MutableList<AutofillId> = mutableListOf()
+	private var focusedIds: MutableList<AutofillId> = mutableListOf()
+	private var webDomain: String? = null
 	
 	override fun onFillRequest(request: FillRequest, cancellationSignal: CancellationSignal, callback: FillCallback
 	) {
-		
-		if (App.sharedPreferencesAreInitialized()){
-			passwords = Gson().fromJson(App.sharedPreferences().getString(SPKeys.passwords, SPKeys.not_found), Array<Password>::class.java).sortedBy { it.label }.toTypedArray()
-		}
-		
-		println("onFillRequest called")
-		
-		// Get the structure from the request
-		val context: List<FillContext> = request.fillContexts
-		val structure: AssistStructure = context[context.size - 1].structure
-		
-		println("package name: " + structure.activityComponent.packageName)
-		
-		if (structure.activityComponent.packageName == "com.dominikdomotor.nextcloudpasswords"){
-			callback.onFailure("...")
-			return
-		}
-		
-		val splitPackageName = structure.activityComponent.packageName.split(".")
-		
-		val pm = applicationContext.packageManager
-		val ai: ApplicationInfo? = try {
-			pm.getApplicationInfo(structure.activityComponent.packageName, 0)
-		} catch (e: PackageManager.NameNotFoundException) {
-			null
-		}
-		val applicationName = (if (ai != null) pm.getApplicationLabel(ai) else "(unknown)") as String
-		
-		println("appname: $applicationName")
-		
-		
-		//viewNode.autofillType != View.AUTOFILL_TYPE_NONE
-		
-		var usernameFill: String = "username"
-		var passwordFill: String = "password"
-		var labelFill: String = "label"
-		
-		passwords.forEach { password ->
-			if (password.label.contains(applicationName, true) || password.url.contains(applicationName, true) && applicationName != "com" && applicationName != "android") {
-				usernameFill = password.username
-				passwordFill = password.password
-				labelFill = password.label
+		try {
+			println("\nOnFillRequest called...\n")
+			
+			SharedPreferencesManager.init(applicationContext)
+			PasswordManager.init(applicationContext)
+			
+			// Get the structure from the request
+			val context: List<FillContext> = request.fillContexts
+			val structure: AssistStructure = context[context.size - 1].structure
+			
+			if (structure.activityComponent.packageName == "com.dominikdomotor.nextcloudpasswords") {
+				callback.onFailure("...")
+				return
 			}
-		}
-		
-		for (a in 0 until structure.windowNodeCount) {
-			val viewNode = structure.getWindowNodeAt(a).rootViewNode
-			traverseNode(viewNode)
-			println("url?: " + viewNode?.webDomain)
-		}
-		
-		var firstEditTextFound: Boolean = false
-		if (applicationName.contains("chrome", true)) {
-			passwords.forEach { password ->
-				if (password.label.contains(webViewUrl, true) || password.url.contains(webViewUrl, true)){
-					usernameFill = password.username
-					passwordFill = password.password
-					labelFill = password.label
+			
+			val packageManager = applicationContext.packageManager
+			val applicationName: String
+			
+			val applicationInfo = packageManager.getApplicationInfo(structure.activityComponent.packageName, PackageManager.GET_META_DATA)
+			applicationName = packageManager.getApplicationLabel(applicationInfo).toString()
+			
+			for (a in 0 until structure.windowNodeCount) {
+				val viewNode = structure.getWindowNodeAt(a).rootViewNode
+				traverseNode(viewNode)
+			}
+			
+			data class DataSet(val username: String, val password: String, val label: String)
+			
+			val dataSets: MutableList<DataSet> = mutableListOf()
+			
+			
+			val webDomainSeparated = webDomain?.split('.')
+			webDomain = webDomainSeparated?.get(webDomainSeparated.lastIndex - 1)
+			println("webdomain: $webDomain")
+			println("applicationName: $applicationName")
+			
+			if (webDomain?.isNotEmpty() == true) {
+				PasswordManager.getPasswords().forEach { password ->
+					if (password.label.contains(webDomain!!, true) || password.url.contains(webDomain!!, true)) {
+						dataSets.add(DataSet(password.username, password.password, password.label))
+					}
+				}
+			} else {
+				if (!(applicationName.isNotEmpty() && applicationName.contains("chrome", true) && webDomain != null)) {
+					PasswordManager.getPasswords().forEach { password ->
+						if (password.label.contains(applicationName, true) || password.url.contains(applicationName, true)) {
+							dataSets.add(DataSet(password.username, password.password, password.label))
+						}
+					}
 				}
 			}
-			allViewNodes.forEach {
-				if (!firstEditTextFound && it.autofillType == 1) {
-					usernameId = it.autofillId!!
-					it.autofillHints?.forEach { println("autofillHints: $it") }
-					println("autofillHints : " + it.autofillHints)
-					println("autofillId : " + it.autofillId)
-					println("autofillOptions : " + it.autofillOptions)
-					println("autofillType : " + it.autofillType)
-					println("autofillValue : " + it.autofillValue)
-					println("childCount : " + it.childCount)
-					println("className : " + it.className)
-					println("contentDescription : " + it.contentDescription)
-					println("extras : " + it.extras)
-					println("hint : " + it.hint)
-					println("hintIdEntry : " + it.hintIdEntry)
-					println("htmlInfo : " + it.htmlInfo)
-					println("id : " + it.id)
-					println("idEntry : " + it.idEntry)
-					println("idPackage : " + it.idPackage)
-					println("idType : " + it.idType)
-					println("importantForAutofill : " + it.importantForAutofill)
-					println("inputType : " + it.inputType)
-					println("isAccessibilityFocused : " + it.isAccessibilityFocused)
-					println("isActivated : " + it.isActivated)
-					println("isFocusable : " + it.isFocusable)
-					println("isFocused : " + it.isFocused)
-					println("isSelected : " + it.isSelected)
-					println("receiveContentMimeTypes : " + it.receiveContentMimeTypes)
-					println("text : " + it.text)
-					println("textIdEntry : " + it.textIdEntry)
-					println("webDomain : " + it.webDomain)
-					println("webScheme : " + it.webScheme)
-					firstEditTextFound = true
-					return@forEach
+			
+			val fillResponseBuilder = FillResponse.Builder()
+			
+			if (dataSets.isNotEmpty()) {
+				dataSets.forEach { dataset ->
+					val dataSet = Dataset.Builder()
+					
+					val usernamePresentation = RemoteViews(packageName, R.layout.simple_list_item_1)
+					usernamePresentation.setTextViewText(R.id.text1, "\uD83D\uDC64 " + dataset.label + " - " + dataset.username)
+					val focusedUsernamePresentation = RemoteViews(packageName, R.layout.simple_list_item_1)
+					focusedUsernamePresentation.setTextViewText(R.id.text1, "\uD83D\uDC64❔" + dataset.label + " - " + dataset.username)
+					val passwordPresentation = RemoteViews(packageName, R.layout.simple_list_item_1)
+					passwordPresentation.setTextViewText(R.id.text1, "\uD83D\uDD11 " + dataset.label + " - " + dataset.username)
+					
+					if (usernameIds.isNotEmpty() || focusedIds.isNotEmpty()) {
+						if (usernameIds.isNotEmpty()) {
+							usernameIds.forEach { dataSet.setValue(it, AutofillValue.forText(dataset.username), usernamePresentation) }
+						} else  {
+							focusedIds.forEach { dataSet.setValue(it, AutofillValue.forText(dataset.username), focusedUsernamePresentation) }
+						}
+					}
+					if (passwordIds.isNotEmpty()) {
+						passwordIds.forEach { dataSet.setValue(it, AutofillValue.forText(dataset.password), passwordPresentation) }
+					}
+					fillResponseBuilder.addDataset(dataSet.build())
+//					else {
+//						if (focusedIds.isNotEmpty()) {
+//
+//							focusedIds.forEach { dataSet.setValue(it, AutofillValue.forText(dataset.username), usernamePresentation) }
+//
+//							val dataSetFocusedUsername = Dataset.Builder()
+//							val dataSetFocusedPassword = Dataset.Builder()
+//							dataSetFocusedUsername.setValue(focusedId, AutofillValue.forText(dataset.username), usernamePresentation)
+//							fillResponseBuilder.addDataset(dataSetFocusedUsername.build())
+//							dataSetFocusedPassword.setValue(focusedId, AutofillValue.forText(dataset.password), passwordPresentation)
+//							fillResponseBuilder.addDataset(dataSetFocusedPassword.build())
+//						}
+//					}
+					
 				}
-				if (firstEditTextFound && it.autofillType == 1) {
-					passwordId = it.autofillId!!
-					println("asdasd2" + it.className)
-				}
+				val fillResponse = fillResponseBuilder.build()
+				dataSets.clear()
+				callback.onSuccess(fillResponse)
+				println("\n\nSuccess\n\n")
+			} else {
+			callback.onFailure("Something went wrong when trying to Autofill")
+				println("\n\nFail\n\n")
 			}
-		}else if(applicationName.contains("nextcloud", true)){
-		
-		} else {
-			allViewNodes.forEach {
-				if (!firstEditTextFound && (it.hint == View.AUTOFILL_HINT_USERNAME || it.hint == View.AUTOFILL_HINT_EMAIL_ADDRESS || it.hint.toString().contains("mail", true) || it.hint.toString().contains("user", true) || it.hint.toString().contains("phone", true) || it.hint.toString().contains("phone", true) || it.isFocused || it.className?.contains("EditText") == true || it.className?.contains("AutoCompleteTextView") == true)) {
-					usernameId = it.autofillId!!
-					println("asdasd1" + it.className)
-					firstEditTextFound = true
-					return@forEach
-				}
-				if (firstEditTextFound && (it.hint.toString().contains("password", true) || it.className?.contains("EditText") == true)) {
-					passwordId = it.autofillId!!
-					println("asdasd2" + it.className)
-				}
-			}
+		} catch (e: Exception) {
+			callback.onFailure("Something went wrong when trying to Autofill")
+			println("\n\nFail\n\n")
+			e.printStackTrace()
 		}
-		
-		// Build the presentation of the datasets
-		val usernamePresentation = RemoteViews(packageName, R.layout.simple_list_item_1)
-		usernamePresentation.setTextViewText(android.R.id.text1, labelFill)
-		val passwordPresentation = RemoteViews(packageName, android.R.layout.simple_list_item_1)
-		passwordPresentation.setTextViewText(android.R.id.text1, labelFill)
-		
-		// Add a dataset to the response
-		val fillResponse: FillResponse.Builder = FillResponse.Builder()
-		val datasetBuilder: Dataset.Builder = Dataset.Builder()
-		
-		if (this::usernameId.isInitialized) {
-			println("userId\t: $usernameId")
-			datasetBuilder.setValue(usernameId, AutofillValue.forText(usernameFill), usernamePresentation)
-		}
-		if (this::passwordId.isInitialized) {
-			println("pwId\t: $passwordId")
-			datasetBuilder.setValue(passwordId, AutofillValue.forText(passwordFill), passwordPresentation)
-		}
-		if (datasetBuilder != Dataset.Builder()) {
-			println("FillResponse builded")
-			fillResponse.addDataset(datasetBuilder.build())
-			callback.onSuccess(fillResponse.build())
-		} else {
-			println("No matching password found")
-			callback.onFailure("No matching password found")
-		}
-
-//		val autofillIds: Array<AutofillId> = arrayOf()
-//		fillAbleViewNodes.forEachIndexed { index, it ->
-//			autofillIds[index] = it.autofillId!!
-//		}
 	}
 	
-	
-	
-	
+	private var firstFillableFound = false
 	private fun traverseNode(viewNode: ViewNode?) {
-//		println("been called")
-
-//		WebView(applicationContext).url
-		
-		if (viewNode != null) {
-			if(viewNode.webDomain?.isNotEmpty() == true){
-				println("url?: " + viewNode.webDomain.toString())
-				webViewUrl = viewNode.webDomain.toString()
-			}
-		}
-		
-
-		if (viewNode?.className?.contains("WebView", true) == true){
-//			println("url?: " + viewNode.webDomain.toString())
-//			println("----------------------------------------------------------------------------------------")
-//			viewNode.autofillHints?.forEach { println("autofillHints: $it") }
-//			println("autofillId : " + viewNode?.autofillId)
-//			println("autofillOptions : " + viewNode?.autofillOptions)
-//			println("autofillType : " + viewNode?.autofillType)
-//			println("autofillValue : " + viewNode?.autofillValue)
-//			println("childCount : " + viewNode?.childCount)
-//			println("className : " + viewNode?.className)
-//			println("contentDescription : " + viewNode?.contentDescription)
-//			println("extras : " + viewNode?.extras)
-//			println("hint : " + viewNode?.hint)
-//			println("hintIdEntry : " + viewNode?.hintIdEntry)
-//			println("htmlInfo : " + viewNode?.htmlInfo)
-//			println("id : " + viewNode?.id)
-//			println("idEntry : " + viewNode?.idEntry)
-//			println("idPackage : " + viewNode?.idPackage)
-//			println("idType : " + viewNode?.idType)
-//			println("importantForAutofill : " + viewNode?.importantForAutofill)
-//			println("inputType : " + viewNode?.inputType)
-//			println("isAccessibilityFocused : " + viewNode?.isAccessibilityFocused)
-//			println("isActivated : " + viewNode?.isActivated)
-//			println("isFocusable : " + viewNode?.isFocusable)
-//			println("isFocused : " + viewNode?.isFocused)
-//			println("isSelected : " + viewNode?.isSelected)
-//			println("receiveContentMimeTypes : " + viewNode?.receiveContentMimeTypes)
-//			println("text : " + viewNode?.text)
-//			println("textIdEntry : " + viewNode?.textIdEntry)
-//			println("webDomain : " + viewNode?.webDomain)
-//			println("webScheme : " + viewNode?.webScheme)
-		}
-		
-		
 		try {
 			if (viewNode != null) {
-				allViewNodes.add(viewNode)
-//				println("ViewNode added")
+				if (
+						((viewNode.inputType.and(InputType.TYPE_CLASS_TEXT) == InputType.TYPE_CLASS_TEXT) ||
+								(viewNode.importantForAutofill != 0) ||
+								(viewNode.autofillType != 0)) &&
+						(viewNode.className?.contains("textview", ignoreCase = true) == false) &&
+						(viewNode.className?.contains("button", ignoreCase = true) == false) &&
+						(viewNode.className?.contains("imageview", ignoreCase = true) == false) &&
+						(viewNode.className?.contains("ProgressBar", ignoreCase = true) == false) &&
+						(viewNode.className?.contains("RecyclerView", ignoreCase = true) == false) &&
+						(viewNode.className?.contains("ViewGroup", ignoreCase = true) == false) //&&
+//						(viewNode.htmlInfo?.attributes?.any { attribute -> attribute.second.contains("button") } == false)
+//						&&
+//						(viewNode.htmlInfo?.attributes?.any { attribute -> attribute.second.contains("text") } == false) &&
+//						(if (viewNode.idPackage != null) viewNode.idPackage?.contains(
+//							"chrome", ignoreCase = true
+//						) == false else if (viewNode.idEntry != null) viewNode.idEntry?.contains("url_bar", ignoreCase = true) == false else true)
+				) {
+					if (viewNode.isFocused) {
+						printDetails(viewNode, "Focused")
+//						focusedId = viewNode.autofillId!!
+						focusedIds += (viewNode.autofillId!!)
+//						Toast.makeText(applicationContext, "hint: " + viewNode.hint, Toast.LENGTH_LONG).show()
+					}
+					if (
+							HintWords.usernameHintList.any { hint ->
+								viewNode.hint.toString().contains(hint, ignoreCase = true)
+									.also { contains -> if (contains) println("\n\nhint: " + viewNode.hint + "\nlistitem: " + hint) }
+							}
+							||
+							HintWords.usernameHintList.any { hint ->
+								viewNode.htmlInfo?.attributes?.any { attribute -> attribute.second.contains(hint) } == true
+							}
+							||
+							HintWords.usernameHintList.any { hint ->
+								viewNode.autofillHints?.toList()?.any { item -> item.contains(hint) } == true
+							}
+//							||
+//							HintWords.usernameHintList.any { hint ->
+//								viewNode.idEntry.toString().contains(hint, ignoreCase = true)
+//									.also { contains -> if (contains) println("\n\nhint: " + viewNode.idEntry + "\nlistitem: " + hint) }
+//							}
+					) {
+//						usernameId = viewNode.autofillId!!
+						usernameIds += viewNode.autofillId!!
+						println("Username hint found: " + viewNode.autofillId)
+						println("Hint: " + viewNode.hint.toString())
+						printDetails(viewNode, "Username")
+					}
+					if (
+							HintWords.passwordHintList.any { hint ->
+								viewNode.hint.toString().contains(hint, ignoreCase = true)
+									.also { contains -> if (contains) println("\n\nhint: " + viewNode.hint + "\nlistitem: " + hint) }
+							}
+							||
+							HintWords.passwordHintList.any { hint ->
+								viewNode.htmlInfo?.attributes?.any { attribute -> attribute.second.contains(hint) } == true
+							}
+							||
+							HintWords.passwordHintList.any { hint ->
+								viewNode.autofillHints?.toList()?.any { item -> item.contains(hint) } == true
+							}
+//							||
+//							HintWords.passwordHintList.any { hint ->
+//								viewNode.idEntry.toString().contains(hint, ignoreCase = true)
+//									.also { contains -> if (contains) println("\n\nhint: " + viewNode.idEntry + "\nlistitem: " + hint) }
+//							}
+					) {
+//						passwordId = viewNode.autofillId!!
+						passwordIds += viewNode.autofillId!!
+						println("Password hint found: " + viewNode.autofillId)
+						println("Hint: " + viewNode.hint.toString())
+						printDetails(viewNode, "Password")
+					}
+				}
+				
+			}
+			
+			if (viewNode != null) {
+				if (viewNode.webDomain?.isNotEmpty() == true) {
+					webDomain = viewNode.webDomain.toString()
+				}
+			}
+			
+			val children: List<ViewNode>? = viewNode?.run {
+				(0 until childCount).map { getChildAt(it) }
+			}
+			
+			children?.forEach { childNode: ViewNode ->
+				traverseNode(childNode)
 			}
 		} catch (e: Exception) {
 			e.printStackTrace()
-		}
-		if (viewNode?.autofillHints?.isNotEmpty() == true) {
-			// If the client app provides autofill hints, you can obtain them using:
-			// viewNode.getAutofillHints();
-		} else {
-			// Or use your own heuristics to describe the contents of a view
-			// using methods such as getText() or getHint().
-		}
-		
-		val children: List<ViewNode>? = viewNode?.run {
-			(0 until childCount).map { getChildAt(it) }
-		}
-		
-		children?.forEach { childNode: ViewNode ->
-			traverseNode(childNode)
 		}
 	}
 	
 	override fun onSaveRequest(p0: SaveRequest, p1: SaveCallback) {
 		TODO("Not yet implemented")
+	}
+	
+	fun printDetails(viewNode: ViewNode?, description: String) {
+		try {
+			
+			if (viewNode != null) {
+				println("\n\n$description\n ------------------------------------------------------------------------------------------------")
+				println("autofillId: " + viewNode.autofillId.toString())
+				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+					println("hintIdEntry: " + viewNode.hintIdEntry.toString())
+				}
+				println("hint: " + viewNode.hint.toString())
+				println("autofillHints: " + (viewNode.autofillHints?.toList()?.forEach { println("autofillhints: $it") }))
+				println("extras: " + viewNode.extras.toString())
+				println("autofillOptions: " + viewNode.autofillOptions.toString())
+				println("autofillType: " + viewNode.autofillType.toString())
+				println("autofillValue: " + viewNode.autofillValue.toString())
+				println("importantForAutofill: " + viewNode.importantForAutofill.toString())
+				println("contentDescription: " + viewNode.contentDescription.toString())
+				println("childCount: " + viewNode.childCount.toString())
+				println("className: " + viewNode.className.toString())
+				println("id: " + viewNode.id.toString())
+				println("idEntry: " + viewNode.idEntry.toString())
+				println("idPackage: " + viewNode.idPackage.toString())
+				println("idType: " + viewNode.idType.toString())
+				//Build.VERSION_CODES.R = constant value for 30...
+				println("htmlInfo: " + (viewNode.htmlInfo?.attributes?.forEach { println("htmlinfo: $it") }))
+				println("inputType: " + viewNode.inputType.toString())
+//				println("isAccessibilityFocused: " + viewNode.isAccessibilityFocused.toString())
+				println("isActivated: " + viewNode.isActivated.toString())
+				println("isAssistBlocked: " + viewNode.isAssistBlocked.toString())
+				println("isCheckable: " + viewNode.isCheckable.toString())
+				println("isChecked: " + viewNode.isChecked.toString())
+				println("isClickable: " + viewNode.isClickable.toString())
+				println("isContextClickable: " + viewNode.isContextClickable.toString())
+				println("isEnabled: " + viewNode.isEnabled.toString())
+//				println("isFocusable: " + viewNode.isFocusable.toString())
+				println("isFocused: " + viewNode.isFocused.toString())
+//				println("isLongClickable: " + viewNode.isLongClickable.toString())
+//				println("isSelected: " + viewNode.isSelected.toString())
+//				println("localeList: " + viewNode.localeList.toString())
+				println("text: " + viewNode.text.toString())
+				println("textIdEntry: " + viewNode.textIdEntry.toString())
+//				println("top: " + viewNode.top.toString())
+//				println("visibility: " + viewNode.visibility.toString())
+//				println("webScheme: " + viewNode.webScheme.toString())
+//				println("width: " + viewNode.width.toString())
+				println("webDomain: " + viewNode.webDomain.toString())
+				print("\n\n")
+			}
+		} catch (e: Exception) {
+			println("Failed to print details")
+			e.printStackTrace()
+		}
 	}
 }

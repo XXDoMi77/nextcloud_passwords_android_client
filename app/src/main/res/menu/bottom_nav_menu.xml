@@ -3,7 +3,7 @@
 
     <item
         android:id="@+id/navigation_folders"
-        android:icon="@drawable/ic_baseline_folder_36"
+        android:icon="@drawable/icon_folder_36"
         android:title="@string/title_folders" />
 
     <item
@@ -12,8 +12,8 @@
         android:title="@string/title_passwords" />
 
     <item
-        android:id="@+id/navigation_account"
-        android:icon="@drawable/ic_baseline_manage_accounts_36"
-        android:title="@string/title_account" />
+        android:id="@+id/navigation_settings"
+        android:icon="@drawable/icon_account_36"
+        android:title="@string/settings" />
 
 </menu>

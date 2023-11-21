@@ -12,8 +12,6 @@
     <color name="background_color">#FFFFFFFF</color>
     <color name="normal_text_color">#FF000000</color>
     <color name="shaded_text_color">#5F000000</color>
-    <color name="password_card_background_color">#70FFFFFF</color>
-    <color name="password_edit_bottom_sheet_background">#FFFFFF</color>
-    <color name="password_edit_bottom_sheet_stroke">#FFFFFF</color>
+    <color name="password_edit_bottom_sheet_background">#222222</color>
     <color name="red">#FFFF0000</color>
 </resources>

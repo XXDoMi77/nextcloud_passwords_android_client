@@ -16,11 +16,13 @@
             <solid
                 android:color="@color/password_edit_bottom_sheet_background"/>
             <corners
-                android:topLeftRadius="24dp"
-                android:topRightRadius="24dp"/>
-            <stroke
-                android:width="3dp"
-                android:color="@color/password_edit_bottom_sheet_stroke"/>
+                android:topLeftRadius="48dp"
+                android:topRightRadius="48dp"
+                android:bottomLeftRadius="48dp"
+                android:bottomRightRadius="48dp"/>
+<!--            <stroke-->
+<!--                android:width="16dp"-->
+<!--                android:color="@color/password_edit_bottom_sheet_stroke"/>-->
         </shape>
     </item>
 </layer-list>

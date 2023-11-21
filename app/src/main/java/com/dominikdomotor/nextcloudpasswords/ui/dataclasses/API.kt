@@ -1,68 +1,114 @@
 package com.dominikdomotor.nextcloudpasswords.ui.dataclasses
 
+import com.dominikdomotor.nextcloudpasswords.SharedPreferencesManager
+import java.util.Base64
+
 object API {
-	const val passwordsPath: String = "/index.php/apps/passwords"
+	const val PASSWORDS_PATH = "/index.php/apps/passwords"
 	
-	object Session{
+	private val username = SharedPreferencesManager.getSharedPreferences().getString(SPKeys.username, SPKeys.not_found)
+	private val token = SharedPreferencesManager.getSharedPreferences().getString(SPKeys.token, SPKeys.not_found)
+	private val userCredentials = "$username:$token"
+	private val basicAuth = "Basic " + String(Base64.getEncoder().encode(userCredentials.toByteArray()))
+	
+	object Session {
 		object Request {
-			const val url: String = "$passwordsPath/api/1.0/session/request"
-			const val method: String = "GET"
-			val headers: List<Pair<String, String>> = listOf(Pair("Connection","keep-alive"))
-			const val doOutput: Boolean = false
+			const val URL = "$PASSWORDS_PATH/api/1.0/session/request"
+			const val METHOD = "GET"
+			val HEADERS = listOf("Connection" to "keep-alive")
+			const val DO_OUTPUT = false
 		}
-		object Open{
-			const val url: String = "$passwordsPath/api/1.0/session/open"
-			const val method: String = "POST"
-			val headers: List<Pair<String, String>> = listOf(Pair("Content-Type", "application/json"), Pair("Connection","keep-alive"))
-			const val doOutput: Boolean = true
+		
+		object Open {
+			const val URL = "$PASSWORDS_PATH/api/1.0/session/open"
+			const val METHOD = "POST"
+			val HEADERS = listOf("Content-Type" to "application/json", "Connection" to "keep-alive")
+			const val DO_OUTPUT = true
 		}
-		object Close{
-			const val url: String = "$passwordsPath/api/1.0/session/close"
-			const val method: String = "GET"
-			val headers: List<Pair<String, String>> = listOf(Pair("Connection","keep-alive"))
-			const val doOutput: Boolean = false
+		
+		object Close {
+			const val URL = "$PASSWORDS_PATH/api/1.0/session/close"
+			const val METHOD = "GET"
+			val HEADERS = listOf("Connection" to "keep-alive")
+			const val DO_OUTPUT = false
 		}
-		object Keepalive{
-			const val url: String = "$passwordsPath/api/1.0/session/keepalive"
-			const val method: String = "GET"
-			val headers: List<Pair<String, String>> = listOf(Pair("Connection","keep-alive"))
-			const val doOutput: Boolean = false
-		}
-	}
-	
-	object Password{
-		object List{
-			const val url: String = "$passwordsPath/api/1.0/password/list"
-			const val method: String = "GET"
-			val headers: kotlin.collections.List<Pair<String, String>> = listOf(Pair("Connection","keep-alive"))
-			const val doOutput: Boolean = false
-		}
-		object ListDetails{
-			const val url: String = "$passwordsPath/api/1.0/password/list"
-			const val method: String = "POST"
-			val headers: kotlin.collections.List<Pair<String, String>> = listOf(Pair("Content-Type", "application/json"), Pair("Connection","keep-alive"))
-			const val doOutput: Boolean = true
-		}
-		object Create{
-			const val url: String = "$passwordsPath/api/1.0/password/create"
-			const val method: String = "POST"
-			val headers: kotlin.collections.List<Pair<String, String>> = listOf(Pair("Content-Type", "application/json"), Pair("Connection","keep-alive"))
-			const val doOutput: Boolean = true
-		}
-		object Update{
-			const val url: String = "$passwordsPath/api/1.0/password/update"
-			const val method: String = "PATCH"
-			val headers: kotlin.collections.List<Pair<String, String>> = listOf(Pair("Content-Type", "application/json"), Pair("Connection","keep-alive"))
-			const val doOutput: Boolean = true
-		}
-		object Delete{
-			const val url: String = "$passwordsPath/api/1.0/password/delete"
-			const val method: String = "DELETE"
-			val headers: kotlin.collections.List<Pair<String, String>> = listOf(Pair("Content-Type", "application/json"), Pair("Connection","keep-alive"))
-			const val doOutput: Boolean = true
-			
+		
+		object Keepalive {
+			const val URL = "$PASSWORDS_PATH/api/1.0/session/keepalive"
+			const val METHOD = "GET"
+			val HEADERS = listOf("Connection" to "keep-alive")
+			const val DO_OUTPUT = false
 		}
 	}
 	
+	object Password {
+//		object ListDetails {
+//			const val URL = "$PASSWORDS_PATH/api/1.0/password/list"
+//			val HEADERS = listOf(
+//				"Authorization" to basicAuth,
+//				"Content-Type" to "application/json",
+//				"Connection" to "keep-alive"
+//			)
+//			const val METHOD = "POST"
+//			const val OUTPUT = "{\n" + "    \"details\": \"model+revisions+folder+tags+shares\"\n" + "}"
+//		}
+		object List {
+			const val URL = "$PASSWORDS_PATH/api/1.0/password/list"
+			val HEADERS = listOf(
+				"Authorization" to basicAuth,
+				"Connection" to "keep-alive"
+			)
+			const val METHOD = "GET"
+			const val DO_OUTPUT = false
+		}
+		
+		object Create {
+			const val URL = "$PASSWORDS_PATH/api/1.0/password/create"
+			const val METHOD = "POST"
+			val HEADERS = listOf(
+				"Authorization" to basicAuth,
+				"Content-Type" to "application/json",
+				"Connection" to "keep-alive"
+			)
+			const val DO_OUTPUT = true
+		}
+		
+		object Update {
+			const val URL = "$PASSWORDS_PATH/api/1.0/password/update"
+			const val METHOD = "PATCH"
+			val HEADERS = listOf(
+				"Authorization" to basicAuth,
+				"Content-Type" to "application/json",
+				"Connection" to "keep-alive"
+			)
+			const val DO_OUTPUT = true
+		}
+		
+		object Delete {
+			const val URL = "$PASSWORDS_PATH/api/1.0/password/delete"
+			const val METHOD = "DELETE"
+			val HEADERS = listOf(
+				"Authorization" to basicAuth,
+				"Content-Type" to "application/json",
+				"Connection" to "keep-alive"
+			)
+			const val DO_OUTPUT = true
+		}
+	}
 	
+	object Share {
+		object Partners {
+			const val URL = "$PASSWORDS_PATH/api/1.0/share/partners"
+			const val METHOD = "GET"
+			val HEADERS = listOf(
+				"Authorization" to basicAuth,
+				"Content-Type" to "application/json",
+				"Connection" to "keep-alive"
+			)
+			const val DO_OUTPUT = true
+			const val BODY = "{\n" +
+					"    \"limit\" : 256\n" +
+					"}"
+		}
+	}
 }

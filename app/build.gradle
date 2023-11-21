@@ -5,14 +5,14 @@ plugins {
 
 android {
     namespace 'com.dominikdomotor.nextcloudpasswords'
-    compileSdk 33
+    compileSdk 34
 
     defaultConfig {
         applicationId "com.dominikdomotor.nextcloudpasswords"
-        minSdk 26
-        targetSdk 33
-        versionCode 2
-        versionName "Preview 2"
+        minSdk 28
+        targetSdk 34
+        versionCode 4
+        versionName "Preview 4"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -36,21 +36,23 @@ android {
 }
 
 dependencies {
-    implementation 'androidx.core:core-ktx:1.9.0'
+    implementation 'androidx.core:core-ktx:1.12.0'
     implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'com.google.android.material:material:1.9.0-alpha02'
+    implementation 'com.google.android.material:material:1.11.0-beta01'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.5.1'
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1'
-    implementation 'androidx.navigation:navigation-fragment-ktx:2.5.3'
-    implementation 'androidx.navigation:navigation-ui-ktx:2.5.3'
+    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.6.2'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2'
+    implementation 'androidx.navigation:navigation-fragment-ktx:2.7.5'
+    implementation 'androidx.navigation:navigation-ui-ktx:2.7.5'
 
-    implementation 'androidx.security:security-crypto:1.1.0-alpha05'
+    implementation 'androidx.security:security-crypto:1.1.0-alpha06'
     implementation 'com.google.code.gson:gson:2.10'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'me.zhanghai.android.fastscroll:library:1.1.8'
 
 
-    implementation "com.goterl:lazysodium-android:5.1.0@aar"
-    implementation "net.java.dev.jna:jna:5.8.0@aar"
+//    implementation "com.goterl:lazysodium-android:5.1.0@aar"
+    implementation "net.java.dev.jna:jna:5.12.1@aar"
+//    implementation("com.ionspin.kotlin:multiplatform-crypto-libsodium-bindings:0.9.0")
+//    implementation "com.goterl:lazysodium-android:latest@aar"
 }
