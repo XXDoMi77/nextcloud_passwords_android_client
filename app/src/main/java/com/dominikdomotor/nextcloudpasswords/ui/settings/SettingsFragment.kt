@@ -38,10 +38,12 @@ class SettingsFragment : Fragment() {
 	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 		super.onViewCreated(view, savedInstanceState)
 		
+		val efm = EncryptedFileManager(requireContext().applicationContext)
+		
 		requireActivity().findViewById<ConstraintLayout>(R.id.openAutofillOptionsSetting).setOnClickListener {
 			try {
 				
-				PasswordManager.generateRandomPassword()
+				PasswordManager.generateRandomPassword(requireContext().applicationContext)
 				
 				val intent = Intent(Settings.ACTION_REQUEST_SET_AUTOFILL_SERVICE)
 				intent.data = Uri.parse("package:" + (context?.packageName))
@@ -86,17 +88,15 @@ class SettingsFragment : Fragment() {
 		)
 		
 		requireActivity().findViewById<EditText>(R.id.passwordLengthSettingNumber)
-			.setText(SharedPreferencesManager.getSharedPreferences().getString(SPKeys.settings_password_length, SPKeys.not_found).toString())
+			.setText(efm.read(SPKeys.settings_password_length))
 		requireActivity().findViewById<EditText>(R.id.includeSymbolsSettingNumber)
-			.setText(SharedPreferencesManager.getSharedPreferences().getString(SPKeys.settings_include_symbols_number, SPKeys.not_found).toString())
+			.setText(efm.read(SPKeys.settings_include_symbols_number))
 		
 		requireActivity().findViewById<Switch>(R.id.excludeSimilarCharactersSettingSwitch).isChecked =
-			SharedPreferencesManager.getSharedPreferences().getBoolean(SPKeys.settings_exclude_similar_numbers, false)
+			efm.read(SPKeys.settings_exclude_similar_numbers).toBoolean()
 		
 		requireActivity().findViewById<Switch>(R.id.excludeSimilarCharactersSettingSwitch).setOnClickListener {
-			SharedPreferencesManager.getSharedPreferences().edit().putBoolean(
-				SPKeys.settings_exclude_similar_numbers, requireActivity().findViewById<Switch>(R.id.excludeSimilarCharactersSettingSwitch).isChecked
-			).apply()
+			efm.store(SPKeys.settings_exclude_similar_numbers, requireActivity().findViewById<Switch>(R.id.excludeSimilarCharactersSettingSwitch).isChecked.toString())
 		}
 		
 		
@@ -113,7 +113,7 @@ class SettingsFragment : Fragment() {
 			override fun afterTextChanged(s: Editable?) {
 				// This method is called to notify you that somewhere within `s`, the text has been changed.
 				// Do something with the entered text
-				SharedPreferencesManager.getSharedPreferences().edit().putString(SPKeys.settings_password_length, s.toString()).apply()
+				efm.store(SPKeys.settings_password_length, s.toString())
 			}
 		})
 		
@@ -130,27 +130,24 @@ class SettingsFragment : Fragment() {
 			override fun afterTextChanged(s: Editable?) {
 				// This method is called to notify you that somewhere within `s`, the text has been changed.
 				// Do something with the entered text
-				SharedPreferencesManager.getSharedPreferences().edit().putString(SPKeys.settings_include_symbols_number, s.toString()).apply()
+				efm.store(SPKeys.settings_include_symbols_number, s.toString())
 			}
 		})
 		
 		requireActivity().findViewById<ConstraintLayout>(R.id.clearPasswordCacheSetting).setOnClickListener {
-			PasswordManager.clearStoredPasswordsFromSharedPreferences()
+			PasswordManager.clearStoredPasswordsFromSharedPreferences(requireContext().applicationContext)
 		}
 		
 		requireActivity().findViewById<ConstraintLayout>(R.id.logoutSetting).setOnClickListener {
-			val username = SharedPreferencesManager.getSharedPreferences().getString(SPKeys.username, SPKeys.not_found)
-			val token = SharedPreferencesManager.getSharedPreferences().getString(SPKeys.token, SPKeys.not_found)
-			
 			try {
 				val thread = Thread {
 					val getPasswordListURL = URL(
-						SharedPreferencesManager.getSharedPreferences().getString(SPKeys.server, SPKeys.not_found) + "/ocs/v2.php/core/apppassword"
+						efm.read(SPKeys.server) + "/ocs/v2.php/core/apppassword"
 					)
 					with(getPasswordListURL.openConnection() as HttpsURLConnection) {
 						val userCredentials = "${
-							SharedPreferencesManager.getSharedPreferences().getString(SPKeys.username, SPKeys.not_found)
-						}:${SharedPreferencesManager.getSharedPreferences().getString(SPKeys.token, SPKeys.not_found)}"
+							efm.read(SPKeys.username)
+						}:${efm.read(SPKeys.token)}"
 						val basicAuth = "Basic " + String(Base64.getEncoder().encode(userCredentials.toByteArray()))
 						setRequestProperty("Authorization", basicAuth)
 						setRequestProperty("OCS-APIREQUEST", "true")

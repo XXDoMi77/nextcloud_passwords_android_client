@@ -1,15 +1,7 @@
 package com.dominikdomotor.nextcloudpasswords.ui.dataclasses
 
-import com.dominikdomotor.nextcloudpasswords.SharedPreferencesManager
-import java.util.Base64
-
 object API {
 	const val PASSWORDS_PATH = "/index.php/apps/passwords"
-	
-	private val username = SharedPreferencesManager.getSharedPreferences().getString(SPKeys.username, SPKeys.not_found)
-	private val token = SharedPreferencesManager.getSharedPreferences().getString(SPKeys.token, SPKeys.not_found)
-	private val userCredentials = "$username:$token"
-	private val basicAuth = "Basic " + String(Base64.getEncoder().encode(userCredentials.toByteArray()))
 	
 	object Session {
 		object Request {
@@ -55,7 +47,6 @@ object API {
 		object List {
 			const val URL = "$PASSWORDS_PATH/api/1.0/password/list"
 			val HEADERS = listOf(
-				"Authorization" to basicAuth,
 				"Connection" to "keep-alive"
 			)
 			const val METHOD = "GET"
@@ -66,7 +57,6 @@ object API {
 			const val URL = "$PASSWORDS_PATH/api/1.0/password/create"
 			const val METHOD = "POST"
 			val HEADERS = listOf(
-				"Authorization" to basicAuth,
 				"Content-Type" to "application/json",
 				"Connection" to "keep-alive"
 			)
@@ -77,7 +67,6 @@ object API {
 			const val URL = "$PASSWORDS_PATH/api/1.0/password/update"
 			const val METHOD = "PATCH"
 			val HEADERS = listOf(
-				"Authorization" to basicAuth,
 				"Content-Type" to "application/json",
 				"Connection" to "keep-alive"
 			)
@@ -88,7 +77,6 @@ object API {
 			const val URL = "$PASSWORDS_PATH/api/1.0/password/delete"
 			const val METHOD = "DELETE"
 			val HEADERS = listOf(
-				"Authorization" to basicAuth,
 				"Content-Type" to "application/json",
 				"Connection" to "keep-alive"
 			)
@@ -101,7 +89,6 @@ object API {
 			const val URL = "$PASSWORDS_PATH/api/1.0/share/partners"
 			const val METHOD = "GET"
 			val HEADERS = listOf(
-				"Authorization" to basicAuth,
 				"Content-Type" to "application/json",
 				"Connection" to "keep-alive"
 			)

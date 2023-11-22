@@ -108,7 +108,8 @@ class PasswordsRecyclerViewAdapter(private val activity: Activity) : RecyclerVie
 			
 			val snack = Snackbar.make(
 				activity.findViewById(R.id.coordinatorLayoutForNotifications),
-				activity.getString(R.string.username).capitalize() + " " + activity.getString(R.string.copied_to_clipboard), Snackbar.LENGTH_SHORT
+				activity.getString(R.string.username).replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() } + " " + activity.getString(R.string.copied_to_clipboard),
+				Snackbar.LENGTH_SHORT
 			)
 			snack.show()
 
@@ -127,7 +128,8 @@ class PasswordsRecyclerViewAdapter(private val activity: Activity) : RecyclerVie
 			setClipboard(activity, loadedPasswordList[position].password, "password")
 			val snack = Snackbar.make(
 				activity.findViewById(R.id.coordinatorLayoutForNotifications),
-				activity.getString(R.string.password).capitalize() + " " + activity.getString(R.string.copied_to_clipboard), Snackbar.LENGTH_SHORT
+				activity.getString(R.string.password).replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() } + " " + activity.getString(R.string.copied_to_clipboard),
+				Snackbar.LENGTH_SHORT
 			)
 			snack.show()
 		}
@@ -190,7 +192,7 @@ class PasswordsRecyclerViewAdapter(private val activity: Activity) : RecyclerVie
 			
 			
 			val usernameItem = View.inflate(view.context, R.layout.password_edit_bottom_sheet_dialog_property_item, viewRoot)
-			usernameItem.findViewById<TextView>(R.id.textview_top).text = activity.getString(R.string.username).capitalize()
+			usernameItem.findViewById<TextView>(R.id.textview_top).text = activity.getString(R.string.username).replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
 			usernameItem.findViewById<EditText>(R.id.edittext_middle_left).setText(loadedPasswordList[position].username)
 			usernameItem.findViewById<EditText>(R.id.edittext_middle_left).isEnabled = false
 			val usernameItemOriginalDrawable: Drawable = usernameItem.findViewById<EditText>(R.id.edittext_middle_left).background
@@ -202,7 +204,7 @@ class PasswordsRecyclerViewAdapter(private val activity: Activity) : RecyclerVie
 			
 			
 			val passwordItem = View.inflate(view.context, R.layout.password_edit_bottom_sheet_dialog_property_item, viewRoot)
-			passwordItem.findViewById<TextView>(R.id.textview_top).text = activity.getString(R.string.password).capitalize()
+			passwordItem.findViewById<TextView>(R.id.textview_top).text = activity.getString(R.string.password).replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
 			passwordItem.findViewById<EditText>(R.id.edittext_middle_left).setText(loadedPasswordList[position].password)
 			passwordItem.findViewById<EditText>(R.id.edittext_middle_left).isEnabled = false
 			val passwordItemOriginalDrawable: Drawable = passwordItem.findViewById<EditText>(R.id.edittext_middle_left).background
@@ -213,7 +215,7 @@ class PasswordsRecyclerViewAdapter(private val activity: Activity) : RecyclerVie
 			myLinearLayout.addView(passwordItem)
 			
 			val urlItem = View.inflate(view.context, R.layout.password_edit_bottom_sheet_dialog_property_item, viewRoot)
-			urlItem.findViewById<TextView>(R.id.textview_top).text = activity.getString(R.string.url).capitalize()
+			urlItem.findViewById<TextView>(R.id.textview_top).text = activity.getString(R.string.url).replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
 			urlItem.findViewById<EditText>(R.id.edittext_middle_left).setText(loadedPasswordList[position].url)
 			urlItem.findViewById<EditText>(R.id.edittext_middle_left).isEnabled = false
 			val urlItemOriginalDrawable: Drawable = urlItem.findViewById<EditText>(R.id.edittext_middle_left).background
@@ -246,7 +248,7 @@ class PasswordsRecyclerViewAdapter(private val activity: Activity) : RecyclerVie
 							
 							
 							view.findViewById<ImageButton>(R.id.imageButtonPencil).drawable.setTint(Color.parseColor("#FFFFFF00"))
-							PasswordManager.updatePassword(activity, loadedPasswordList[position]) {
+							PasswordManager.updatePassword(holder.itemView.context.applicationContext, activity, loadedPasswordList[position]) {
 								view.findViewById<ImageButton>(R.id.imageButtonPencil).setImageResource(R.drawable.icon_edit_36)
 								when (loadedPasswordList[position].editable) {
 									true -> view.findViewById<ImageButton>(R.id.imageButtonPencil).drawable.setTint(Color.parseColor("#FF00FF00"))
@@ -297,7 +299,7 @@ class PasswordsRecyclerViewAdapter(private val activity: Activity) : RecyclerVie
 					view.findViewById<ImageButton>(R.id.imageButtonStar).setImageResource(R.drawable.icon_star_filled_36)
 					view.findViewById<ImageButton>(R.id.imageButtonStar).drawable.setTint(Color.parseColor("#ECA700"))
 				}
-				PasswordManager.updatePassword(activity, loadedPasswordList[position]) {}
+				PasswordManager.updatePassword(holder.itemView.context.applicationContext, activity, loadedPasswordList[position]) {}
 			}
 			
 			when (loadedPasswordList[position].status) {
@@ -333,11 +335,11 @@ class PasswordsRecyclerViewAdapter(private val activity: Activity) : RecyclerVie
 			
 			view.findViewById<ImageButton>(R.id.imageButtonTrashcan).setOnClickListener {
 				
-				val dialogClickListener: DialogInterface.OnClickListener = DialogInterface.OnClickListener { dialog, which ->
+				val dialogClickListener: DialogInterface.OnClickListener = DialogInterface.OnClickListener { _, which ->
 					when (which) {
 						DialogInterface.BUTTON_POSITIVE -> {
 							bottomSheetDialog.cancel()
-							PasswordManager.deletePassword(activity, loadedPasswordList[position]) {
+							PasswordManager.deletePassword(holder.itemView.context.applicationContext, activity, loadedPasswordList[position]) {
 								activity.runOnUiThread {
 									this.reloadPasswords()
 								}
@@ -354,12 +356,15 @@ class PasswordsRecyclerViewAdapter(private val activity: Activity) : RecyclerVie
 					.show()
 			}
 			
-			val shares: Shares = Gson().fromJson(SharedPreferencesManager.getSharedPreferences().getString(SPKeys.shares, SPKeys.not_found), Shares::class.java)
-
+			
+			val efm = EncryptedFileManager(holder.itemView.context.applicationContext)
+			
+			val shares: Shares = Gson().fromJson(efm.read(SPKeys.shares), Shares::class.java)
+			
 			var shareTitleItemSpawned = true
 			for (shareItem in shares) {
 				if (shareItem.password == loadedPasswordList[position].id) {
-					if (shareTitleItemSpawned){
+					if (shareTitleItemSpawned) {
 						val shareTitleItem = View.inflate(view.context, R.layout.password_edit_bottom_sheet_dialog_title_item, viewRoot)
 						shareTitleItem.findViewById<TextView>(R.id.title).text = "Shares"
 						myLinearLayout.addView(shareTitleItem)

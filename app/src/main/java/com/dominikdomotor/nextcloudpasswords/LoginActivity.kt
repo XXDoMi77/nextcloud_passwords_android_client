@@ -63,22 +63,14 @@ class LoginActivity : AppCompatActivity() {
 
 //			println("Received token, username: $username\t token: $token")
 			
-			try {
-				this.runOnUiThread{
-					SharedPreferencesManager.getSharedPreferences().edit().putString(SPKeys.server, server).commit()
-					SharedPreferencesManager.getSharedPreferences().edit().putString(SPKeys.username, username).commit()
-					SharedPreferencesManager.getSharedPreferences().edit().putString(SPKeys.token, token).commit()
-					SharedPreferencesManager.getSharedPreferences().edit().putBoolean(SPKeys.logged_in, true).commit()
-					
-					println("1234" + SharedPreferencesManager.getSharedPreferences().getString(SPKeys.server, SPKeys.not_found))
-					println("1234" + SharedPreferencesManager.getSharedPreferences().getString(SPKeys.username, SPKeys.not_found))
-					println("4567" + SharedPreferencesManager.getSharedPreferences().getString(SPKeys.token, SPKeys.not_found))
-					println("1234" + SharedPreferencesManager.getSharedPreferences().getString(SPKeys.logged_in, SPKeys.not_found))
-				}
-				
-			} catch (exception: Exception) {
-				println(exception)
-			}
+			val efm = EncryptedFileManager(applicationContext)
+			
+			efm.store(SPKeys.server, server)
+			efm.store(SPKeys.username, username)
+			efm.store(SPKeys.token, token)
+			efm.store(SPKeys.logged_in, true.toString())
+			
+
 		}
 		
 		myWebView.webViewClient = object : WebViewClient() {

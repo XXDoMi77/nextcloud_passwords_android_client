@@ -40,28 +40,33 @@ object PasswordManager {
 	private lateinit var userCredentials: String
 	private lateinit var basicAuth: String
 	
-	fun init(context: Context) {
+	fun init(applicationContext: Context) {
 		try {
+			val efm = EncryptedFileManager(applicationContext)
+			
+			println("Passwords getting read from sharedpreferences")
+			
 			passwords = Gson().fromJson(
-				SharedPreferencesManager.getSharedPreferences().getString(SPKeys.passwords, SPKeys.not_found), Array<Password>::class.java
+				efm.read(SPKeys.passwords), Array<Password>::class.java
 			).sortedBy { it.label }.toTypedArray()
 			
-			server = SharedPreferencesManager.getSharedPreferences().getString(SPKeys.server, SPKeys.not_found).toString()
-			username = SharedPreferencesManager.getSharedPreferences().getString(SPKeys.username, SPKeys.not_found).toString()
-			token = SharedPreferencesManager.getSharedPreferences().getString(SPKeys.token, SPKeys.not_found).toString()
+			
+			server = efm.read(SPKeys.server)
+			username = efm.read(SPKeys.username)
+			token = efm.read(SPKeys.token)
 			userCredentials = "$username:$token"
 			basicAuth = "Basic " + String(Base64.getEncoder().encode(userCredentials.toByteArray()))
 			
 		} catch (e: Exception) {
 			println(e.stackTrace)
 			emptyPasswords()
-			clearFaviconCache()
-			clearStoredPasswordsFromSharedPreferences()
+			clearFaviconCache(applicationContext)
+			clearStoredPasswordsFromSharedPreferences(applicationContext)
 //			context.getSharedPreferences(SPKeys.secure_storage, Context.MODE_PRIVATE).edit().clear().commit()
 		}
 	}
 	
-	fun deletePassword(activity: Activity, deletedPassword: Password, func: () -> Unit) {
+	fun deletePassword(applicationContext: Context, activity: Activity, deletedPassword: Password, func: () -> Unit) {
 		val strategy: ExclusionStrategy = object : ExclusionStrategy {
 			override fun shouldSkipField(field: FieldAttributes): Boolean {
 				if (field.name == "id"
@@ -104,7 +109,7 @@ object PasswordManager {
 				}
 				
 				passwords.filter { it.id != deletedPassword.id }.toTypedArray()
-				writePasswordsToEncryptedSharedPreferences()
+				writePasswordsToEncryptedSharedPreferences(applicationContext)
 			} else {
 				activity.runOnUiThread {
 					Toast.makeText(activity, activity.getString(R.string.something_went_wrong_try_again), Toast.LENGTH_SHORT).show()
@@ -116,7 +121,7 @@ object PasswordManager {
 		}.start()
 	}
 	
-	fun updatePassword(activity: Activity, updatedPassword: Password, func: () -> Unit) {
+	fun updatePassword(applicationContext: Context, activity: Activity, updatedPassword: Password, func: () -> Unit) {
 		val strategy: ExclusionStrategy = object : ExclusionStrategy {
 			override fun shouldSkipField(field: FieldAttributes): Boolean {
 				if (field.name == "id" ||
@@ -145,6 +150,9 @@ object PasswordManager {
 		val jsonString = gson.toJson(updatedPassword)
 		
 		Thread {
+			
+			val efm = EncryptedFileManager(applicationContext)
+			
 			val url = URL(server + API.Password.Update.URL)
 			val httpConnection: HttpsURLConnection = url.openConnection() as HttpsURLConnection
 			
@@ -167,12 +175,12 @@ object PasswordManager {
 					Toast.makeText(activity, activity.getString(R.string.password_successfully_updated), Toast.LENGTH_SHORT).show()
 				}
 				
-				PasswordManager.passwords.forEachIndexed { index, password ->
+				passwords.forEachIndexed { index, password ->
 					if (password.id == updatedPassword.id) {
-						PasswordManager.passwords[index] = updatedPassword
+						passwords[index] = updatedPassword
 					}
 				}
-				SharedPreferencesManager.getSharedPreferences().edit().putString(SPKeys.passwords, Gson().toJson(PasswordManager.passwords)).apply()
+				efm.store(SPKeys.passwords, Gson().toJson(passwords))
 				
 			} else {
 				activity.runOnUiThread {
@@ -206,6 +214,7 @@ object PasswordManager {
 				api.HEADERS.forEach { header ->
 					httpConnection.setRequestProperty(header.first, header.second)
 				}
+				httpConnection.setRequestProperty("Authorization", basicAuth)
 				
 				if (api.DO_OUTPUT) {
 					httpConnection.doOutput = true
@@ -252,9 +261,11 @@ object PasswordManager {
 		}
 	}
 	
-	fun pullPasswords(activity: Activity, func: () -> Unit) {
+	fun pullPasswords(applicationContext: Context, activity: Activity, func: () -> Unit) {
 		try {
 			Thread {
+				
+				val efm = EncryptedFileManager(applicationContext)
 				
 				val api = API.Password.List
 				
@@ -265,6 +276,8 @@ object PasswordManager {
 				api.HEADERS.forEach { header ->
 					httpConnection.setRequestProperty(header.first, header.second)
 				}
+				httpConnection.setRequestProperty("Authorization", basicAuth)
+				
 
 //				if(api.DO_OUTPUT){
 //					httpConnection.doOutput = true
@@ -279,7 +292,7 @@ object PasswordManager {
 				when (httpConnection.responseCode) {
 					in 200..299 -> {
 						val inputAsString = httpConnection.inputStream.bufferedReader().use { it.readText() }
-						SharedPreferencesManager.getSharedPreferences().edit().putString(SPKeys.passwords, inputAsString).apply()
+						efm.store(SPKeys.passwords, inputAsString)
 					}
 					
 					412 -> {
@@ -302,7 +315,7 @@ object PasswordManager {
 					println("\nSent $requestMethod request to URL : $getShareListURL; Response Code : $responseCode")
 					if (responseCode in 200..299) {
 						val inputAsString = inputStream.bufferedReader().use { it.readText() }
-						SharedPreferencesManager.getSharedPreferences().edit().putString(SPKeys.shares, inputAsString).apply()
+						efm.store(SPKeys.shares, inputAsString)
 //					makeToast(getString(R.string.share_list_fetch_successful), Toast.LENGTH_SHORT)
 					} else {
 //					makeToast(getString(R.string.something_went_wrong_try_again), Toast.LENGTH_SHORT)
@@ -318,7 +331,7 @@ object PasswordManager {
 				}
 				
 				passwords = Gson().fromJson(
-					SharedPreferencesManager.getSharedPreferences().getString(SPKeys.passwords, SPKeys.not_found), Array<Password>::class.java
+					efm.read(SPKeys.passwords), Array<Password>::class.java
 				).sortedBy { it.label }.toTypedArray()
 				
 				passwords.forEach { password ->
@@ -327,7 +340,7 @@ object PasswordManager {
 					}
 				}
 				
-				SharedPreferencesManager.getSharedPreferences().edit().putString(SPKeys.passwords, Gson().toJson(passwords)).apply()
+				efm.store(SPKeys.passwords, Gson().toJson(passwords))
 				
 				activity.runOnUiThread {
 					func()
@@ -340,8 +353,10 @@ object PasswordManager {
 	}
 	
 	
-	fun pullPasswordIcons(activity: Activity, func: () -> Unit) {
+	fun pullPasswordIcons(applicationContext: Context, activity: Activity, func: () -> Unit) {
 		Thread {
+			val efm = EncryptedFileManager(applicationContext)
+			
 			fun getDomainName(url: String?): String {
 				val uri = URI(url)
 				val domain: String = uri.host
@@ -374,13 +389,6 @@ object PasswordManager {
 			val item = ProgressBar(activity)
 			contentLay.addView(item, 0)
 			snackBarProgress.show()
-			
-			
-			val server = SharedPreferencesManager.getSharedPreferences().getString(SPKeys.server, SPKeys.not_found)
-			val username = SharedPreferencesManager.getSharedPreferences().getString(SPKeys.username, SPKeys.not_found)
-			val token = SharedPreferencesManager.getSharedPreferences().getString(SPKeys.token, SPKeys.not_found)
-			val userCredentials = "$username:$token"
-			val basicAuth = "Basic " + String(Base64.getEncoder().encode(userCredentials.toByteArray()))
 			
 			var progress = 0
 			
@@ -430,7 +438,7 @@ object PasswordManager {
 			executor.shutdown()
 			while (!executor.isTerminated) {
 			}
-			SharedPreferencesManager.getSharedPreferences().edit().putString(SPKeys.passwords, Gson().toJson(PasswordManager.passwords)).apply()
+			efm.store(SPKeys.passwords, Gson().toJson(PasswordManager.passwords))
 			println("Finished all threads")
 			println("Done fetching favicons")
 			activity.runOnUiThread {
@@ -441,11 +449,13 @@ object PasswordManager {
 		}.start()
 	}
 	
-	fun getPartners(activity: Activity) {
+	fun getPartners(activity: Activity, applicationContext: Context) {
 		try {
-			val server = SharedPreferencesManager.getSharedPreferences().getString(SPKeys.server, SPKeys.not_found)
-			val username = SharedPreferencesManager.getSharedPreferences().getString(SPKeys.username, SPKeys.not_found)
-			val token = SharedPreferencesManager.getSharedPreferences().getString(SPKeys.token, SPKeys.not_found)
+			val efm = EncryptedFileManager(applicationContext)
+			val server = efm.read(SPKeys.server)
+			val username = efm.read(SPKeys.username)
+			val token = efm.read(SPKeys.token)
+			
 			val userCredentials = "$username:$token"
 			val basicAuth = "Basic " + String(Base64.getEncoder().encode(userCredentials.toByteArray()))
 			Thread {
@@ -464,7 +474,7 @@ object PasswordManager {
 					requestMethod = "GET"
 					if (responseCode in 200..299) {
 						val inputAsString = inputStream.bufferedReader().use { it.readText() }
-						SharedPreferencesManager.getSharedPreferences().edit().putString(SPKeys.partners, inputAsString).apply()
+						efm.store(SPKeys.partners, inputAsString)
 					} else if (responseCode == 412) {
 //						val url = URL(server + API.Session.Request.url)
 //						val httpConnection: HttpsURLConnection = url.openConnection() as HttpsURLConnection
@@ -505,14 +515,12 @@ object PasswordManager {
 				
 				val builder = GsonBuilder()
 				partners = builder.create().fromJson(
-					SharedPreferencesManager.getSharedPreferences().getString(SPKeys.partners, SPKeys.not_found),
+					efm.read(SPKeys.partners),
 					object : TypeToken<MutableMap<String, String>>() {})
 				println(partners.javaClass)
 				println(partners.toMutableMap()["Ferenc"])
 				
-				SharedPreferencesManager.getSharedPreferences().edit().putString(SPKeys.partners, Gson().toJson(partners)).commit()
-				
-				println("\n\n\n" + SharedPreferencesManager.getSharedPreferences().getString(SPKeys.partners, SPKeys.not_found))
+				efm.store(SPKeys.partners, Gson().toJson(partners))
 
 //				activity.runOnUiThread {
 //					func()
@@ -531,32 +539,34 @@ object PasswordManager {
 		passwords = arrayOf(Password())
 	}
 	
-	fun clearFaviconCache() {
+	fun clearFaviconCache(applicationContext: Context) {
 		passwords.forEach { password ->
 			password.favicon = byteArrayOf()
 		}
-		SharedPreferencesManager.getSharedPreferences().edit().putString(SPKeys.passwords, Gson().toJson(passwords)).commit()
+		val efm = EncryptedFileManager(applicationContext)
+		efm.store(SPKeys.passwords, Gson().toJson(passwords))
 	}
 	
-	fun clearStoredPasswordsFromSharedPreferences() {
+	fun clearStoredPasswordsFromSharedPreferences(applicationContext: Context) {
 		passwords = arrayOf(Password())
-		SharedPreferencesManager.getSharedPreferences().edit().putString(SPKeys.passwords, Gson().toJson(passwords)).commit()
-		println("Password cache has been cleared")
+		val efm = EncryptedFileManager(applicationContext)
+		efm.store(SPKeys.passwords, Gson().toJson(passwords))
 	}
 	
-	private fun writePasswordsToEncryptedSharedPreferences() {
-		SharedPreferencesManager.getSharedPreferences().edit().putString(SPKeys.passwords, Gson().toJson(passwords)).commit()
+	private fun writePasswordsToEncryptedSharedPreferences(applicationContext: Context) {
+		val efm = EncryptedFileManager(applicationContext)
+		efm.store(SPKeys.passwords, Gson().toJson(passwords))
 	}
 	
 	fun emptyPasswords() {
 		passwords = arrayOf(Password())
 	}
 	
-	fun generateRandomPassword(): String {
-		val length: Int? = SharedPreferencesManager.getSharedPreferences().getString(SPKeys.settings_password_length, "0")?.toInt()
-		val numberOfSpecialCharacters: Int? = SharedPreferencesManager.getSharedPreferences().getString(SPKeys.settings_include_symbols_number, "0")?.toInt()
-		val excludeSimilarCharacters: Boolean =
-			SharedPreferencesManager.getSharedPreferences().getBoolean(SPKeys.settings_exclude_similar_numbers, true)
+	fun generateRandomPassword(applicationContext: Context): String {
+		val efm = EncryptedFileManager(applicationContext)
+		val length: Int = efm.read(SPKeys.settings_password_length).toInt()
+		val numberOfSpecialCharacters: Int = efm.read(SPKeys.settings_include_symbols_number).toInt()
+		val excludeSimilarCharacters: Boolean = efm.read(SPKeys.settings_exclude_similar_numbers).toBoolean()
 		val lettersNumbers = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 		val specialCharacters = "#\$*+,-.:<=>?@\\^_~"
 		val similarCharacters = "iIlL1oO0uvcemnwWbdpqsS5"
@@ -574,7 +584,7 @@ object PasswordManager {
 		println("availableCharacters: $availableCharacters")
 		
 		// Generate the first part of the string with random characters
-		val randomPasswordWithoutSpecialCharacters = (1..length!!)
+		val randomPasswordWithoutSpecialCharacters = (1..length)
 			.map { availableCharacters.random() }
 			.joinToString("")
 		
@@ -582,7 +592,7 @@ object PasswordManager {
 		println("randomPasswordWithoutSpecialCharacters: $randomPasswordWithoutSpecialCharacters")
 		
 		// Create a list of indices where replacements will occur
-		val indicesToReplace = (randomPasswordWithoutSpecialCharacters.indices).shuffled().take(numberOfSpecialCharacters!!)
+		val indicesToReplace = (randomPasswordWithoutSpecialCharacters.indices).shuffled().take(numberOfSpecialCharacters)
 		
 		// Replace characters at the selected indices with characters from the replacementCharacterSet
 		val result = randomPasswordWithoutSpecialCharacters.mapIndexed { index, char ->

@@ -7,14 +7,16 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.CancellationSignal
 import android.service.autofill.*
-import android.text.InputType
 import android.view.autofill.AutofillId
 import android.view.autofill.AutofillValue
 import android.widget.RemoteViews
-import android.widget.Toast
-import com.dominikdomotor.nextcloudpasswords.PasswordManager
-import com.dominikdomotor.nextcloudpasswords.SharedPreferencesManager
+import com.dominikdomotor.nextcloudpasswords.EncryptedFileManager
+//import com.dominikdomotor.nextcloudpasswords.PasswordManager
+//import com.dominikdomotor.nextcloudpasswords.SharedPreferencesManager
 import com.dominikdomotor.nextcloudpasswords.ui.dataclasses.HintWords
+import com.dominikdomotor.nextcloudpasswords.ui.dataclasses.Password
+import com.dominikdomotor.nextcloudpasswords.ui.dataclasses.SPKeys
+import com.google.gson.Gson
 
 
 class MyAutofillService : AutofillService() {
@@ -24,13 +26,27 @@ class MyAutofillService : AutofillService() {
 	private var focusedIds: MutableList<AutofillId> = mutableListOf()
 	private var webDomain: String? = null
 	
+	lateinit var passwords:Array<Password>
+	
+	override fun onCreate() {
+		super.onCreate()
+	}
+	
 	override fun onFillRequest(request: FillRequest, cancellationSignal: CancellationSignal, callback: FillCallback
 	) {
 		try {
+			
 			println("\nOnFillRequest called...\n")
 			
-			SharedPreferencesManager.init(applicationContext)
-			PasswordManager.init(applicationContext)
+//			SharedPreferencesManager.init(applicationContext)
+//			PasswordManager.init(applicationContext)
+			
+			val efm = EncryptedFileManager(applicationContext)
+			
+			passwords = Gson().fromJson(
+				efm.read(SPKeys.passwords), Array<Password>::class.java
+			).sortedBy { it.label }.toTypedArray()
+			
 			
 			// Get the structure from the request
 			val context: List<FillContext> = request.fillContexts
@@ -63,14 +79,14 @@ class MyAutofillService : AutofillService() {
 			println("applicationName: $applicationName")
 			
 			if (webDomain?.isNotEmpty() == true) {
-				PasswordManager.getPasswords().forEach { password ->
+				passwords.forEach { password ->
 					if (password.label.contains(webDomain!!, true) || password.url.contains(webDomain!!, true)) {
 						dataSets.add(DataSet(password.username, password.password, password.label))
 					}
 				}
 			} else {
 				if (!(applicationName.isNotEmpty() && applicationName.contains("chrome", true) && webDomain != null)) {
-					PasswordManager.getPasswords().forEach { password ->
+					passwords.forEach { password ->
 						if (password.label.contains(applicationName, true) || password.url.contains(applicationName, true)) {
 							dataSets.add(DataSet(password.username, password.password, password.label))
 						}
@@ -133,19 +149,26 @@ class MyAutofillService : AutofillService() {
 	}
 	
 	private var firstFillableFound = false
-	private fun traverseNode(viewNode: ViewNode?) {
+	private fun traverseNode(viewNode: ViewNode?, viewnodeCeptionDepth: Int = 0) {
 		try {
 			if (viewNode != null) {
-				if (
-						((viewNode.inputType.and(InputType.TYPE_CLASS_TEXT) == InputType.TYPE_CLASS_TEXT) ||
-								(viewNode.importantForAutofill != 0) ||
-								(viewNode.autofillType != 0)) &&
-						(viewNode.className?.contains("textview", ignoreCase = true) == false) &&
-						(viewNode.className?.contains("button", ignoreCase = true) == false) &&
-						(viewNode.className?.contains("imageview", ignoreCase = true) == false) &&
-						(viewNode.className?.contains("ProgressBar", ignoreCase = true) == false) &&
-						(viewNode.className?.contains("RecyclerView", ignoreCase = true) == false) &&
-						(viewNode.className?.contains("ViewGroup", ignoreCase = true) == false) //&&
+				println("viewnodeCeptionDepth: $viewnodeCeptionDepth")
+				if (viewNode.isFocused && viewnodeCeptionDepth > 4) {
+					printDetails(viewNode, "Focused")
+//						focusedId = viewNode.autofillId!!
+					focusedIds += (viewNode.autofillId!!)
+//						Toast.makeText(applicationContext, "hint: " + viewNode.hint, Toast.LENGTH_LONG).show()
+				}
+				if (true
+//						((viewNode.inputType.and(InputType.TYPE_CLASS_TEXT) == InputType.TYPE_CLASS_TEXT) ||
+//								(viewNode.importantForAutofill != 0) ||
+//								(viewNode.autofillType != 0)) &&
+//						(viewNode.className?.contains("textview", ignoreCase = true) == false) &&
+//						(viewNode.className?.contains("button", ignoreCase = true) == false) &&
+//						(viewNode.className?.contains("imageview", ignoreCase = true) == false) &&
+//						(viewNode.className?.contains("ProgressBar", ignoreCase = true) == false) &&
+//						(viewNode.className?.contains("RecyclerView", ignoreCase = true) == false) //&&
+//						(viewNode.className?.contains("ViewGroup", ignoreCase = true) == false) //&&
 //						(viewNode.htmlInfo?.attributes?.any { attribute -> attribute.second.contains("button") } == false)
 //						&&
 //						(viewNode.htmlInfo?.attributes?.any { attribute -> attribute.second.contains("text") } == false) &&
@@ -153,12 +176,6 @@ class MyAutofillService : AutofillService() {
 //							"chrome", ignoreCase = true
 //						) == false else if (viewNode.idEntry != null) viewNode.idEntry?.contains("url_bar", ignoreCase = true) == false else true)
 				) {
-					if (viewNode.isFocused) {
-						printDetails(viewNode, "Focused")
-//						focusedId = viewNode.autofillId!!
-						focusedIds += (viewNode.autofillId!!)
-//						Toast.makeText(applicationContext, "hint: " + viewNode.hint, Toast.LENGTH_LONG).show()
-					}
 					if (
 							HintWords.usernameHintList.any { hint ->
 								viewNode.hint.toString().contains(hint, ignoreCase = true)
@@ -224,7 +241,7 @@ class MyAutofillService : AutofillService() {
 			}
 			
 			children?.forEach { childNode: ViewNode ->
-				traverseNode(childNode)
+				traverseNode(childNode, viewnodeCeptionDepth + 1)
 			}
 		} catch (e: Exception) {
 			e.printStackTrace()

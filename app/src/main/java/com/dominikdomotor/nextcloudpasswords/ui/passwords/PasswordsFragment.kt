@@ -58,8 +58,8 @@ class PasswordsFragment : Fragment() {
 		
 		activity?.findViewById<ActionMenuItemView>(R.id.refresh)?.setOnClickListener {
 			it.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.start_rotating_clockwise))
-			PasswordManager.getPartners(requireActivity())
-			PasswordManager.pullPasswords(requireActivity()) {
+			PasswordManager.getPartners(requireActivity(), requireContext().applicationContext)
+			PasswordManager.pullPasswords(requireContext().applicationContext, requireActivity()) {
 				activity?.findViewById<ActionMenuItemView>(R.id.refresh)?.animation?.repeatCount = 0
 //				activity?.findViewById<ActionMenuItemView>(R.id.refresh)?.clearAnimation()
 				passwordsRecyclerViewAdapter.showAllPasswords()
@@ -126,16 +126,17 @@ class PasswordsFragment : Fragment() {
 		})
 		
 		if (PasswordManager.getPasswords()[0].id.isEmpty()) {
-			if (SharedPreferencesManager.getSharedPreferences().contains(SPKeys.logged_in)) {
-				if (SharedPreferencesManager.getSharedPreferences().getBoolean(SPKeys.logged_in, false)) {
+			val efm = EncryptedFileManager(requireActivity().applicationContext)
+			if (efm.exists(SPKeys.logged_in)) {
+				if (efm.read(SPKeys.logged_in).toBoolean()) {
 					activity?.findViewById<ActionMenuItemView>(R.id.refresh)
 						?.startAnimation(AnimationUtils.loadAnimation(requireContext(), R.anim.start_rotating_clockwise))
-					PasswordManager.getPartners(requireActivity())
-					PasswordManager.pullPasswords(requireActivity()) {
+					PasswordManager.getPartners(requireActivity(), requireActivity().applicationContext)
+					PasswordManager.pullPasswords(requireActivity().applicationContext, requireActivity()) {
 						passwordsRecyclerViewAdapter.showAllPasswords()
 						activity?.findViewById<ActionMenuItemView>(R.id.refresh)?.clearAnimation()
 //						activity?.findViewById<ActionMenuItemView>(R.id.refresh)?.animation?.repeatCount = 0
-						PasswordManager.pullPasswordIcons(requireActivity()) {
+						PasswordManager.pullPasswordIcons(requireActivity().applicationContext, requireActivity()) {
 							passwordsRecyclerViewAdapter.showAllPasswords()
 //							linearLayoutManager.smoothScrollToPosition(recyclerviewPasswords, RecyclerView.State(), passwordsRecyclerViewAdapter.itemCount)
 //							linearLayoutManager.smoothScrollToPosition(recyclerviewPasswords, RecyclerView.State(), 0)
@@ -158,7 +159,7 @@ class PasswordsFragment : Fragment() {
 			bottomSheetDialog.show()
 			
 			bottomSheetDialog.findViewById<ImageButton>(R.id.generateRandomPasswordButton)?.setOnClickListener{
-				bottomSheetDialog.findViewById<EditText>(R.id.create_password_password)?.setText(PasswordManager.generateRandomPassword())
+				bottomSheetDialog.findViewById<EditText>(R.id.create_password_password)?.setText(PasswordManager.generateRandomPassword(requireContext().applicationContext))
 			}
 			bottomSheetDialog.findViewById<EditText>(R.id.create_password_password)?.inputType = InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS
 			
