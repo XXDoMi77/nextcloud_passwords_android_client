@@ -12,6 +12,18 @@ class EncryptedFileManager(private val applicationContext: Context) {
 		.setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
 		.build()
 	
+	fun deleteAllFiles() {
+		val directory = applicationContext.filesDir
+		val files = directory.listFiles()
+		if (files != null) {
+			for (file in files) {
+				if (file.exists()) {
+					file.delete()
+				}
+			}
+		}
+	}
+	
 	fun exists(filename: String): Boolean {
 		val file = File(applicationContext.filesDir, filename)
 		return file.exists()

@@ -20,6 +20,7 @@ import androidx.fragment.app.Fragment
 import com.dominikdomotor.nextcloudpasswords.*
 import com.dominikdomotor.nextcloudpasswords.ui.dataclasses.Password
 import com.dominikdomotor.nextcloudpasswords.ui.dataclasses.SPKeys
+import java.io.File
 import java.net.URL
 import java.util.*
 import javax.net.ssl.HttpsURLConnection
@@ -155,9 +156,8 @@ class SettingsFragment : Fragment() {
 						println("\nSent $requestMethod request to URL : $getPasswordListURL; Response Code : $responseCode")
 						if (responseCode in 200..299) {
 							requireActivity().runOnUiThread {
-								requireContext().getSharedPreferences(SPKeys.secure_storage, Context.MODE_PRIVATE).edit().clear().commit()
+								efm.deleteAllFiles()
 								PasswordManager.emptyPasswords()
-								//requireActivity().deleteSharedPreferences(SPKeys.secure_storage)
 								val intent = Intent(requireActivity(), EnterServerURLActivity::class.java)
 								requireActivity().finish()
 								startActivity(intent)
@@ -165,25 +165,18 @@ class SettingsFragment : Fragment() {
 							}
 						} else if (responseCode == 401) {
 							requireActivity().runOnUiThread {
-								requireContext().getSharedPreferences(SPKeys.secure_storage, Context.MODE_PRIVATE).edit().clear().commit()
+								efm.deleteAllFiles()
 								PasswordManager.clearPasswordsCache()
-								//requireActivity().deleteSharedPreferences(SPKeys.secure_storage)
 								val intent = Intent(requireActivity(), EnterServerURLActivity::class.java)
 								requireActivity().finish()
 								startActivity(intent)
-								Toast.makeText(
-									requireActivity(), getString(R.string.your_token_is_no_longer_valid_please_login_again), Toast.LENGTH_LONG
-								).show()
+								Toast.makeText(requireActivity(), getString(R.string.your_token_is_no_longer_valid_please_login_again), Toast.LENGTH_LONG).show()
 							}
 						} else {
 							requireActivity().runOnUiThread {
 								Toast.makeText(requireActivity(), getString(R.string.something_went_wrong_try_again), Toast.LENGTH_LONG).show()
 							}
 						}
-						//						println(inputAsString)
-						//						activity?.runOnUiThread{
-						//							requireActivity().findViewById<TextView>(R.id.textView2).text = inputAsString
-						//						}
 					}
 				}
 				thread.start()
@@ -191,8 +184,6 @@ class SettingsFragment : Fragment() {
 				e.printStackTrace()
 			}
 		}
-		
-		
 	}
 	
 	private fun startNumberSelector(number: EditText, remove: ImageButton, add: ImageButton, min: Int, max: Int) {
