@@ -4,24 +4,26 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.REQUEST_FILL_AND_PROTECT" />
     <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" tools:ignore="QueryAllPackagesPermission" />
 
 <!--    <uses-permission android:name="android.permission.BIND_AUTOFILL_SERVICE"/>-->
 
 
-<!--    android:name=".MyApplication"-->
+
+    <!--        android:name=".MyApp"-->
     <application
-        android:allowBackup="true"
+        android:allowBackup="false"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/launcher_icon"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/launcher_icon_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.NextcloudPasswords"
+        android:theme="@style/Theme.App.Starting"
         tools:targetApi="33">
         <service
-            android:name=".ui.autofill.MyAutofillService"
+            android:name="com.dominikdomotor.nextcloudpasswords.autofill.MyAutofillService"
             android:exported="true"
             android:label="Nextcloud Passwords"
             android:permission="android.permission.BIND_AUTOFILL_SERVICE"
@@ -34,8 +36,9 @@
             </intent-filter>
         </service>
         <activity
-            android:name=".OverviewActivity"
-            android:exported="true">
+            android:name=".activities.OverviewActivity"
+            android:exported="true"
+            android:theme="@style/Theme.App.Starting">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
@@ -45,18 +48,27 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".EnterServerURLActivity"
-            android:exported="false">
+            android:name=".activities.EnterServerURLActivity"
+            android:exported="false"
+            android:theme="@style/Theme.NextcloudPasswords">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
-            android:name=".LoginActivity"
-            android:exported="false">
+            android:name=".activities.LoginActivity"
+            android:exported="true"
+            android:theme="@style/Theme.NextcloudPasswords">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
+
+            <intent-filter>
+                <data android:scheme="nc" />
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+            </intent-filter>
         </activity>
     </application>
 

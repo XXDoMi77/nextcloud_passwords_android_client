@@ -11,7 +11,7 @@
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintTop_toTopOf="parent"
-    tools:context=".ui.settings.SettingsFragment">
+    tools:context=".fragments.settings.SettingsFragment">
 
     <ImageView
         android:id="@+id/imageView2"
@@ -28,6 +28,7 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="24dp"
+        android:scrollbars="none"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -120,7 +121,7 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/clearPasswordCacheSetting"
+                android:id="@+id/clearOfflinePasswordCacheSetting"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="?android:attr/selectableItemBackground"
@@ -145,7 +146,7 @@
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="16dp"
                     android:layout_marginEnd="16dp"
-                    android:text="@string/delete_cached_passwords"
+                    android:text="@string/clear_offline_storage"
                     android:textColor="@color/normal_text_color"
                     android:textSize="16sp"
                     android:textStyle="bold"
@@ -270,14 +271,14 @@
                     app:tint="@color/normal_text_color" />
 
                 <!--                    android:layout_marginEnd="16dp"-->
-<!--                    android:ems="10"-->
-<!--                    android:inputType="number"-->
-<!--                    android:maxLength="3"-->
-<!--                    android:numeric="integer"-->
-<!--                    android:phoneNumber="false"-->
-<!--                    android:selectAllOnFocus="true"-->
-<!--                    android:singleLine="true"-->
-<!--                    android:textAlignment="center"-->
+                <!--                    android:ems="10"-->
+                <!--                    android:inputType="number"-->
+                <!--                    android:maxLength="3"-->
+                <!--                    android:numeric="integer"-->
+                <!--                    android:phoneNumber="false"-->
+                <!--                    android:selectAllOnFocus="true"-->
+                <!--                    android:singleLine="true"-->
+                <!--                    android:textAlignment="center"-->
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -425,7 +426,7 @@
                     app:layout_constraintTop_toBottomOf="@+id/excludeSimilarCharactersSettingLabel"
                     app:layout_constraintVertical_bias="0.0" />
 
-                <Switch
+                <androidx.appcompat.widget.SwitchCompat
                     android:id="@+id/excludeSimilarCharactersSettingSwitch"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

@@ -7,19 +7,19 @@
 
     <fragment
         android:id="@+id/navigation_folders"
-        android:name="com.dominikdomotor.nextcloudpasswords.ui.folders.FoldersFragment"
+        android:name="com.dominikdomotor.nextcloudpasswords.fragments.folders.FoldersFragment"
         android:label="@string/title_folders"
         tools:layout="@layout/fragment_folders" />
 
     <fragment
         android:id="@+id/navigation_passwords"
-        android:name="com.dominikdomotor.nextcloudpasswords.ui.passwords.PasswordsFragment"
+        android:name="com.dominikdomotor.nextcloudpasswords.fragments.passwords.PasswordsFragment"
         android:label="@string/title_passwords"
         tools:layout="@layout/fragment_passwords" />
 
     <fragment
         android:id="@+id/navigation_settings"
-        android:name="com.dominikdomotor.nextcloudpasswords.ui.settings.SettingsFragment"
+        android:name="com.dominikdomotor.nextcloudpasswords.fragments.settings.SettingsFragment"
         android:label="@string/title_account"
         tools:layout="@layout/fragment_settings" />
 </navigation>

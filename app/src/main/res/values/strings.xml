@@ -44,7 +44,7 @@
     <string name="label_is_required_for_password_creation">Label is required for password creation</string>
     <string name="password_is_required_for_password_creation">Password is required for password creation</string>
     <string name="set_autofill_service">Set autofill service</string>
-    <string name="delete_cached_passwords">Delete cached passwords</string>
+    <string name="clear_offline_storage">Clear offline storage</string>
     <string name="open_autofill_options_in_phone_settings">Open autofill options in phone settings</string>
     <string name="clear_offline_password_storage">Clear offline password storage</string>
     <string name="completely_logout_of_the_application">Completely logout of the application</string>
@@ -58,4 +58,7 @@
     <string name="number_of_character_for_password">Number of characters for password (default: 20)</string>
     <string name="security">Security</string>
     <string name="settings">Settings</string>
+    <string name="search">Search</string>
+    <string name="refresh">Refresh</string>
+    <string name="shares">Shares</string>
 </resources>
