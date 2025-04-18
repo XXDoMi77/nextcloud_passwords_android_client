@@ -13,7 +13,7 @@ open class BaseActivity : AppCompatActivity() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
         // Set the status bar as translucent.
-        window.statusBarColor = Color.TRANSPARENT
+        // window.statusBarColor = Color.TRANSPARENT
 
         // Access WindowInsetsController to manipulate system bars if needed.
         val windowInsetsController = WindowCompat.getInsetsController(window, window.decorView)
