@@ -1,41 +1,47 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
+
+    <!-- Base application theme -->
+    <style name="Theme.App" parent="@android:style/Theme.DeviceDefault"/>
+
+    <style name="Theme.App.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@android:color/black</item>
+        <item name="windowSplashScreenAnimatedIcon">@mipmap/icon</item>
+        <item name="postSplashScreenTheme">@style/Theme.NextcloudPasswords</item>
+    </style>
+
     <style name="Theme.NextcloudPasswords" parent="Theme.MaterialComponents.DayNight">
-        <!-- Primary brand color. -->
+        <!-- Primary brand color -->
         <item name="colorPrimary">@color/background_color</item>
         <item name="colorPrimaryVariant">@color/background_color</item>
         <item name="colorOnPrimary">@color/background_color</item>
-        <!-- Secondary brand color. -->
+
+        <!-- Secondary brand color -->
         <item name="colorSecondary">@color/navigation_menu_background</item>
         <item name="colorSecondaryVariant">@color/normal_text_color</item>
         <item name="colorOnSecondary">@color/normal_text_color</item>
-        <!-- Status bar color. -->
+
+        <!-- Status bar handling -->
         <item name="android:statusBarColor">@color/background_color</item>
         <item name="android:windowLightStatusBar">true</item>
-        <!-- <item name="android:windowTranslucentStatus">true</item>-->
-        <!-- <item name="android:windowTranslucentNavigation">true</item>-->
-        <!-- Customize your theme here. -->
-        <!--        <item name="android:windowActivityTransitions">false</item>-->
-        <!--        <item name="android:activityCloseEnterAnimation">@null</item>-->
-        <!--        <item name="android:activityCloseExitAnimation">@null</item>-->
-        <!--        <item name="android:activityOpenEnterAnimation">@null</item>-->
-        <!--        <item name="android:activityOpenExitAnimation">@null</item>-->
-        <!--        <item name="android:windowAnimationStyle">@null</item>-->
-        <!--        <item name="android:windowEnterTransition">@null</item>-->
-        <!--        <item name="android:windowExitTransition">@null</item>-->
-        <!--        <item name="android:windowSharedElementEnterTransition">@null</item>-->
-        <!--        <item name="android:windowSharedElementExitTransition">@null</item>-->
+        <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item>
+        <item name="android:fitsSystemWindows">false</item> <!-- Important change -->
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+
+        <!-- Edge-to-edge support -->
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:enforceNavigationBarContrast">false</item>
+        <item name="android:enforceStatusBarContrast">false</item>
+
+        <!-- Bottom sheet -->
         <item name="bottomSheetDialogTheme">@style/AppBottomSheetDialogTheme</item>
-<!--        <item name="snackbarStyle">@style/Widget.MaterialComponents.Snackbar.FullWidth</item>-->
     </style>
 
-    <style name="AppBottomSheetDialogTheme"
-        parent="Theme.Design.Light.BottomSheetDialog">
+    <style name="AppBottomSheetDialogTheme" parent="Theme.Design.Light.BottomSheetDialog">
         <item name="bottomSheetStyle">@style/AppModalStyle</item>
     </style>
 
-    <style name="AppModalStyle"
-        parent="Widget.Design.BottomSheet.Modal">
+    <style name="AppModalStyle" parent="Widget.Design.BottomSheet.Modal">
         <item name="android:background">@drawable/rounded_dialog</item>
     </style>
 
@@ -45,19 +51,33 @@
     </style>
 
     <style name="AlertDialogStyle" parent="Theme.AppCompat.DayNight.Dialog">
-        <!--        <item name="android:windowMinWidthMajor">200dp</item>-->
-        <!--        <item name="android:windowMinWidthMinor">200dp</item>-->
         <item name="android:minHeight">46dp</item>
         <item name="android:minWidth">80dp</item>
 
 
         <item name="dialogCornerRadius">16dp</item>
         <item name="android:background">@color/material_dynamic_neutral20</item>
-        <!--        <item name="android:colorAccent">#FF0000</item>-->
-<!--        <item name="android:titleTextColor">#00FF00</item>-->
         <item name="android:textColorPrimary">#FFFFFF</item>
-        <!--        <item name="android:gravity">center</item>-->
-        <!--        <item name="android:justificationMode">inter_word</item>-->
     </style>
 
+    <style name="TextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="boxStrokeColor">@color/text_input_field_box_color</item>
+        <item name="hintTextColor">@color/text_input_field_box_color</item>
+        <item name="cursorColor">#000000</item>
+        <item name="startIconTint">#000000</item>
+    </style>
+
+    <style name="BottomSheetDialogCreatePasswordEditText">
+        <item name="colorPrimary">@color/text_handle_color</item>
+        <item name="colorAccent">@color/selected_text_background</item>
+    </style>
+
+    <style name="BottomSheetDialogEditPasswordEditText">
+        <item name="colorAccent">@color/selected_text_background</item>
+        <item name="colorControlActivated">@color/text_handle_color</item>
+    </style>
+
+    <style name="FastScrollBar">
+        <item name="colorSecondary">@color/fast_scroll_bar_button</item>
+    </style>
 </resources>

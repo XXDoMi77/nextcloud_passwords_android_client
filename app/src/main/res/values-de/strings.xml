@@ -44,7 +44,7 @@
     <string name="label_is_required_for_password_creation">Du musst eine Name für den Passwort vergeben</string>
     <string name="password_is_required_for_password_creation">Du musst erst eine Passwort vergeben</string>
     <string name="set_autofill_service">Automatisches Ausfüllen einstellen</string>
-    <string name="delete_cached_passwords">Gespeicherte Passwörter löschen</string>
+    <string name="clear_offline_storage">Offline Speicher entleeren</string>
     <string name="open_autofill_options_in_phone_settings">Öffne die Einstellungen für Automatisches Ausfüllen</string>
     <string name="clear_offline_password_storage">Leere den Offline-Passwortspeicher</string>
     <string name="completely_logout_of_the_application">Vollständig aus der App abmelden</string>
@@ -58,4 +58,7 @@
     <string name="number_of_character_for_password">Anzahl der Zeichen für das Passwort (Standard: 20)</string>
     <string name="security">Sicherheit</string>
     <string name="settings">Einstellungen</string>
+    <string name="search">Suchen</string>
+    <string name="refresh">Aktualisieren</string>
+    <string name="shares">Freigaben</string>
 </resources>
