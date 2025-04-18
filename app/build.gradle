@@ -11,8 +11,8 @@ android {
         applicationId "com.dominikdomotor.nextcloudpasswords"
         minSdk 29
         targetSdk 35
-        versionCode 4
-        versionName "Preview 4"
+        versionCode 5
+        versionName "Preview 5"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
