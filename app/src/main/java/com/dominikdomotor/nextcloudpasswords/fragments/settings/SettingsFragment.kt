@@ -128,6 +128,7 @@ class SettingsFragment : Fragment() {
 		
 		requireActivity().findViewById<ConstraintLayout>(R.id.logoutSetting).setOnClickListener {
 			requireActivity().runOnUiThread {
+				NM.stopFaviconPull()
 				val dialogClickListener: DialogInterface.OnClickListener = DialogInterface.OnClickListener { _, which ->
 					when (which) {
 						DialogInterface.BUTTON_POSITIVE -> {

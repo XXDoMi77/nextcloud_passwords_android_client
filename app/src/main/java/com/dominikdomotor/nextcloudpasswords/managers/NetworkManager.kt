@@ -20,6 +20,7 @@ import java.io.OutputStream
 import java.io.OutputStreamWriter
 import java.net.URL
 import java.security.MessageDigest
+import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import javax.net.ssl.HttpsURLConnection
@@ -289,12 +290,14 @@ object NetworkManager {
 
     private var pullFaviconsRunning = false
 
-    private val executor = Executors.newFixedThreadPool(1)
+    private var executor: ExecutorService = Executors.newFixedThreadPool(1)
+
 
     fun stopFaviconPull(){
         executor.shutdownNow()
         pullFaviconsRunning = false
     }
+
     fun pullFavicons(func: () -> Unit) {
         if (!pullFaviconsRunning) {
             pullFaviconsRunning = true
@@ -365,10 +368,23 @@ object NetworkManager {
                                         e.printStackTrace()
                                     }
                                     faviconsDownloaded++
-                                    func()
+                                    try {
+                                        func()
+                                    }
+                                    catch (e: Exception){
+                                        e.printStackTrace()
+                                    }
                                 }
                             }
-                            executor.execute(worker)
+                            try {
+                                if (executor.isShutdown || executor.isTerminated) {
+                                    executor = Executors.newFixedThreadPool(1)
+                                }
+                                executor.execute(worker)
+                            }
+                            catch (e: Exception){
+                                e.printStackTrace()
+                            }
                         }
                     }
                     executor.shutdown()
