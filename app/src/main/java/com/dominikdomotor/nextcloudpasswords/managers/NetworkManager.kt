@@ -290,8 +290,7 @@ object NetworkManager {
 
     private var pullFaviconsRunning = false
 
-    private var executor: ExecutorService = Executors.newFixedThreadPool(1)
-
+    private var executor: ExecutorService = Executors.newFixedThreadPool(4)
 
     fun stopFaviconPull(){
         executor.shutdownNow()
@@ -315,8 +314,8 @@ object NetworkManager {
                             val worker = Runnable {
                                 if (pullFaviconsRunning) {
                                     try {
-                                        val startTime =
-                                            System.currentTimeMillis() // Record start time
+//                                        val startTime =
+//                                            System.currentTimeMillis() // Record start time
 
                                         val getFaviconURL: URL =
                                             if (password.url.isNotEmpty() and URLUtil.isValidUrl(
@@ -338,8 +337,8 @@ object NetworkManager {
                                                 SM.getSettings().basicAuth
                                             )
                                             requestMethod = "GET"
-                                            connectTimeout = 10000
-                                            readTimeout = 10000
+                                            connectTimeout = 60000
+                                            readTimeout = 60000
                                             GF.println("\nSent $requestMethod request to URL : $getFaviconURL; Response Code : $responseCode")
                                             if (responseCode in 200..299) {
                                                 val bytesRead = inputStream.readBytes()
@@ -355,14 +354,17 @@ object NetworkManager {
 //											favicons[password.id] = BitmapFactory.decodeByteArray(bytesRead, 0, bytesRead.size)
                                                 }
                                             }
+                                            else{
+                                                stopFaviconPull()
+                                            }
                                         }
 
-                                        val endTime = System.currentTimeMillis() // Record end time
-                                        val duration = endTime - startTime
+//                                        val endTime = System.currentTimeMillis() // Record end time
+//                                        val duration = endTime - startTime
 
-                                        if (duration < 1100) {  // Sleep only if the download took less than 2 seconds
-                                            Thread.sleep(1100 - duration)
-                                        }
+//                                        if (duration < 1100) {  // Sleep only if the download took less than 2 seconds
+//                                            Thread.sleep(1100 - duration)
+//                                        }
 
                                     } catch (e: Exception) {
                                         e.printStackTrace()
@@ -378,7 +380,7 @@ object NetworkManager {
                             }
                             try {
                                 if (executor.isShutdown || executor.isTerminated) {
-                                    executor = Executors.newFixedThreadPool(1)
+                                    executor = Executors.newFixedThreadPool(4)
                                 }
                                 executor.execute(worker)
                             }
