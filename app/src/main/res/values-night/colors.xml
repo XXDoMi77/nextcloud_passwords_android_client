@@ -31,4 +31,6 @@
     <color name="fast_scroll_bar_button">#FFFFFF</color>
 
     <color name="red">#FFFF0000</color>
+
+    <color name="status_bar_color">#000000</color>
 </resources>
