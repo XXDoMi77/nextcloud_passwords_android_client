@@ -21,3 +21,7 @@
 #-renamesourcefileattribute SourceFile
 -dontwarn javax.annotation.Nullable
 -dontwarn javax.annotation.concurrent.GuardedBy
+
+# Keep all classes in the app's package from being obfuscated or removed.
+# This is a safer approach for open-source projects where obfuscation is not a concern.
+-keep class com.dominikdomotor.nextcloudpasswords.** { *; }
