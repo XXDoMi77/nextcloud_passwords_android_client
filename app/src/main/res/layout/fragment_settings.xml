@@ -1,0 +1,510 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_weight="1"
+    android:background="@color/background_color"
+    android:focusable="true"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent"
+    tools:context=".fragments.settings.SettingsFragment">
+
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginTop="48dp"
+        android:src="@drawable/icon_foreground_36"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="@color/normal_text_color" />
+
+    <ScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="24dp"
+        android:scrollbars="none"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView2">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:divider="@color/shaded_text_color"
+            android:orientation="vertical"
+            android:showDividers="none">
+
+            <TextView
+                android:id="@+id/generalTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="8dp"
+                android:paddingTop="24dp"
+                android:paddingEnd="8dp"
+                android:paddingBottom="8dp"
+                android:text="@string/general"
+                android:textColor="@color/normal_text_color"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/openAutofillOptionsSetting"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true">
+
+                <ImageView
+                    android:id="@+id/openAutofillOptionsSettingIcon"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginStart="16dp"
+                    android:src="@drawable/icon_settings_outline_24"
+                    app:layout_constraintBottom_toBottomOf="@+id/openAutofillOptionsSettingDescription"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/openAutofillOptionsSettingLabel"
+                    app:tint="@color/normal_text_color" />
+
+                <TextView
+                    android:id="@+id/openAutofillOptionsSettingLabel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:text="@string/set_autofill_service"
+                    android:textColor="@color/normal_text_color"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toStartOf="@+id/openAutofillOptionsSettingActionIcon"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toEndOf="@+id/openAutofillOptionsSettingIcon"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/openAutofillOptionsSettingDescription"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:autoSizeTextType="none"
+                    android:breakStrategy="high_quality"
+                    android:text="@string/open_autofill_options_in_phone_settings"
+                    android:textColor="@color/shaded_text_color"
+                    android:textSize="14sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/openAutofillOptionsSettingActionIcon"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="@+id/openAutofillOptionsSettingLabel"
+                    app:layout_constraintTop_toBottomOf="@+id/openAutofillOptionsSettingLabel"
+                    app:layout_constraintVertical_bias="0.0" />
+
+                <ImageView
+                    android:id="@+id/openAutofillOptionsSettingActionIcon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:src="@drawable/icon_open_in_new_24"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:tint="@color/normal_text_color" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/clearOfflinePasswordCacheSetting"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true">
+
+                <ImageView
+                    android:id="@+id/clearPasswordCacheSettingIcon"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginStart="16dp"
+                    android:src="@drawable/icon_delete_outline_24"
+                    app:layout_constraintBottom_toBottomOf="@+id/clearPasswordCacheSettingDescription"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/clearPasswordCacheSettingLabel"
+                    app:tint="@color/normal_text_color" />
+
+                <TextView
+                    android:id="@+id/clearPasswordCacheSettingLabel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:text="@string/clear_offline_storage"
+                    android:textColor="@color/normal_text_color"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toEndOf="@+id/clearPasswordCacheSettingIcon"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/clearPasswordCacheSettingDescription"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:text="@string/clear_offline_password_storage"
+                    android:textColor="@color/shaded_text_color"
+                    android:textSize="14sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="@+id/clearPasswordCacheSettingLabel"
+                    app:layout_constraintTop_toBottomOf="@+id/clearPasswordCacheSettingLabel" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <TextView
+                android:id="@+id/passwordGenerationTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="8dp"
+                android:paddingTop="24dp"
+                android:paddingEnd="8dp"
+                android:paddingBottom="8dp"
+                android:text="@string/password_generation"
+                android:textColor="@color/normal_text_color"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/passwordLengthSetting"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clickable="false">
+
+                <ImageView
+                    android:id="@+id/passwordLengthSettingIcon"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginStart="16dp"
+                    android:src="@drawable/icon_straighten_24"
+                    app:layout_constraintBottom_toBottomOf="@+id/passwordLengthSettingDescription"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/passwordLengthSettingLabel"
+                    app:tint="@color/normal_text_color" />
+
+                <TextView
+                    android:id="@+id/passwordLengthSettingLabel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:text="@string/password_length"
+                    android:textColor="@color/normal_text_color"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toStartOf="@+id/passwordLengthSettingRemove"
+                    app:layout_constraintStart_toEndOf="@+id/passwordLengthSettingIcon"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/passwordLengthSettingDescription"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:text="@string/number_of_character_for_password"
+                    android:textColor="@color/shaded_text_color"
+                    android:textSize="14sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/passwordLengthSettingRemove"
+                    app:layout_constraintStart_toStartOf="@+id/passwordLengthSettingLabel"
+                    app:layout_constraintTop_toBottomOf="@+id/passwordLengthSettingLabel"
+                    app:layout_constraintVertical_bias="0.0" />
+
+                <ImageButton
+                    android:id="@+id/passwordLengthSettingRemove"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:background="?android:attr/selectableItemBackgroundBorderless"
+                    android:src="@drawable/icon_remove_36"
+                    app:layout_constraintBottom_toBottomOf="@+id/passwordLengthSettingNumber"
+                    app:layout_constraintEnd_toStartOf="@+id/passwordLengthSettingNumber"
+                    app:layout_constraintTop_toTopOf="@+id/passwordLengthSettingNumber"
+                    app:tint="@color/normal_text_color" />
+
+                <EditText
+                    android:id="@+id/passwordLengthSettingNumber"
+                    android:layout_width="48dp"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/transparent"
+                    android:ems="10"
+                    android:inputType="number"
+                    android:maxLength="3"
+                    android:selectAllOnFocus="true"
+                    android:singleLine="true"
+                    android:textAlignment="center"
+                    app:layout_constraintBottom_toBottomOf="@+id/passwordLengthSettingDescription"
+                    app:layout_constraintEnd_toStartOf="@+id/passwordLengthSettingAdd"
+                    app:layout_constraintTop_toTopOf="@+id/passwordLengthSettingLabel" />
+
+                <ImageButton
+                    android:id="@+id/passwordLengthSettingAdd"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_marginEnd="16dp"
+                    android:background="?android:attr/selectableItemBackgroundBorderless"
+                    android:src="@drawable/icon_add_36"
+                    app:layout_constraintBottom_toBottomOf="@+id/passwordLengthSettingNumber"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/passwordLengthSettingNumber"
+                    app:tint="@color/normal_text_color" />
+
+                <!--                    android:layout_marginEnd="16dp"-->
+                <!--                    android:ems="10"-->
+                <!--                    android:inputType="number"-->
+                <!--                    android:maxLength="3"-->
+                <!--                    android:numeric="integer"-->
+                <!--                    android:phoneNumber="false"-->
+                <!--                    android:selectAllOnFocus="true"-->
+                <!--                    android:singleLine="true"-->
+                <!--                    android:textAlignment="center"-->
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/includeSymbolsSetting"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clickable="false">
+
+                <ImageView
+                    android:id="@+id/includeSymbolsSettingIcon"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginStart="16dp"
+                    android:src="@drawable/icon_numbers_24"
+                    app:layout_constraintBottom_toBottomOf="@+id/includeSymbolsSettingDescription"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/includeSymbolsSettingLabel"
+                    app:tint="@color/normal_text_color" />
+
+                <TextView
+                    android:id="@+id/includeSymbolsSettingLabel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:text="@string/include_symbols"
+                    android:textColor="@color/normal_text_color"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toStartOf="@+id/includeSymbolsSettingRemove"
+                    app:layout_constraintStart_toEndOf="@+id/includeSymbolsSettingIcon"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/includeSymbolsSettingDescription"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:text="@string/increase_password_security_by_including_symbols_such_as"
+                    android:textColor="@color/shaded_text_color"
+                    android:textSize="14sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/includeSymbolsSettingRemove"
+                    app:layout_constraintStart_toStartOf="@+id/includeSymbolsSettingLabel"
+                    app:layout_constraintTop_toBottomOf="@+id/includeSymbolsSettingLabel"
+                    app:layout_constraintVertical_bias="0.0" />
+
+                <ImageButton
+                    android:id="@+id/includeSymbolsSettingRemove"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:background="?android:attr/selectableItemBackgroundBorderless"
+                    android:src="@drawable/icon_remove_36"
+                    app:layout_constraintBottom_toBottomOf="@+id/includeSymbolsSettingNumber"
+                    app:layout_constraintEnd_toStartOf="@+id/includeSymbolsSettingNumber"
+                    app:layout_constraintTop_toTopOf="@+id/includeSymbolsSettingNumber"
+                    app:tint="@color/normal_text_color" />
+
+                <EditText
+                    android:id="@+id/includeSymbolsSettingNumber"
+                    android:layout_width="48dp"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/transparent"
+                    android:ems="10"
+                    android:inputType="number"
+                    android:maxLength="3"
+                    android:selectAllOnFocus="true"
+                    android:singleLine="true"
+                    android:textAlignment="center"
+                    app:layout_constraintBottom_toBottomOf="@+id/includeSymbolsSettingDescription"
+                    app:layout_constraintEnd_toStartOf="@+id/includeSymbolsSettingAdd"
+                    app:layout_constraintTop_toTopOf="@+id/includeSymbolsSettingLabel" />
+
+                <ImageButton
+                    android:id="@+id/includeSymbolsSettingAdd"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_marginEnd="16dp"
+                    android:background="?android:attr/selectableItemBackgroundBorderless"
+                    android:src="@drawable/icon_add_36"
+                    app:layout_constraintBottom_toBottomOf="@+id/includeSymbolsSettingNumber"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/includeSymbolsSettingNumber"
+                    app:tint="@color/normal_text_color" />
+
+                <!--                    android:layout_marginEnd="16dp"-->
+                <!--                    android:ems="10"-->
+                <!--                    android:inputType="number"-->
+                <!--                    android:maxLength="3"-->
+                <!--                    android:numeric="integer"-->
+                <!--                    android:phoneNumber="false"-->
+                <!--                    android:selectAllOnFocus="true"-->
+                <!--                    android:singleLine="true"-->
+                <!--                    android:textAlignment="center"-->
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/excludeSimilarCharactersSetting"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clickable="false">
+
+                <ImageView
+                    android:id="@+id/excludeSimilarCharactersSettingIcon"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginStart="16dp"
+                    android:src="@drawable/icon_visibility_24"
+                    app:layout_constraintBottom_toBottomOf="@+id/excludeSimilarCharactersSettingDescription"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/excludeSimilarCharactersSettingLabel"
+                    app:tint="@color/normal_text_color" />
+
+                <TextView
+                    android:id="@+id/excludeSimilarCharactersSettingLabel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:text="@string/exclude_similar_characters"
+                    android:textColor="@color/normal_text_color"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toStartOf="@+id/excludeSimilarCharactersSettingSwitch"
+                    app:layout_constraintStart_toEndOf="@+id/excludeSimilarCharactersSettingIcon"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/excludeSimilarCharactersSettingDescription"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:text="@string/dont_use_characters_like"
+                    android:textColor="@color/shaded_text_color"
+                    android:textSize="14sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/excludeSimilarCharactersSettingSwitch"
+                    app:layout_constraintStart_toStartOf="@+id/excludeSimilarCharactersSettingLabel"
+                    app:layout_constraintTop_toBottomOf="@+id/excludeSimilarCharactersSettingLabel"
+                    app:layout_constraintVertical_bias="0.0" />
+
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/excludeSimilarCharactersSettingSwitch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:paddingLeft="6dp"
+                    android:paddingTop="16dp"
+                    android:paddingRight="6dp"
+                    android:paddingBottom="16dp"
+                    app:layout_constraintBottom_toBottomOf="@+id/excludeSimilarCharactersSettingDescription"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/excludeSimilarCharactersSettingLabel"
+                    app:thumbTint="@color/switch_thumb_color"
+                    app:trackTint="@color/switch_track_color" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <TextView
+                android:id="@+id/securityTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="8dp"
+                android:paddingTop="24dp"
+                android:paddingEnd="8dp"
+                android:paddingBottom="8dp"
+                android:text="@string/security"
+                android:textColor="@color/normal_text_color"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/logoutSetting"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true">
+
+                <ImageView
+                    android:id="@+id/logoutSettingIcon"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginStart="16dp"
+                    android:src="@drawable/icon_logout_24"
+                    app:layout_constraintBottom_toBottomOf="@+id/logoutSettingDescription"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/logoutSettingLabel"
+                    app:tint="@color/normal_text_color" />
+
+                <TextView
+                    android:id="@+id/logoutSettingLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/logout"
+                    android:textColor="@color/normal_text_color"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toEndOf="@+id/logoutSettingIcon"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/logoutSettingDescription"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:text="@string/completely_logout_of_the_application"
+                    android:textColor="@color/shaded_text_color"
+                    android:textSize="14sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="@+id/logoutSettingLabel"
+                    app:layout_constraintTop_toBottomOf="@+id/logoutSettingLabel" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </LinearLayout>
+    </ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:theme="@style/Theme.AppCompat.Light.DarkActionBar"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_color"
+    android:backgroundTint="@color/background_color"
+    tools:context=".activities.EnterServerURLActivity">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="32dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_max="300dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintWidth_max="600dp">
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:src="@mipmap/icon"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:fontFamily="sans-serif"
+            android:text="@string/app_name"
+            android:textAlignment="center"
+            android:textColor="@color/normal_text_color"
+            android:textSize="34sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/imageView" />
+
+        <EditText
+            android:id="@+id/URL_input"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:autofillHints=""
+            android:backgroundTint="@color/normal_text_color"
+            android:ems="10"
+            android:hint="@string/example_url"
+            android:importantForAutofill="no"
+            android:inputType="textUri|textPersonName"
+            android:textColor="@color/normal_text_color"
+            android:textColorHint="@color/shaded_text_color"
+            android:textCursorDrawable="@null"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/enter_URL_button"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <ImageButton
+            android:id="@+id/enter_URL_button"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="@color/transparent"
+            app:layout_constraintBottom_toBottomOf="@+id/URL_input"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/URL_input"
+            app:layout_constraintVertical_bias="0.0"
+            app:srcCompat="@drawable/baseline_check_36"
+            app:tint="@color/normal_text_color" />
+
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="3dp"
+            android:text="@string/please_enter_your_server_url"
+            android:textColor="@color/normal_text_color"
+            app:layout_constraintBottom_toTopOf="@+id/URL_input"
+            app:layout_constraintStart_toStartOf="@+id/URL_input" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

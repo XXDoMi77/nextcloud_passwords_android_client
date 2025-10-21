@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@id/navigation_passwords">
+
+    <fragment
+        android:id="@+id/navigation_folders"
+        android:name="com.dominikdomotor.nextcloudpasswords.fragments.folders.FoldersFragment"
+        android:label="@string/title_folders"
+        tools:layout="@layout/fragment_folders" />
+
+    <fragment
+        android:id="@+id/navigation_passwords"
+        android:name="com.dominikdomotor.nextcloudpasswords.fragments.passwords.PasswordsFragment"
+        android:label="@string/title_passwords"
+        tools:layout="@layout/fragment_passwords" />
+
+    <fragment
+        android:id="@+id/navigation_settings"
+        android:name="com.dominikdomotor.nextcloudpasswords.fragments.settings.SettingsFragment"
+        android:label="@string/title_account"
+        tools:layout="@layout/fragment_settings" />
+</navigation>

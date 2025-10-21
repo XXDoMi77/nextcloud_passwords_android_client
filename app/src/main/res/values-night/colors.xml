@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+
+    <color name="toolbar_color">#0082C9</color>
+    <color name="accent_color">#2695D1</color>
+    <color name="ripple_color">#99000000</color>
+    <color name="add_password_floating_action_button">#FFFFFF</color>
+    <color name="transparent">#00000000</color>
+    <color name="background_color">#FF000000</color>
+
+    <color name="normal_text_color">#FFFFFFFF</color>
+    <color name="shaded_text_color">#5FFFFFFF</color>
+    <color name="selected_text_background">#919191</color>
+    <color name="text_handle_color">#FFFFFF</color>
+    <color name="cursor_color">#00FF00</color> <!-- Not yet implemented -->
+
+    <color name="password_edit_bottom_sheet_background">#222222</color>
+
+    <color name="password_create_bottom_sheet_background">#222222</color>
+
+    <color name="navigation_menu_background">#000000</color>
+    <color name="navigation_menu_icon_selected">#FFFFFF</color>
+    <color name="navigation_menu_icon_not_selected">#7E7E7E</color>
+
+    <color name="floating_action_button_background">#FFFFFF</color>
+    <color name="floating_action_button_icon">#000000</color>
+    <color name="floating_action_button_ripple">#B3B3B3</color>
+
+    <color name="fast_scroll_bar_button">#FFFFFF</color>
+
+    <color name="red">#FFFF0000</color>
+
+    <color name="status_bar_color">#000000</color>
+</resources>

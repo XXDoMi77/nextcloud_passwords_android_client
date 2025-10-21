@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+<!--    <item-->
+<!--        android:id="@+id/navigation_folders"-->
+<!--        android:icon="@drawable/icon_folder_36"-->
+<!--        android:title="@string/title_folders" />-->
+
+    <item
+        android:id="@+id/navigation_passwords"
+        android:icon="@drawable/icon_foreground_36"
+        android:title="@string/title_passwords" />
+
+    <item
+        android:id="@+id/navigation_settings"
+        android:icon="@drawable/icon_account_36"
+        android:title="@string/settings" />
+
+</menu>

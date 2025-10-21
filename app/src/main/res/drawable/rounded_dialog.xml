@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list>
+    <item>
+        <shape xmlns:tools="http://schemas.android.com/tools"
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            tools:ignore="ExtraText">
+            android:shape="rectangle">
+
+        </shape>
+    </item>
+    <item>
+        <shape xmlns:tools="http://schemas.android.com/tools"
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            tools:ignore="ExtraText"
+            android:shape="rectangle">
+            <solid
+                android:color="@color/password_edit_bottom_sheet_background"/>
+            <corners
+                android:topLeftRadius="48dp"
+                android:topRightRadius="48dp"
+                android:bottomLeftRadius="48dp"
+                android:bottomRightRadius="48dp"/>
+<!--            <stroke-->
+<!--                android:width="16dp"-->
+<!--                android:color="@color/password_edit_bottom_sheet_stroke"/>-->
+        </shape>
+    </item>
+</layer-list>
