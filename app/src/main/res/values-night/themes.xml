@@ -4,29 +4,30 @@
     <style name="Theme.App" parent="@android:style/Theme.DeviceDefault"/>
 
     <style name="Theme.App.Starting" parent="Theme.SplashScreen">
-        <item name="windowSplashScreenBackground">@android:color/black</item>
+        <item name="windowSplashScreenBackground">@color/background_color</item>
         <item name="windowSplashScreenAnimatedIcon">@mipmap/icon</item>
         <item name="postSplashScreenTheme">@style/Theme.NextcloudPasswords</item>
     </style>
 
-    <style name="Theme.NextcloudPasswords" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
-        <!-- Primary brand color. -->
+    <style name="Theme.NextcloudPasswords" parent="Theme.MaterialComponents.DayNight">
+        <!-- Primary brand color -->
         <item name="colorPrimary">@color/background_color</item>
         <item name="colorPrimaryVariant">@color/background_color</item>
         <item name="colorOnPrimary">@color/normal_text_color</item>
 
-        <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/normal_text_color</item>
+        <!-- Secondary brand color -->
+        <item name="colorSecondary">@color/navigation_menu_background</item>
         <item name="colorSecondaryVariant">@color/normal_text_color</item>
         <item name="colorOnSecondary">@color/normal_text_color</item>
 
         <!-- Status bar handling -->
         <item name="android:statusBarColor">@color/background_color</item>
-        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightStatusBar">false</item>
         <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item>
         <item name="android:fitsSystemWindows">false</item> <!-- Important change -->
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
+        <item name="android:windowBackground">@color/background_color</item>
 
         <!-- Edge-to-edge support -->
         <item name="android:navigationBarColor">@android:color/transparent</item>
@@ -53,22 +54,34 @@
     <style name="AlertDialogStyle" parent="Theme.AppCompat.DayNight.Dialog">
         <item name="android:minHeight">46dp</item>
         <item name="android:minWidth">80dp</item>
-
-
         <item name="dialogCornerRadius">16dp</item>
-        <item name="android:background">@color/material_dynamic_neutral10</item>
+        <item name="android:background">@color/material_dynamic_neutral20</item>
         <item name="android:textColorPrimary">#FFFFFF</item>
     </style>
 
     <style name="TextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
         <item name="boxStrokeColor">@color/text_input_field_box_color</item>
         <item name="hintTextColor">@color/text_input_field_box_color</item>
-        <item name="cursorColor">#FFFFFF</item>
-        <item name="startIconTint">#FFFFFF</item>
+        <item name="cursorColor">@color/normal_text_color</item>
+        <item name="startIconTint">@color/normal_text_color</item>
+    </style>
+
+    <style name="BottomSheetDialogCreatePasswordEditText">
+        <item name="colorPrimary">@color/text_handle_color</item>
+        <item name="colorAccent">@color/selected_text_background</item>
     </style>
 
     <style name="PopupAnimation" parent="android:Animation">
         <item name="android:windowEnterAnimation">@anim/popup_show</item>
         <item name="android:windowExitAnimation">@anim/popup_hide</item>
+    </style>
+
+    <style name="BottomSheetDialogEditPasswordEditText">
+        <item name="colorAccent">@color/selected_text_background</item>
+        <item name="colorControlActivated">@color/text_handle_color</item>
+    </style>
+
+    <style name="FastScrollBar">
+        <item name="colorSecondary">@color/fast_scroll_bar_button</item>
     </style>
 </resources>
