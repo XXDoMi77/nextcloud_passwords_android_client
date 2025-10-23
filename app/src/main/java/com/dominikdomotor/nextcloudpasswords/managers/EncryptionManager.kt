@@ -1,26 +1,24 @@
-package com.dominikdomotor.nextcloudpasswords.managers//package com.dominikdomotor.nextcloudpasswords
+package com.dominikdomotor.nextcloudpasswords.managers // package com.dominikdomotor.nextcloudpasswords
 //
-//import android.content.Context
-//import com.dominikdomotor.nextcloudpasswords.dataclasses.Password
-//import com.dominikdomotor.nextcloudpasswords.dataclasses.SPKeys
-//import com.google.gson.Gson
-//import com.ionspin.kotlin.crypto.box.crypto_box_SEEDBYTES
-//import com.ionspin.kotlin.crypto.generichash.GenericHash
-//import com.ionspin.kotlin.crypto.generichash.crypto_generichash_blake2b_KEYBYTES_MAX
-//import com.ionspin.kotlin.crypto.generichash.crypto_generichash_blake2b_SALTBYTES
-//import com.ionspin.kotlin.crypto.pwhash.PasswordHash
-//import com.ionspin.kotlin.crypto.pwhash.crypto_pwhash_MEMLIMIT_INTERACTIVE
-//import com.ionspin.kotlin.crypto.pwhash.crypto_pwhash_OPSLIMIT_SENSITIVE
-//import com.ionspin.kotlin.crypto.pwhash.crypto_pwhash_argon2id_ALG_ARGON2ID13
-//import com.ionspin.kotlin.crypto.util.LibsodiumRandom
-//import com.ionspin.kotlin.crypto.util.encodeToUByteArray
+// import android.content.Context
+// import com.dominikdomotor.nextcloudpasswords.dataclasses.Password
+// import com.dominikdomotor.nextcloudpasswords.dataclasses.SPKeys
+// import com.google.gson.Gson
+// import com.ionspin.kotlin.crypto.box.crypto_box_SEEDBYTES
+// import com.ionspin.kotlin.crypto.generichash.GenericHash
+// import com.ionspin.kotlin.crypto.generichash.crypto_generichash_blake2b_KEYBYTES_MAX
+// import com.ionspin.kotlin.crypto.generichash.crypto_generichash_blake2b_SALTBYTES
+// import com.ionspin.kotlin.crypto.pwhash.PasswordHash
+// import com.ionspin.kotlin.crypto.pwhash.crypto_pwhash_MEMLIMIT_INTERACTIVE
+// import com.ionspin.kotlin.crypto.pwhash.crypto_pwhash_OPSLIMIT_SENSITIVE
+// import com.ionspin.kotlin.crypto.pwhash.crypto_pwhash_argon2id_ALG_ARGON2ID13
+// import com.ionspin.kotlin.crypto.util.LibsodiumRandom
+// import com.ionspin.kotlin.crypto.util.encodeToUByteArray
 //
 
-object EncryptionManager {
+object EncryptionManager {}
 
-}
-
-//object EncryptionManager {
+// object EncryptionManager {
 //
 //	fun init() {}
 //
@@ -41,7 +39,8 @@ object EncryptionManager {
 //		val passwordHashSalt = salts[2].decodeHex()
 //
 //		// Compute generic hash
-//		val genericHash = GenericHash.genericHash(message = (masterPassword.encodeToUByteArray() + passwordSalt).toUByteArray(), key = genericHashKey.toUByteArray())
+//		val genericHash = GenericHash.genericHash(message = (masterPassword.encodeToUByteArray() +
+// passwordSalt).toUByteArray(), key = genericHashKey.toUByteArray())
 //
 //		// Compute secret using crypto_pwhash
 //		val secret = PasswordHash.pwhash(
@@ -88,4 +87,4 @@ object EncryptionManager {
 //			passwordHashSalt.encodeToHex()
 //		)
 //	}
-//}
+// }

@@ -8,8 +8,6 @@ import android.os.Bundle
 import android.view.View
 import android.view.Window
 import android.view.WindowInsetsController
-import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.ViewCompat
@@ -20,26 +18,22 @@ import androidx.navigation.ui.setupWithNavController
 import com.dominikdomotor.nextcloudpasswords.GF
 import com.dominikdomotor.nextcloudpasswords.R
 import com.dominikdomotor.nextcloudpasswords.databinding.ActivityOverviewBinding
-import com.dominikdomotor.nextcloudpasswords.managers.EFM
-import com.dominikdomotor.nextcloudpasswords.managers.NM
-import com.dominikdomotor.nextcloudpasswords.managers.SM
+import com.dominikdomotor.nextcloudpasswords.managers.StorageManager
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import dagger.hilt.android.AndroidEntryPoint
+import jakarta.inject.Inject
 
-//import com.ionspin.kotlin.crypto.LibsodiumInitializer
-
-
+@AndroidEntryPoint
 class OverviewActivity : BaseActivity() {
     private lateinit var binding: ActivityOverviewBinding
+
+    @Inject lateinit var storageManager: StorageManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
         super.onCreate(savedInstanceState)
 
-        EFM.init(this.applicationContext)
-        SM.init()
-        NM.init(this.applicationContext)
-
-        if (!SM.getSettings().loggedIn) {
+        if (!storageManager.getSettings().loggedIn) {
             GF.println("logged_in_check")
             startActivity(Intent(this, EnterServerURLActivity::class.java))
             this.finish()
@@ -49,10 +43,10 @@ class OverviewActivity : BaseActivity() {
         supportActionBar?.hide()
 
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
-            val bars = insets.getInsets(
-                WindowInsetsCompat.Type.systemBars()
-                        or WindowInsetsCompat.Type.displayCutout()
-            )
+            val bars =
+                insets.getInsets(
+                    WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout(),
+                )
             v.updatePadding(
                 left = bars.left,
                 top = bars.top,
@@ -67,12 +61,16 @@ class OverviewActivity : BaseActivity() {
             return currentNightMode == Configuration.UI_MODE_NIGHT_YES
         }
 
-        fun setStatusBarAppearance(window: Window, isDarkMode: Boolean, context: Context) {
+        fun setStatusBarAppearance(
+            window: Window,
+            isDarkMode: Boolean,
+            context: Context,
+        ) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                 val windowInsetsController = window.insetsController ?: return
                 windowInsetsController.setSystemBarsAppearance(
                     if (isDarkMode) 0 else WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS,
-                    WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS
+                    WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS,
                 )
             } else {
                 window.decorView.systemUiVisibility = if (isDarkMode) 0 else View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
@@ -91,13 +89,12 @@ class OverviewActivity : BaseActivity() {
         val navController = navHostFragment.navController
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
-        //		val appBarConfiguration = AppBarConfiguration(
-        //			setOf(
-        //				R.id.navigation_folders, R.id.navigation_passwords, R.id.navigation_account
-        //			)
-        //		)
-        //		setupActionBarWithNavController(navController, appBarConfiguration)
+        // 		val appBarConfiguration = AppBarConfiguration(
+        // 			setOf(
+        // 				R.id.navigation_folders, R.id.navigation_passwords, R.id.navigation_account
+        // 			)
+        // 		)
+        // 		setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
-
     }
 }
