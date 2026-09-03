@@ -13,5 +13,5 @@ data class SharesItem(
     @SerializedName("receiver") val `receiver`: Receiver,
     @SerializedName("shareable") val shareable: Boolean,
     @SerializedName("updatePending") val updatePending: Boolean,
-    @SerializedName("updated") val updated: Int
+    @SerializedName("updated") val updated: Int,
 )

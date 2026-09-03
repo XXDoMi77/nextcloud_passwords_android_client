@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- One half of a tab change: the tabs slide sideways in the direction of travel. -->
+<translate xmlns:android="http://schemas.android.com/apk/res/android"
+    android:duration="@integer/tab_transition_millis"
+    android:fromXDelta="100%p"
+    android:interpolator="@interpolator/emphasized"
+    android:toXDelta="0" />

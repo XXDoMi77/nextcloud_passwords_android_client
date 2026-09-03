@@ -5,7 +5,6 @@
     android:theme="@style/Theme.AppCompat.Light.DarkActionBar"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_color"
     android:backgroundTint="@color/background_color"
     tools:context=".activities.EnterServerURLActivity">
 
@@ -28,7 +27,8 @@
             android:id="@+id/imageView"
             android:layout_width="120dp"
             android:layout_height="120dp"
-            android:src="@mipmap/icon"
+            android:importantForAccessibility="no"
+            android:src="@mipmap/launcher_icon"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -74,7 +74,8 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/URL_input"
             app:layout_constraintVertical_bias="0.0"
-            app:srcCompat="@drawable/baseline_check_36"
+            android:contentDescription="@string/connect_to_server"
+            app:srcCompat="@drawable/icon_check_24"
             app:tint="@color/normal_text_color" />
 
         <TextView

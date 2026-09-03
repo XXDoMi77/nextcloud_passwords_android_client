@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    The folder picker's body. The title and the buttons come from AppDialog, and there is no close or
+    up button: cancel closes it, and back walks up a level the way it does in the folder browser.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/tv_current_path"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:paddingHorizontal="@dimen/spacing_horizontal"
+        android:ellipsize="start"
+        android:singleLine="true"
+        android:textColor="@color/shaded_text_color"
+        android:textSize="13sp"
+        tools:text="Home / My Folder" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_folders"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:clipToPadding="false"
+        android:scrollbars="none" />
+</LinearLayout>

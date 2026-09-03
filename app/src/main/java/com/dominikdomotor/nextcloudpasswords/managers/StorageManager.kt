@@ -1,181 +1,157 @@
 package com.dominikdomotor.nextcloudpasswords.managers
 
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.util.Base64
+import com.dominikdomotor.nextcloudpasswords.GF
 import com.dominikdomotor.nextcloudpasswords.dataclasses.Data
 import com.dominikdomotor.nextcloudpasswords.dataclasses.Settings
-import com.dominikdomotor.nextcloudpasswords.dataclasses.passwords.Passwords
-import com.dominikdomotor.nextcloudpasswords.dataclasses.shares.Shares
+import com.dominikdomotor.nextcloudpasswords.dataclasses.folders.Folder
+import com.dominikdomotor.nextcloudpasswords.dataclasses.passwords.Password
+import com.dominikdomotor.nextcloudpasswords.dataclasses.shares.SharesItem
 import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import jakarta.inject.Inject
 import jakarta.inject.Singleton
-import java.io.ByteArrayInputStream
-import java.io.ByteArrayOutputStream
-import java.io.InputStream
 import java.text.Collator
 import java.util.Locale
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.withContext
 
+/**
+ * The local source of truth: the encrypted data document plus the in-memory state derived from it.
+ *
+ * Everything is exposed as immutable [StateFlow] snapshots. Callers never receive the backing collections, so state can
+ * only change through the mutator methods, each of which persists and republishes atomically.
+ */
 @Singleton
-class StorageManager
-@Inject
-constructor(
-    private val encryptedFileManager: EncryptedFileManager,
-) {
+class StorageManager @Inject constructor(private val encryptedFileManager: EncryptedFileManager) {
+    private val lock = Any()
     private var data: Data = Data()
-    private var favicons: MutableMap<String, Bitmap> = mutableMapOf()
 
-    init {
-        if (encryptedFileManager.exists(Keys.data)) {
-            try {
-                data = Gson().fromJson(encryptedFileManager.read(Keys.data), Data::class.java)
-            } catch (e: Exception) {
-                throw Exception("Failed to parse data into memory")
-            }
-        }
-        if (encryptedFileManager.exists(Keys.favicons)) {
-            try {
-                favicons = loadFaviconsFromString(encryptedFileManager.read(Keys.favicons))
-            } catch (e: Exception) {
-                throw Exception("Failed to parse favicons into memory")
-            }
-        }
+    @Volatile private var loaded = false
+    @Volatile var apiSessionToken: String = ""
+
+    private val _passwords = MutableStateFlow<List<Password>>(emptyList())
+    private val _folders = MutableStateFlow<List<Folder>>(emptyList())
+    private val _shares = MutableStateFlow<List<SharesItem>>(emptyList())
+    private val _settings = MutableStateFlow(Settings())
+
+    val passwords: StateFlow<List<Password>> = _passwords.asStateFlow()
+    val folders: StateFlow<List<Folder>> = _folders.asStateFlow()
+    val shares: StateFlow<List<SharesItem>> = _shares.asStateFlow()
+    val settings: StateFlow<Settings> = _settings.asStateFlow()
+
+    /**
+     * Reads and decrypts the data document. Safe to call repeatedly; only the first call does work.
+     *
+     * A corrupt or undecryptable document is discarded rather than thrown, because this used to run in the constructor
+     * and a failure there put the app into a crash loop with no way out.
+     */
+    suspend fun load() {
+        if (loaded) return
+        withContext(Dispatchers.IO) { synchronized(lock) { ensureLoadedLocked() } }
     }
 
-    private fun writeDataToStorage() {
-        synchronized(this) { encryptedFileManager.store(Keys.data, Gson().toJson(data)) }
+    /**
+     * Reads the document if that has not happened yet.
+     *
+     * Every mutator goes through this: a write that landed before [load] finished — the login service persisting
+     * credentials, for instance — would otherwise save an empty document over the real one.
+     */
+    private fun ensureLoadedLocked() {
+        if (loaded) return
+        val startedAt = System.currentTimeMillis()
+        data = readData() ?: Data()
+        loaded = true
+        migrateLegacyDefaults()
+        publish()
+        GF.println("Loaded ${data.passwords.size} passwords in ${System.currentTimeMillis() - startedAt} ms")
     }
 
-    fun updateSettings(updateBlock: (Settings) -> Unit) {
-        synchronized(this) {
-            updateBlock(data.settings)
-            if (data.settings.basicAuth.isEmpty() && data.settings.loggedIn) {
-                data.settings.basicAuth =
-                    "Basic " +
-                        String(
-                            Base64.encode(
-                                "${data.settings.username}:${data.settings.token}".toByteArray(),
-                                Base64.NO_WRAP,
-                            ),
-                        )
-            }
-            writeDataToStorage()
+    /**
+     * Re-reads the document from disk, discarding in-memory state.
+     *
+     * The autofill service runs in its own process and therefore has its own instance of this class, so it needs an
+     * explicit way to pick up writes made by the main process.
+     */
+    fun reloadFromStorage(): Boolean =
+        synchronized(lock) {
+            val fresh = readData() ?: return@synchronized false
+            data = fresh
+            loaded = true
+            publish()
+            true
         }
-    }
 
-    fun setPasswords(updatedPasswords: Passwords) {
-        synchronized(this) {
-            data.passwords = updatedPasswords
-            data.passwords.sortWith(compareBy(Collator.getInstance(Locale.getDefault())) { it.label })
-            writeDataToStorage()
-        }
-    }
-
-    fun updatePassword(updateBlock: (Passwords) -> Unit) {
-        synchronized(this) {
-            updateBlock(data.passwords)
-            writeDataToStorage()
-        }
-    }
-
-    fun addFavicon(
-        id: String,
-        bitmap: Bitmap,
-    ) {
-        synchronized(this) {
-            favicons[id] = bitmap
-            encryptedFileManager.store(Keys.favicons, convertFaviconsToString(favicons))
-        }
-    }
-
-    fun setPartners(updatedPartners: MutableMap<String, String>) {
-        synchronized(this) {
-            data.partners = updatedPartners
-            writeDataToStorage()
+    fun updateSettings(updateBlock: (Settings) -> Unit) = mutate {
+        updateBlock(data.settings)
+        val settings = data.settings
+        if (settings.basicAuth.isEmpty() && settings.loggedIn) {
+            val credentials = "${settings.username}:${settings.token}".toByteArray()
+            settings.basicAuth = "Basic " + String(Base64.encode(credentials, Base64.NO_WRAP))
         }
     }
 
-    fun setShares(updatedShares: Shares) {
-        synchronized(this) {
-            data.shares = updatedShares
-            writeDataToStorage()
-        }
+    fun setPasswords(updated: List<Password>) = mutate {
+        data.passwords = updated.sortedWith(compareBy(Collator.getInstance(Locale.getDefault())) { it.label })
     }
 
-    fun removePassword(password: com.dominikdomotor.nextcloudpasswords.dataclasses.passwords.Password) {
-        synchronized(this) {
-            data.passwords.removeIf { it == password }
-            writeDataToStorage()
-        }
+    fun setFolders(updated: List<Folder>) = mutate {
+        data.folders = updated.filterNot { it.trashed }.sortedBy { it.label.lowercase() }
     }
 
-    fun getPasswords(): Passwords = data.passwords
+    fun setShares(updated: List<SharesItem>) = mutate { data.shares = updated }
 
-    fun getFavicons(): MutableMap<String, Bitmap> = favicons
-
-    fun getSettings(): Settings = data.settings
-
-    fun getShares(): Shares = data.shares
-
-    fun clearOfflinePasswordCache() {
-        synchronized(this) {
-            data.passwords = Passwords()
-            writeDataToStorage()
-        }
+    /** Replaces the stored copy of [updated] by id, leaving every other password untouched. */
+    fun replacePassword(updated: Password) = mutate {
+        data.passwords = data.passwords.map { if (it.id == updated.id) updated else it }
     }
 
-    fun clearFaviconCache() {
-        synchronized(this) {
-            favicons = mutableMapOf()
-            encryptedFileManager.deleteFile(Keys.favicons)
-        }
+    fun removePassword(password: Password) = mutate {
+        data.passwords = data.passwords.filterNot { it.id == password.id }
     }
 
-    fun deleteAllData() {
-        synchronized(this) {
-            data.settings = Settings()
-            data.passwords = Passwords()
-            data.partners = mutableMapOf()
-            data.shares = Shares()
-            favicons = mutableMapOf()
+    fun clearOfflinePasswordCache() = mutate { data.passwords = emptyList() }
+
+    fun deleteAllData() =
+        mutate(persist = false) {
+            data = Data()
+            apiSessionToken = ""
             encryptedFileManager.deleteAllFiles()
         }
+
+    private inline fun mutate(persist: Boolean = true, block: () -> Unit) {
+        synchronized(lock) {
+            ensureLoadedLocked()
+            block()
+            if (persist) writeData()
+            publish()
+        }
     }
 
-    private fun convertFaviconsToString(favicons: MutableMap<String, Bitmap>): String {
-        // Convert Bitmaps to Base64 strings
-        val faviconsBase64: MutableMap<String, String> = mutableMapOf()
-        var index = 0
-        favicons.forEach { (key, value) ->
-            val byteArrayOutputStream = ByteArrayOutputStream()
-            value.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream)
-            val bitmapData = byteArrayOutputStream.toByteArray()
-            val base64 = Base64.encodeToString(bitmapData, Base64.DEFAULT)
-            faviconsBase64[key] = base64
-            index++
-        }
-
-        // Convert the faviconsBase64 map to a JSON string
-        val gson = Gson()
-        return gson.toJson(faviconsBase64)
+    private fun readData(): Data? {
+        if (!encryptedFileManager.exists(Keys.DATA)) return null
+        return runCatching { Gson().fromJson(encryptedFileManager.read(Keys.DATA), Data::class.java) }
+            .onFailure { GF.println("Could not parse the stored data document; starting from empty state") }
+            .getOrNull()
     }
 
-    private fun loadFaviconsFromString(jsonString: String): MutableMap<String, Bitmap> {
-        // Convert the JSON string to a map of Base64 strings
-        val gson = Gson()
-        val type = object : TypeToken<MutableMap<String, String>>() {}.type
-        val faviconsBase64: MutableMap<String, String> = gson.fromJson(jsonString, type)
+    private fun writeData() {
+        encryptedFileManager.store(Keys.DATA, Gson().toJson(data))
+    }
 
-        // Convert Base64 strings back to Bitmaps
-        val favicons: MutableMap<String, Bitmap> = mutableMapOf()
-        for ((key, value) in faviconsBase64) {
-            val bitmapData = Base64.decode(value, Base64.DEFAULT)
-            val inputStream: InputStream = ByteArrayInputStream(bitmapData)
-            val bitmap = BitmapFactory.decodeStream(inputStream)
-            favicons[key] = bitmap
+    private fun migrateLegacyDefaults() {
+        if (data.settings.includedSymbols == Settings.LEGACY_DEFAULT_SYMBOLS) {
+            data.settings.includedSymbols = Settings.DEFAULT_SYMBOLS
+            writeData()
         }
+    }
 
-        return favicons
+    private fun publish() {
+        _passwords.value = data.passwords
+        _folders.value = data.folders
+        _shares.value = data.shares
+        _settings.value = data.settings.copy()
     }
 }

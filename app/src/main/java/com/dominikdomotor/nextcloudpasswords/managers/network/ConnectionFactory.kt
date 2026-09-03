@@ -4,17 +4,19 @@ import com.dominikdomotor.nextcloudpasswords.managers.StorageManager
 import java.net.URL
 import javax.net.ssl.HttpsURLConnection
 
-// Creates and configures a new HttpsURLConnection for every request.
-internal fun createAuthorizedConnection(
-    url: URL,
-    storageManager: StorageManager,
-): HttpsURLConnection {
-    val connection = url.openConnection() as HttpsURLConnection
+private const val REQUEST_TIMEOUT_MILLIS = 60_000
 
-    // Setting up Authorization header
-    connection.setRequestProperty("Authorization", storageManager.getSettings().basicAuth)
-    connection.connectTimeout = 60000
-    connection.readTimeout = 60000
+/** Creates a connection carrying the stored credentials and, when present, the API session token. */
+internal fun createAuthorizedConnection(url: URL, storageManager: StorageManager): HttpsURLConnection {
+    val connection = createHttpsConnection(url, storageManager)
+
+    connection.setRequestProperty("Authorization", storageManager.settings.value.basicAuth)
+    storageManager.apiSessionToken
+        .takeIf { it.isNotBlank() }
+        ?.let { connection.setRequestProperty("X-API-SESSION", it) }
+    connection.setRequestProperty("Connection", "keep-alive")
+    connection.connectTimeout = REQUEST_TIMEOUT_MILLIS
+    connection.readTimeout = REQUEST_TIMEOUT_MILLIS
 
     return connection
 }

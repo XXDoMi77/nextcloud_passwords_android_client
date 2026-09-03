@@ -1,500 +1,229 @@
 package com.dominikdomotor.nextcloudpasswords.fragments.passwords
 
 import android.os.Bundle
-import android.text.InputType
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.AnimationUtils
-import android.webkit.URLUtil
-import android.widget.FrameLayout
-import android.widget.ImageButton
-import android.widget.SearchView
-import android.widget.Toast
-import androidx.activity.addCallback
-import androidx.appcompat.view.menu.ActionMenuItemView
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.dominikdomotor.nextcloudpasswords.GF
 import com.dominikdomotor.nextcloudpasswords.R
-import com.dominikdomotor.nextcloudpasswords.dataclasses.passwords.Password
-import com.dominikdomotor.nextcloudpasswords.managers.NetworkManager
-import com.dominikdomotor.nextcloudpasswords.managers.StorageManager
-import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.google.android.material.bottomsheet.BottomSheetDialog
-import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.android.material.textfield.TextInputLayout
+import com.dominikdomotor.nextcloudpasswords.data.FaviconWarmUpOrder
+import com.dominikdomotor.nextcloudpasswords.databinding.FragmentPasswordsBinding
+import com.dominikdomotor.nextcloudpasswords.fragments.BackHandler
+import com.dominikdomotor.nextcloudpasswords.fragments.hideFloatingActionsOnScroll
+import com.dominikdomotor.nextcloudpasswords.fragments.setVisible
+import com.dominikdomotor.nextcloudpasswords.managers.FaviconStore
+import com.dominikdomotor.nextcloudpasswords.managers.UiMessageManager
+import com.dominikdomotor.nextcloudpasswords.ui.FaviconBinder
+import com.dominikdomotor.nextcloudpasswords.ui.PasswordListAdapter
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
+import jakarta.inject.Inject
+import kotlinx.coroutines.launch
+import me.zhanghai.android.fastscroll.FastScroller
 import me.zhanghai.android.fastscroll.FastScrollerBuilder
 
 @AndroidEntryPoint
-class PasswordsFragment : Fragment() {
-    @Inject lateinit var networkManager: NetworkManager
+class PasswordsFragment : Fragment(), BackHandler {
+    @Inject lateinit var uiMessageManager: UiMessageManager
+    @Inject lateinit var faviconStore: FaviconStore
 
-    @Inject lateinit var storageManager: StorageManager
+    private val viewModel: PasswordsViewModel by viewModels()
+    private val actionsViewModel: PasswordActionsViewModel by activityViewModels()
 
-    private lateinit var passwordsRecyclerViewAdapter: PasswordsRecyclerViewAdapter
+    private var _binding: FragmentPasswordsBinding? = null
+    private val binding
+        get() = _binding!!
+
+    private lateinit var adapter: PasswordListAdapter
     private lateinit var linearLayoutManager: LinearLayoutManager
+    private var fastScroller: FastScroller? = null
+    private var listAnimator: RecyclerView.ItemAnimator? = null
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?,
-    ): View? = inflater.inflate(R.layout.fragment_passwords, container, false)
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        requireActivity().onBackPressedDispatcher.addCallback(this) {
-            if (activity?.findViewById<SearchView>(R.id.search)?.isIconified == false) {
-                activity?.findViewById<SearchView>(R.id.search)?.setQuery("", true)
-                activity?.findViewById<SearchView>(R.id.search)?.isIconified = true
-            } else {
-                activity?.finish()
-            }
-        }
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        _binding = FragmentPasswordsBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
-    override fun onViewCreated(
-        view: View,
-        savedInstanceState: Bundle?,
-    ) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        try {
-            activity
-                ?.findViewById<androidx.appcompat.widget.Toolbar>(R.id.myToolbar)
-                ?.inflateMenu(R.menu.passwords_overview_menu)
-            activity?.findViewById<SearchView>(R.id.search)?.maxWidth = Integer.MAX_VALUE
+        setUpToolbar()
+        setUpList()
+        setUpSearch()
 
-            activity?.findViewById<ActionMenuItemView>(R.id.refresh)?.setOnClickListener {
-                it.startAnimation(
-                    AnimationUtils.loadAnimation(
-                        requireContext(),
-                        R.anim.start_rotating_clockwise,
-                    ),
-                )
-                // 			networkManager.pullPartners(requireActivity(), requireContext().applicationContext)
-                networkManager.pullDataFromServer({
-                    activity?.findViewById<ActionMenuItemView>(R.id.refresh)?.animation?.repeatCount = 0
-                    // 				activity?.findViewById<ActionMenuItemView>(R.id.refresh)?.clearAnimation()
-                    activity?.runOnUiThread { passwordsRecyclerViewAdapter.showAllPasswords() }
-                })
-                try {
-                    // 				startActivity(Intent(Settings.ACTION_REQUEST_SET_AUTOFILL_SERVICE))
-                } catch (e: Exception) {
-                    e.printStackTrace()
+        binding.passwordsPullRefresh.onRefresh = viewModel::refresh
+        binding.addPasswordFloatingactionbutton.setOnClickListener { showCreatePasswordDialog() }
+
+        observeViewModel()
+    }
+
+    /** Back closes the search field first; otherwise the activity decides. */
+    override fun handleBack(): Boolean {
+        if (_binding == null || binding.passwordSearchLayout.visibility != View.VISIBLE) return false
+        closeSearch()
+        return true
+    }
+
+    private fun setUpToolbar() {
+        binding.passwordToolbar.apply {
+            inflateMenu(R.menu.passwords_overview_menu)
+            setOnMenuItemClickListener { item ->
+                // Search is the only toolbar action: pulling refreshes, and the app also syncs on
+                // its own when it comes to the foreground.
+                if (item.itemId == R.id.search) {
+                    openSearch()
+                    true
+                } else {
+                    false
                 }
             }
-
-            val recyclerviewPasswords = activity?.findViewById<RecyclerView>(R.id.recyclerview_passwords)!!
-            val dividerItemDecoration =
-                DividerItemDecoration(
-                    recyclerviewPasswords.context,
-                    DividerItemDecoration.VERTICAL,
-                )
-            recyclerviewPasswords.addItemDecoration(dividerItemDecoration)
-            recyclerviewPasswords.setHasFixedSize(true)
-            linearLayoutManager = LinearLayoutManager(activity)
-            linearLayoutManager.initialPrefetchItemCount = 10
-            recyclerviewPasswords.layoutManager = linearLayoutManager
-
-            // checking if user is logged in
-            if (storageManager.getSettings().loggedIn && storageManager.getPasswords().isNotEmpty()) {
-                GF.println("pull passwords")
-                requireActivity().runOnUiThread {
-                    passwordsRecyclerViewAdapter =
-                        PasswordsRecyclerViewAdapter(requireActivity(), networkManager, storageManager)
-                    recyclerviewPasswords.adapter = passwordsRecyclerViewAdapter
-                    val fastScrollerBuilder = FastScrollerBuilder(recyclerviewPasswords)
-                    fastScrollerBuilder.useMd2Style()
-                    val fastScroller = fastScrollerBuilder.build()
-
-                    fastScroller.setPadding(0, 0, 0, 0)
-
-                    recyclerviewPasswords.addOnScrollListener(
-                        object : RecyclerView.OnScrollListener() {
-                            override fun onScrolled(
-                                recyclerView: RecyclerView,
-                                dx: Int,
-                                dy: Int,
-                            ) {
-                                super.onScrolled(recyclerView, dx, dy)
-                                if (dy > 0) {
-                                    activity
-                                        ?.findViewById<FloatingActionButton>(R.id.add_password_floatingactionbutton)
-                                        ?.hide()
-                                    // Scrolling down
-                                } else if (dy < 0) {
-                                    if (activity
-                                        ?.findViewById<FloatingActionButton>(R.id.add_password_floatingactionbutton)
-                                        ?.isShown == false) {
-                                        activity
-                                            ?.findViewById<FloatingActionButton>(R.id.add_password_floatingactionbutton)
-                                            ?.show()
-                                    }
-                                    // Scrolling up
-                                }
-                            }
-                        },
-                    )
-                }
-                networkManager.downloadFavicons {
-                    requireActivity().runOnUiThread { recyclerviewPasswords.adapter?.notifyDataSetChanged() }
-                }
-            } else {
-                activity
-                    ?.findViewById<ActionMenuItemView>(R.id.refresh)
-                    ?.startAnimation(
-                        AnimationUtils.loadAnimation(
-                            activity,
-                            R.anim.start_rotating_clockwise,
-                        ),
-                    )
-                networkManager.pullDataFromServer(
-                    onEverythingPulled = {
-                        requireActivity().runOnUiThread {
-                            passwordsRecyclerViewAdapter =
-                                PasswordsRecyclerViewAdapter(requireActivity(), networkManager, storageManager)
-                            recyclerviewPasswords.adapter = passwordsRecyclerViewAdapter
-                            val fastScrollerBuilder = FastScrollerBuilder(recyclerviewPasswords)
-                            fastScrollerBuilder.useMd2Style()
-                            val fastScroller = fastScrollerBuilder.build()
-
-                            fastScroller.setPadding(0, 0, 0, 0)
-
-                            recyclerviewPasswords.addOnScrollListener(
-                                object : RecyclerView.OnScrollListener() {
-                                    override fun onScrolled(
-                                        recyclerView: RecyclerView,
-                                        dx: Int,
-                                        dy: Int,
-                                    ) {
-                                        super.onScrolled(recyclerView, dx, dy)
-                                        if (dy > 0) {
-                                            activity
-                                                ?.findViewById<FloatingActionButton>(
-                                                    R.id.add_password_floatingactionbutton)
-                                                ?.hide()
-                                            // Scrolling down
-                                        } else if (dy < 0) {
-                                            if (activity
-                                                ?.findViewById<FloatingActionButton>(
-                                                    R.id.add_password_floatingactionbutton,
-                                                )
-                                                ?.isShown == false) {
-                                                activity
-                                                    ?.findViewById<FloatingActionButton>(
-                                                        R.id.add_password_floatingactionbutton)
-                                                    ?.show()
-                                            }
-                                            // Scrolling up
-                                        }
-                                    }
-                                },
-                            )
-                            activity?.findViewById<ActionMenuItemView>(R.id.refresh)?.animation?.repeatCount = 0
-                        }
-                    },
-                    onNewFaviconPulled = {
-                        requireActivity().runOnUiThread { recyclerviewPasswords.adapter?.notifyDataSetChanged() }
-                    },
-                )
-            }
-
-            activity
-                ?.findViewById<SearchView>(R.id.search)
-                ?.setOnQueryTextListener(
-                    object : SearchView.OnQueryTextListener {
-                        override fun onQueryTextSubmit(query: String): Boolean = false
-
-                        override fun onQueryTextChange(query: String): Boolean {
-                            if (query.isNotEmpty()) {
-                                passwordsRecyclerViewAdapter.filterPasswordList(query)
-                                // 						passwordsRecyclerViewAdapter.showAllPasswords()
-                            } else {
-                                passwordsRecyclerViewAdapter.showAllPasswords()
-                            }
-                            return false
-                        }
-                    },
-                )
-
-            activity?.findViewById<FloatingActionButton>(R.id.add_password_floatingactionbutton)?.setOnClickListener {
-                val bottomSheetDialog = BottomSheetDialog(requireContext())
-
-                val passwordCreateView =
-                    this.layoutInflater.inflate(
-                        R.layout.password_create_bottom_sheet_dialog,
-                        null,
-                    )
-
-                passwordCreateView.findViewById<ImageButton>(R.id.cancel_password_creation).setOnClickListener {
-                    bottomSheetDialog.dismiss()
-                }
-
-                bottomSheetDialog.setCancelable(false)
-                bottomSheetDialog.setContentView(passwordCreateView)
-
-                bottomSheetDialog.setOnShowListener {
-                    val bottomSheet =
-                        (it as BottomSheetDialog).findViewById<FrameLayout>(
-                            com.google.android.material.R.id.design_bottom_sheet)
-                    val behavior = BottomSheetBehavior.from(bottomSheet!!)
-                    behavior.state = BottomSheetBehavior.STATE_EXPANDED
-                    // 					behavior.peekHeight = 0
-                }
-
-                bottomSheetDialog.show()
-
-                passwordCreateView.findViewById<ImageButton>(R.id.generateRandomPasswordButton)?.setOnClickListener {
-                    passwordCreateView
-                        .findViewById<TextInputLayout>(R.id.createPasswordPassword)
-                        ?.editText
-                        ?.setText(
-                            generateRandomPassword(),
-                        )
-                }
-                passwordCreateView.findViewById<TextInputLayout>(R.id.createPasswordPassword)?.editText?.inputType =
-                    InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS
-
-                val urlInput = passwordCreateView.findViewById<TextInputLayout>(R.id.createPasswordURL)?.editText
-
-                passwordCreateView
-                    .findViewById<ImageButton>(R.id.create_passwords_checkmark_button)
-                    .setOnClickListener {
-                        if (passwordCreateView
-                            .findViewById<TextInputLayout>(R.id.createPasswordLabel)
-                            .editText
-                            ?.text
-                            .toString()
-                            .isEmpty()) {
-                            requireActivity().runOnUiThread {
-                                Toast.makeText(
-                                        requireActivity(),
-                                        getString(R.string.label_is_required_for_password_creation),
-                                        Toast.LENGTH_LONG,
-                                    )
-                                    .show()
-                            }
-                        } else if (passwordCreateView
-                            .findViewById<TextInputLayout>(
-                                R.id.createPasswordPassword,
-                            )
-                            .editText
-                            ?.text
-                            .toString()
-                            .isEmpty()) {
-                            requireActivity().runOnUiThread {
-                                Toast.makeText(
-                                        requireActivity(),
-                                        getString(R.string.password_is_required_for_password_creation),
-                                        Toast.LENGTH_LONG,
-                                    )
-                                    .show()
-                            }
-                        } else if (urlInput?.text.toString().isNotEmpty()) {
-                            if (!URLUtil.isValidUrl(urlInput?.text.toString())) {
-                                requireActivity().runOnUiThread {
-                                    Toast.makeText(
-                                            requireActivity(),
-                                            getString(R.string.not_a_valid_url_alert_message),
-                                            Toast.LENGTH_LONG,
-                                        )
-                                        .show()
-                                }
-                                urlInput?.setText(
-                                    URLUtil.guessUrl(urlInput.text.toString().filter { !it.isWhitespace() })
-                                        .replace("http://www.", "https://", true)
-                                        .replace(
-                                            "http:",
-                                            "https:",
-                                            true,
-                                        ), // .dropLastWhile { it == '/' || it.isWhitespace() }
-                                )
-                                urlInput?.setSelection(urlInput.length()) // placing cursor at the end of the tex
-                                // whitespace at the end of the url results in the authentication process not working,
-                                // so trying to remove them and letting the user know
-                            } else if (urlInput?.text.toString().contains(" ")) {
-                                requireActivity().runOnUiThread {
-                                    Toast.makeText(
-                                            requireActivity(),
-                                            getString(R.string.whitespaces_in_url_alert_message),
-                                            Toast.LENGTH_LONG,
-                                        )
-                                        .show()
-                                }
-                                urlInput?.setText(urlInput.text.toString().filter { !it.isWhitespace() })
-                                urlInput?.setSelection(urlInput.length()) // placing cursor at the end of the text
-                                // if everything is ok with the entered url the next activity is opened and the server
-                                // url is passed
-                            } else if (URLUtil.isValidUrl(urlInput?.text.toString())) {
-                                val password = Password()
-                                password.label =
-                                    passwordCreateView
-                                        .findViewById<TextInputLayout>(
-                                            R.id.createPasswordLabel,
-                                        )
-                                        ?.editText
-                                        ?.text
-                                        .toString()
-                                password.username =
-                                    passwordCreateView
-                                        .findViewById<TextInputLayout>(
-                                            R.id.createPasswordUsername,
-                                        )
-                                        ?.editText
-                                        ?.text
-                                        .toString()
-                                password.password =
-                                    passwordCreateView
-                                        .findViewById<TextInputLayout>(
-                                            R.id.createPasswordPassword,
-                                        )
-                                        ?.editText
-                                        ?.text
-                                        .toString()
-                                password.url = urlInput?.text.toString()
-                                password.notes =
-                                    passwordCreateView
-                                        .findViewById<TextInputLayout>(
-                                            R.id.createPasswordNotes,
-                                        )
-                                        ?.editText
-                                        ?.text
-                                        .toString()
-
-                                networkManager.createPassword(password) {
-                                    requireActivity().runOnUiThread {
-                                        bottomSheetDialog.dismiss()
-                                        activity
-                                            ?.findViewById<ActionMenuItemView>(R.id.refresh)
-                                            ?.startAnimation(
-                                                AnimationUtils.loadAnimation(
-                                                    requireContext(),
-                                                    R.anim.start_rotating_clockwise,
-                                                ),
-                                            )
-                                        networkManager.pullDataFromServer({
-                                            activity?.runOnUiThread {
-                                                GF.println("I am being executed")
-                                                requireActivity().runOnUiThread {
-                                                    passwordsRecyclerViewAdapter.showAllPasswords()
-                                                    activity
-                                                        ?.findViewById<ActionMenuItemView>(R.id.refresh)
-                                                        ?.animation
-                                                        ?.repeatCount = 0
-                                                }
-                                            }
-                                        })
-                                    }
-                                }
-                            }
-                        } else {
-                            val password = Password()
-                            password.label =
-                                passwordCreateView
-                                    .findViewById<TextInputLayout>(R.id.createPasswordLabel)
-                                    .editText
-                                    ?.text
-                                    .toString()
-                            password.username =
-                                passwordCreateView
-                                    .findViewById<TextInputLayout>(R.id.createPasswordUsername)
-                                    .editText
-                                    ?.text
-                                    .toString()
-                            password.password =
-                                passwordCreateView
-                                    .findViewById<TextInputLayout>(R.id.createPasswordPassword)
-                                    .editText
-                                    ?.text
-                                    .toString()
-                            password.url = urlInput?.text.toString()
-                            password.notes =
-                                passwordCreateView
-                                    .findViewById<TextInputLayout>(R.id.createPasswordNotes)
-                                    .editText
-                                    ?.text
-                                    .toString()
-
-                            networkManager.createPassword(password) {
-                                requireActivity().runOnUiThread {
-                                    bottomSheetDialog.dismiss()
-                                    activity
-                                        ?.findViewById<ActionMenuItemView>(R.id.refresh)
-                                        ?.startAnimation(
-                                            AnimationUtils.loadAnimation(
-                                                requireContext(),
-                                                R.anim.start_rotating_clockwise,
-                                            ),
-                                        )
-                                    networkManager.pullDataFromServer({
-                                        GF.println("I am being executed")
-                                        requireActivity().runOnUiThread {
-                                            passwordsRecyclerViewAdapter.showAllPasswords()
-                                            activity
-                                                ?.findViewById<ActionMenuItemView>(R.id.refresh)
-                                                ?.animation
-                                                ?.repeatCount = 0
-                                        }
-                                    })
-                                }
-                            }
-                        }
-                    }
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
         }
     }
 
-    private fun generateRandomPassword(): String {
-        val length: Int = storageManager.getSettings().passwordLength
-        val numberOfSpecialCharacters: Int = storageManager.getSettings().includedSymbolsQuantity
-        val excludeSimilarCharacters: Boolean = storageManager.getSettings().excludeSimilarCharacters
-        val lettersNumbers = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-        val specialCharacters = "#*+,-.:<=>?@^_~"
-        val similarCharacters = "iIlL1oO0uvcemnwWbdpqsS5"
-
-        var availableCharacters = lettersNumbers.filter { it !in similarCharacters }
-
-        // 		if (numberOfSpecialCharacters > 0){
-        // 			availableCharacters += specialCharacters
-        // 		}
-
-        if (!excludeSimilarCharacters) {
-            availableCharacters += similarCharacters
+    private fun setUpList() {
+        adapter =
+            PasswordListAdapter(
+                favicons = FaviconBinder(faviconStore, viewLifecycleOwner.lifecycleScope),
+                onClick = { detailsController().show(it) },
+                onCopyUsername = viewModel::copyUsername,
+                onCopyPassword = viewModel::copyPassword,
+            )
+        binding.recyclerviewPasswords.apply {
+            addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
+            setHasFixedSize(true)
+            linearLayoutManager = LinearLayoutManager(context).apply { initialPrefetchItemCount = PREFETCH_ITEMS }
+            layoutManager = linearLayoutManager
+            adapter = this@PasswordsFragment.adapter
+            hideFloatingActionsOnScroll(binding.addPasswordFloatingactionbutton)
         }
+        listAnimator = binding.recyclerviewPasswords.itemAnimator
+        fastScroller = FastScrollerBuilder(binding.recyclerviewPasswords).useMd2Style().build()
+        binding.recyclerviewPasswords.addOnScrollListener(
+            object : RecyclerView.OnScrollListener() {
+                override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                    // Re-prioritise once the user settles somewhere new in the list.
+                    if (newState == RecyclerView.SCROLL_STATE_IDLE) warmFaviconsVisibleFirst()
+                }
+            }
+        )
+    }
 
-        GF.println("availableCharacters: $availableCharacters")
+    /**
+     * Asks for every cached favicon, rows on screen first.
+     *
+     * All of them get decoded, not only the visible ones — but one at a time and in this order, so what the user is
+     * looking at resolves immediately and the rest fill in behind it.
+     */
+    private fun warmFaviconsVisibleFirst() {
+        if (_binding == null) return
+        val ids = adapter.currentList.map { it.id }
+        if (ids.isEmpty()) return
 
-        // Generate the first part of the string with random characters
-        val randomPasswordWithoutSpecialCharacters = (1..length).map { availableCharacters.random() }.joinToString("")
+        val first = linearLayoutManager.findFirstVisibleItemPosition()
+        val last = linearLayoutManager.findLastVisibleItemPosition()
+        val ordered =
+            if (first == RecyclerView.NO_POSITION || last == RecyclerView.NO_POSITION) ids
+            else FaviconWarmUpOrder.visibleFirst(ids, first, last)
+        viewModel.warmFavicons(ordered)
+    }
 
-        GF.println("randomPasswordWithoutSpecialCharacters: $randomPasswordWithoutSpecialCharacters")
+    private fun setUpSearch() {
+        binding.passwordSearchInput.doAfterTextChanged { viewModel.search(it?.toString().orEmpty()) }
+    }
 
-        // Create a list of indices where replacements will occur
-        val indicesToReplace =
-            (randomPasswordWithoutSpecialCharacters.indices).shuffled().take(numberOfSpecialCharacters)
-
-        // Replace characters at the selected indices with characters from the replacementCharacterSet
-        val result =
-            randomPasswordWithoutSpecialCharacters
-                .mapIndexed { index, char ->
-                    if (index in indicesToReplace) {
-                        specialCharacters.random()
-                    } else {
-                        char
+    private fun observeViewModel() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    var lastQuery: String? = null
+                    viewModel.items.collect { items ->
+                        // Every keystroke re-ranks the list, so the best match is row 0 — but the RecyclerView keeps
+                        // whatever offset it had and would leave the user looking at the middle of the results.
+                        // Only on a query change: a background sync must not yank the list out from under them.
+                        val query = viewModel.query.value
+                        val queryChanged = query != lastQuery
+                        lastQuery = query
+                        adapter.submitList(items) {
+                            if (queryChanged) linearLayoutManager.scrollToPosition(0)
+                            updateFastScroller(items.size)
+                            // Wait for the layout pass the new list triggers: until it runs, the layout manager
+                            // still reports positions from the previous list, so "visible first" would prioritise
+                            // rows that have moved or disappeared.
+                            _binding?.recyclerviewPasswords?.post { warmFaviconsVisibleFirst() }
+                        }
                     }
                 }
-                .joinToString("")
+                launch { faviconStore.updates.collect(adapter::notifyFaviconChanged) }
+                launch {
+                    viewModel.suppressSearchAnimation.collect { suppress ->
+                        binding.recyclerviewPasswords.itemAnimator = if (suppress) null else listAnimator
+                    }
+                }
+                launch { viewModel.isRefreshing.collect(binding.passwordsSyncIndicator::setVisible) }
+                launch {
+                    // The sweep is the app's most visible accent, so it follows the chosen colour.
+                    viewModel.accentColor.collect { binding.passwordsSyncIndicator.setIndicatorColor(it) }
+                }
+            }
+        }
+    }
 
-        GF.println("generatedPassword: $result")
+    private fun openSearch() {
+        binding.passwordToolbar.visibility = View.GONE
+        binding.passwordSearchLayout.visibility = View.VISIBLE
+        binding.passwordSearchInput.requestFocus()
+        binding.passwordSearchInput.post { insetsController()?.show(WindowInsetsCompat.Type.ime()) }
+    }
 
-        return result
+    private fun closeSearch() {
+        binding.passwordSearchInput.setText("")
+        binding.passwordSearchLayout.visibility = View.GONE
+        binding.passwordToolbar.visibility = View.VISIBLE
+        insetsController()?.hide(WindowInsetsCompat.Type.ime())
+    }
+
+    private fun insetsController() =
+        activity?.window?.let { WindowCompat.getInsetsController(it, binding.passwordSearchInput) }
+
+    private fun folderPicker() = FolderPicker(requireActivity()) { actionsViewModel.foldersSnapshot() }
+
+    private fun detailsController() =
+        PasswordDetailsController(requireActivity(), actionsViewModel, folderPicker(), uiMessageManager)
+
+    private fun showCreatePasswordDialog() {
+        PasswordEditorSheet(requireActivity(), actionsViewModel.settings, folderPicker()).show { password, dismiss ->
+            actionsViewModel.create(password) { dismiss() }
+        }
+    }
+
+    /**
+     * The fast scroller is only useful once the list is long enough to be worth dragging, so it is pushed off-screen
+     * below that threshold.
+     */
+    private fun updateFastScroller(itemCount: Int) {
+        fastScroller?.setPadding(0, 0, if (itemCount > FAST_SCROLL_THRESHOLD) 0 else OFF_SCREEN_PADDING, 0)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        fastScroller = null
+        listAnimator = null
+        _binding = null
+    }
+
+    private companion object {
+        const val PREFETCH_ITEMS = 10
+        const val FAST_SCROLL_THRESHOLD = 50
+        const val OFF_SCREEN_PADDING = 10_000
     }
 }

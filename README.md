@@ -37,23 +37,49 @@ This application is currently in a stable preview state. It is functional for da
 ## Features
 
 ### Current Features
-- **Secure Login & Sync:** Connects to your Nextcloud instance to sync passwords.
-- **Full Password Management:** Create, view, edit, and delete passwords.
-- **Offline Caching:** Access your passwords and favicons even without an internet connection.
-- **Android Autofill:** Provides password suggestions in other apps and browsers using a hint-based detection system.
-- **Password Generation:** Create strong, random passwords with customizable parameters.
-- **View Shares:** See who a password has been shared with.
-- **Note Creation:** Securely create and attach notes to your passwords.
+- **Secure login & sync:** Nextcloud Login Flow v2, with a foreground service that survives the
+  browser handover and returns you to the app automatically.
+- **Full password management:** create, view, edit, delete, and mark favourites.
+- **Folders:** browse a folder tree with breadcrumbs, and create, rename, move and delete folders.
+- **End-to-end encryption:** full `CSEv1r1` support — the `PWDv1r1` challenge, keychain decryption,
+  and per-field encryption on write. The passphrase stays in memory unless you opt into storing it.
+- **Sharing:** share with server-backed recipient search, adjust permissions, and revoke shares.
+- **Android Autofill:** hint- and heuristic-based field detection, inline (keyboard) suggestions,
+  a searchable picker, a manual fallback for unrecognised fields, and a per-app blocklist.
+- **Offline caching:** passwords and favicons are stored AES-256-GCM encrypted with a key held in
+  the Android Keystore, and are readable without a connection.
+- **Password generation:** configurable length, symbol set and symbol count, with an option to
+  exclude look-alike characters.
+- **Privacy:** `FLAG_SECURE` by default so the app is hidden from screenshots and the recents
+  preview, and copied secrets are marked sensitive and cleared from the clipboard after 30 seconds.
+- **Self-signed certificates:** pin and trust a certificate after showing you its SHA-256
+  fingerprint and expiry.
 
 ### Roadmap (Planned Features)
-- Reimplement Favorites: Add support for marking favorite passwords after the recent network manager refactor.
-- View & Edit Notes: Implement the ability to view and edit existing notes.
-- Full management of shares (editing, resharing, setting expiration).
-- Support for folders and tags.
-- App lock with Biometrics or a PIN code.
-- End-to-End Encryption (E2E).
-- App blacklisting/whitelisting for the Autofill service.
+- App lock with biometrics or a PIN code.
+- View and edit custom fields.
+- Tags.
+- Share expiry dates.
+- Trash / restore deleted passwords.
 - In-app language selection.
+- Passwords API token and 2FA support (only the `PWDv1r1` challenge is implemented today).
+
+---
+
+## Architecture
+
+- **Kotlin, views (no Compose), Material 3**, `minSdk 29` / `targetSdk 36`, Java 17.
+- **Hilt** for dependency injection throughout.
+- **`PasswordRepository`** is the single entry point for password data. It sequences "call the
+  server, then update the local store" and returns a typed `ApiResult` for every operation, so
+  failures carry a reason instead of being indistinguishable from an empty result.
+- **`StorageManager`** owns the encrypted local document and publishes immutable `StateFlow`
+  snapshots. Callers never receive the backing collections.
+- **ViewModels** (`PasswordsViewModel`, `FoldersViewModel`, `SettingsViewModel`,
+  `PasswordActionsViewModel`, `OverviewViewModel`) hold all screen state; fragments only render and
+  forward events.
+- **`PasswordsApiClient`** issues every API call in one place, so connection handling, session-token
+  capture and status-code mapping are not repeated per endpoint.
 
 ---
 
@@ -71,6 +97,23 @@ To build and run this project yourself, follow these simple steps:
     Allow Android Studio to automatically download and sync the required Gradle dependencies.
 4.  **Build & Run:**
     Build and run the app on an emulator or a physical Android device.
+
+### Checks
+
+```bash
+./gradlew :app:ktfmtCheck        # formatting (ktfmt, kotlinlang style, 120 columns)
+./gradlew :app:testDebugUnitTest # unit tests
+./gradlew :app:lintDebug         # Android lint
+```
+
+Formatting is enforced by the build, not only by the IDE. Run `./gradlew :app:ktfmtFormat` to fix.
+
+### Release builds
+
+Release signing material is deliberately kept outside this repository, so a signed build cannot be
+produced from a clean clone. The build script reads the keystore path from the
+`NPAC_KEYSTORE_PROPERTIES` environment variable (or the `releaseKeystoreProperties` Gradle property)
+and falls back to an unsigned release build when neither is set.
 
 ---
 

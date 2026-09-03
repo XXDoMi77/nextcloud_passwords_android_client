@@ -1,84 +1,80 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Base application theme -->
-    <style name="Theme.App" parent="@android:style/Theme.DeviceDefault"/>
-
     <style name="Theme.App.Starting" parent="Theme.SplashScreen">
         <item name="windowSplashScreenBackground">@color/background_color</item>
-        <item name="windowSplashScreenAnimatedIcon">@mipmap/icon</item>
+        <item name="windowSplashScreenAnimatedIcon">@mipmap/launcher_icon</item>
         <item name="postSplashScreenTheme">@style/Theme.NextcloudPasswords</item>
     </style>
 
-    <style name="Theme.NextcloudPasswords" parent="Theme.MaterialComponents.DayNight">
-        <!-- Primary brand color -->
-        <item name="colorPrimary">@color/background_color</item>
-        <item name="colorPrimaryVariant">@color/background_color</item>
-        <item name="colorOnPrimary">@color/background_color</item>
-
-        <!-- Secondary brand color -->
-        <item name="colorSecondary">@color/navigation_menu_background</item>
-        <item name="colorSecondaryVariant">@color/normal_text_color</item>
-        <item name="colorOnSecondary">@color/normal_text_color</item>
-
-        <!-- Status bar handling -->
-        <item name="android:statusBarColor">@color/background_color</item>
-        <item name="android:windowLightStatusBar">true</item>
-        <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item>
-        <item name="android:fitsSystemWindows">false</item> <!-- Important change -->
+    <style name="Theme.NextcloudPasswords" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Every screen used to repaint this over the window, filling the display twice per frame. -->
+        <item name="android:windowBackground">@color/background_color</item>
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
-        <item name="android:windowBackground">@color/background_color</item>
-
-        <!-- Edge-to-edge support -->
-        <item name="android:navigationBarColor">@android:color/transparent</item>
-        <item name="android:enforceNavigationBarContrast">false</item>
-        <item name="android:enforceStatusBarContrast">false</item>
-
-        <!-- Bottom sheet -->
-        <item name="bottomSheetDialogTheme">@style/AppBottomSheetDialogTheme</item>
     </style>
 
-    <style name="AppBottomSheetDialogTheme" parent="Theme.Design.Light.BottomSheetDialog">
-        <item name="bottomSheetStyle">@style/AppModalStyle</item>
-    </style>
-
-    <style name="AppModalStyle" parent="Widget.Design.BottomSheet.Modal">
-        <item name="android:background">@drawable/rounded_dialog</item>
-    </style>
-
-    <style name="ToolbarColoredBackArrow" parent="Theme.NextcloudPasswords">
-        <item name="android:textColorSecondary">@color/normal_text_color</item>
-        <item name="android:drawableTint">@color/normal_text_color</item>
-    </style>
-
-    <style name="AlertDialogStyle" parent="Theme.AppCompat.DayNight.Dialog">
-        <item name="android:minHeight">46dp</item>
-        <item name="android:minWidth">80dp</item>
+    <style name="AlertDialogStyle" parent="Theme.Material3.DayNight.Dialog.Alert">
+        <!--
+            No android:minHeight or android:minWidth here. A view resolves any attribute it does not set
+            itself from the theme, and both are part of TextView's styleable, so a theme-level 46dp
+            minHeight silently became the minimum height of every TextView inflated with this theme. That
+            is what made the blocked-app rows 108dp tall: the name and the package were each forced to
+            46dp regardless of their text. Window size belongs to the dialog, not to a theme attribute
+            every widget also reads.
+        -->
         <item name="dialogCornerRadius">16dp</item>
-        <item name="android:background">@color/material_dynamic_neutral20</item>
-        <item name="android:textColorPrimary">#FFFFFF</item>
+        <!-- Every dialog gets the same buttons, including the neutral one. -->
+        <item name="buttonBarPositiveButtonStyle">@style/AppDialogButton</item>
+        <item name="buttonBarNegativeButtonStyle">@style/AppDialogButton.Destructive</item>
+        <item name="buttonBarNeutralButtonStyle">@style/AppDialogButton</item>
+        <item name="buttonBarStyle">@style/AppDialogButtonBar</item>
+        <item name="colorSurface">@color/background_color</item>
+        <item name="colorOnSurface">@color/normal_text_color</item>
+        <item name="colorPrimary">@color/normal_text_color</item>
+        <item name="android:textColorPrimary">@color/normal_text_color</item>
+        <item name="android:textColorSecondary">@color/normal_text_color</item>
+    </style>
+
+
+    <!--
+        Breathing room above the button row.
+
+        A dialog button's own layout_margin is ignored here - the alert layout sets the buttons' layout
+        params itself - so the space has to come from the panel. Without it the buttons sat flush against
+        the content: in the blocked-app list the rows ended on exactly the pixel the buttons began, which
+        read as the buttons being clipped at the top.
+    -->
+    <style name="AppDialogButtonBar" parent="Widget.AppCompat.ButtonBar">
+        <item name="android:paddingTop">12dp</item>
+        <item name="android:paddingBottom">8dp</item>
+        <item name="android:paddingStart">8dp</item>
+        <item name="android:paddingEnd">8dp</item>
+    </style>
+
+    <!--
+        The shared dialog button: Material 3's filled tonal button.
+
+        Material's default dialog buttons are borderless text, so the tappable area is invisible and easy
+        to miss. The tonal button is the standard Material You control that has a container, so it shows
+        where the touch area ends without inventing a bespoke look. Kept at 48dp, the platform's minimum
+        touch target and comfortably above the 24dp that was asked for.
+    -->
+    <style name="AppDialogButton" parent="Widget.Material3.Button.TonalButton">
+        <item name="android:minHeight">48dp</item>
+        <item name="android:minWidth">76dp</item>
+        <item name="android:layout_margin">6dp</item>
+    </style>
+
+    <!-- For a button that discards or cancels, using Material 3's own error container colours. -->
+    <style name="AppDialogButton.Destructive">
+        <item name="backgroundTint">?attr/colorErrorContainer</item>
+        <item name="android:textColor">?attr/colorOnErrorContainer</item>
     </style>
 
     <style name="TextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-        <item name="boxStrokeColor">@color/text_input_field_box_color</item>
-        <item name="hintTextColor">@color/text_input_field_box_color</item>
-        <item name="cursorColor">@color/normal_text_color</item>
-        <item name="startIconTint">@color/normal_text_color</item>
-    </style>
-
-    <style name="BottomSheetDialogCreatePasswordEditText">
-        <item name="colorPrimary">@color/text_handle_color</item>
-        <item name="colorAccent">@color/selected_text_background</item>
-    </style>
-
-    <style name="PopupAnimation" parent="android:Animation">
-        <item name="android:windowEnterAnimation">@anim/popup_show</item>
-        <item name="android:windowExitAnimation">@anim/popup_hide</item>
-    </style>
-
-    <style name="BottomSheetDialogEditPasswordEditText">
-        <item name="colorAccent">@color/selected_text_background</item>
-        <item name="colorControlActivated">@color/text_handle_color</item>
+        <item name="boxStrokeColor">@color/text_input_box_stroke</item>
+        <item name="hintTextColor">@color/normal_text_color</item>
     </style>
 
     <style name="FastScrollBar">
