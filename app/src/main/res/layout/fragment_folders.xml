@@ -57,8 +57,7 @@
             android:clipToPadding="false"
             android:paddingTop="8dp"
             android:paddingBottom="160dp"
-            android:scrollbarStyle="insideOverlay"
-            android:theme="@style/FastScrollBar" />
+            android:scrollbarStyle="insideOverlay" />
     </com.dominikdomotor.nextcloudpasswords.ui.PullToRefreshLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton

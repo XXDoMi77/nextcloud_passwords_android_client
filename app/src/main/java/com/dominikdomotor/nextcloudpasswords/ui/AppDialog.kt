@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import android.widget.Space
 import android.widget.TextView
 import androidx.activity.ComponentDialog
 import androidx.activity.OnBackPressedCallback
@@ -78,6 +79,23 @@ class AppDialog(private val activity: Activity) {
             if (dismissOnClick) dialog.dismiss()
         }
         buttonRow.addView(button)
+    }
+
+    /**
+     * Adds the reset button, at the start of the row and as an icon rather than a word.
+     *
+     * Separate from [button] because it is not one of the row's answers - it changes the dialog's contents and leaves
+     * it open, so it never dismisses. Pinning it to the start also keeps it away from the button a hurried tap is
+     * aiming for.
+     *
+     * The pinning is a weighted spacer rather than a gravity: the row is laid out end-first so the confirming button
+     * stays where the thumb expects it, and a spacer is what pushes this one the other way without disturbing that.
+     */
+    fun resetButton(onClick: () -> Unit) = apply {
+        val button = inflater.inflate(R.layout.app_dialog_button_reset, buttonRow, false) as MaterialButton
+        button.setOnClickListener { onClick() }
+        buttonRow.addView(button, 0)
+        buttonRow.addView(Space(context).apply { layoutParams = LinearLayout.LayoutParams(0, 1, 1f) }, 1)
     }
 
     fun dismiss() = dialog.dismiss()

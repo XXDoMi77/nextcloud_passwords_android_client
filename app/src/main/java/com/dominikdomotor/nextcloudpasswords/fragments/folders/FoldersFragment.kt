@@ -30,6 +30,7 @@ import com.dominikdomotor.nextcloudpasswords.managers.UiMessageManager
 import com.dominikdomotor.nextcloudpasswords.ui.AppDialog
 import com.dominikdomotor.nextcloudpasswords.ui.FaviconBinder
 import com.dominikdomotor.nextcloudpasswords.ui.theme.themeColor
+import com.dominikdomotor.nextcloudpasswords.ui.usePaletteStyle
 import com.google.android.material.R as MaterialR
 import com.google.android.material.textfield.TextInputLayout
 import dagger.hilt.android.AndroidEntryPoint
@@ -74,7 +75,7 @@ class FoldersFragment : Fragment(), BackHandler {
         binding.foldersList.layoutManager = LinearLayoutManager(requireContext())
         binding.foldersList.adapter = adapter
         binding.foldersList.hideFloatingActionsOnScroll(binding.addPassword, binding.addFolder)
-        fastScroller = FastScrollerBuilder(binding.foldersList).useMd2Style().build()
+        fastScroller = FastScrollerBuilder(binding.foldersList).usePaletteStyle(requireContext()).build()
 
         binding.addFolder.setOnClickListener { showFolderEditor(null) }
         binding.addFolder.contentDescription = getString(R.string.create_folder)

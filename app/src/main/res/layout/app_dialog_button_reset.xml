@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+    The reset button: an icon, with no label.
+
+    A worded button here squeezed the row. "Auf Standard zurücksetzen" is three times the width of
+    "Reset", so in German the two buttons beside it were pushed down to a sliver each, their labels
+    wrapped onto two lines, and the whole row grew taller than the buttons it contained. An icon is a
+    fixed width in every language, so the row cannot be pulled out of shape by a translation. The label
+    survives as the content description, so it is still announced and still shown on long press.
+-->
+<com.google.android.material.button.MaterialButton xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="@style/AppDialogButton.Reset"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:contentDescription="@string/reset_to_default"
+    android:tooltipText="@string/reset_to_default"
+    app:icon="@drawable/icon_autorenew_24" />

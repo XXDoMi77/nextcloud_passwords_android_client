@@ -67,7 +67,9 @@
         <item name="android:colorControlNormal">@color/npac_on_surface_variant</item>
         <item name="colorControlNormal">@color/npac_on_surface_variant</item>
         <item name="colorControlActivated">@color/npac_primary</item>
+        <item name="android:colorControlActivated">@color/npac_primary</item>
         <item name="colorControlHighlight">@color/npac_ripple</item>
+        <item name="android:colorControlHighlight">@color/npac_ripple</item>
         <item name="android:textColorPrimary">@color/npac_on_surface</item>
         <item name="android:textColorSecondary">@color/npac_on_surface_variant</item>
         <item name="android:textColorTertiary">@color/npac_on_surface_variant</item>
@@ -167,12 +169,21 @@
         <item name="android:textColor">@color/on_destructive_container</item>
     </style>
 
+    <!--
+        The reset button. Square, icon only, and no wider in one language than another.
+    -->
+    <style name="AppDialogButton.Reset">
+        <item name="android:minWidth">48dp</item>
+        <item name="android:insetLeft">0dp</item>
+        <item name="android:insetRight">0dp</item>
+        <item name="iconGravity">textStart</item>
+        <item name="iconPadding">0dp</item>
+        <item name="iconTint">?attr/colorOnSecondaryContainer</item>
+    </style>
+
     <style name="TextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
         <item name="boxStrokeColor">@color/text_input_box_stroke</item>
         <item name="hintTextColor">?attr/colorOnSurface</item>
     </style>
 
-    <style name="FastScrollBar">
-        <item name="colorSecondary">?attr/colorPrimary</item>
-    </style>
 </resources>

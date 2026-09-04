@@ -35,11 +35,9 @@ class EnterServerURLActivity : BaseActivity() {
 
         // check url, if ok open next activity otherwise try to guess url
         fun openLoginActivity() {
-            urlInput.error = null
-
             // trying to guess the url
             if (!URLUtil.isValidUrl(urlInput.text.toString())) {
-                urlInput.error = getString(R.string.not_a_valid_url_alert_message)
+                showMessage(R.string.not_a_valid_url_alert_message)
                 urlInput.setText(
                     URLUtil.guessUrl(urlInput.text.toString().filter { !it.isWhitespace() })
                         .replace("http://www.", "https://", true)
@@ -50,7 +48,7 @@ class EnterServerURLActivity : BaseActivity() {
                 // working, so
                 // trying to remove them and letting the user know
             } else if (urlInput.text.toString().contains(" ")) {
-                urlInput.error = getString(R.string.whitespaces_in_url_alert_message)
+                showMessage(R.string.whitespaces_in_url_alert_message)
                 urlInput.setText(urlInput.text.toString().filter { !it.isWhitespace() })
                 urlInput.setSelection(urlInput.length()) // placing cursor at the end of the text
 
@@ -58,7 +56,7 @@ class EnterServerURLActivity : BaseActivity() {
             } else if (URLUtil.isValidUrl(urlInput.text.toString())) {
                 val serverUrl = URL(urlInput.text.toString().trimEnd('/'))
                 if (!serverUrl.protocol.equals("https", ignoreCase = true)) {
-                    urlInput.error = getString(R.string.https_is_required)
+                    showMessage(R.string.https_is_required)
                 } else {
                     checkNextcloudServer(serverUrl, urlInput, allowCertificatePrompt = true)
                 }
@@ -106,13 +104,12 @@ class EnterServerURLActivity : BaseActivity() {
 
                     runOnUiThread {
                         if (isNextcloud) openLogin(serverUrl)
-                        else urlInput.error = getString(R.string.this_URL_doesnt_seem_to_point_to_a_nextcloud_server)
+                        else showMessage(R.string.this_URL_doesnt_seem_to_point_to_a_nextcloud_server)
                     }
                 } catch (_: SSLHandshakeException) {
-                    if (allowCertificatePrompt) showCertificatePrompt(serverUrl, urlInput)
-                    else showServerError(urlInput)
+                    if (allowCertificatePrompt) showCertificatePrompt(serverUrl, urlInput) else showServerError()
                 } catch (_: Exception) {
-                    showServerError(urlInput)
+                    showServerError()
                 }
             }
             .start()
@@ -123,7 +120,7 @@ class EnterServerURLActivity : BaseActivity() {
             val certificate = inspectServerCertificate(serverUrl)
             runOnUiThread { showCertificateDialog(serverUrl, urlInput, certificate) }
         } catch (_: Exception) {
-            showServerError(urlInput)
+            showServerError()
         }
     }
 
@@ -151,8 +148,9 @@ class EnterServerURLActivity : BaseActivity() {
         startActivity(intent)
     }
 
-    private fun showServerError(urlInput: EditText) {
-        runOnUiThread { urlInput.error = getString(R.string.this_URL_doesnt_seem_to_point_to_a_nextcloud_server) }
+    /** The URL looked plausible but nothing Nextcloud-shaped answered. */
+    private fun showServerError() {
+        runOnUiThread { showMessage(R.string.this_URL_doesnt_seem_to_point_to_a_nextcloud_server) }
     }
 
     companion object {

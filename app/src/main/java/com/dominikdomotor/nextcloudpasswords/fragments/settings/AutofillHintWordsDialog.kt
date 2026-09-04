@@ -31,9 +31,8 @@ object AutofillHintWordsDialog {
         dialog
             .title(R.string.autofill_hint_words)
             .content(content)
-            // Refills the fields rather than saving, so a mistaken tap can still be cancelled - which is
-            // also why it does not dismiss.
-            .button(R.string.reset_to_default, dismissOnClick = false) {
+            // Refills the fields rather than saving, so a mistaken tap can still be cancelled.
+            .resetButton {
                 usernameInput.setText(HintWords.format(HintWords.DEFAULT_USERNAME_WORDS))
                 passwordInput.setText(HintWords.format(HintWords.DEFAULT_PASSWORD_WORDS))
             }

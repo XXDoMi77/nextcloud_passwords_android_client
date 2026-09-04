@@ -81,7 +81,7 @@ object AccentColorDialog {
             .title(R.string.accent_colour)
             .content(content)
             // Puts the server's colour back in the picker rather than saving it, so it can still be cancelled.
-            .button(R.string.reset_to_default, dismissOnClick = false) {
+            .resetButton {
                 render(serverDefault, updateHex = true, updateSliders = true)
                 chosen = serverDefault
             }

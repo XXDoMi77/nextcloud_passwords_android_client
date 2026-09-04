@@ -26,6 +26,7 @@ import com.dominikdomotor.nextcloudpasswords.managers.FaviconStore
 import com.dominikdomotor.nextcloudpasswords.managers.UiMessageManager
 import com.dominikdomotor.nextcloudpasswords.ui.FaviconBinder
 import com.dominikdomotor.nextcloudpasswords.ui.PasswordListAdapter
+import com.dominikdomotor.nextcloudpasswords.ui.usePaletteStyle
 import dagger.hilt.android.AndroidEntryPoint
 import jakarta.inject.Inject
 import kotlinx.coroutines.launch
@@ -107,7 +108,7 @@ class PasswordsFragment : Fragment(), BackHandler {
             hideFloatingActionsOnScroll(binding.addPasswordFloatingactionbutton)
         }
         listAnimator = binding.recyclerviewPasswords.itemAnimator
-        fastScroller = FastScrollerBuilder(binding.recyclerviewPasswords).useMd2Style().build()
+        fastScroller = FastScrollerBuilder(binding.recyclerviewPasswords).usePaletteStyle(requireContext()).build()
         binding.recyclerviewPasswords.addOnScrollListener(
             object : RecyclerView.OnScrollListener() {
                 override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
