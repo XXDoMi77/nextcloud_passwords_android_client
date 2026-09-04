@@ -170,10 +170,6 @@ class PasswordsFragment : Fragment(), BackHandler {
                     }
                 }
                 launch { viewModel.isRefreshing.collect(binding.passwordsSyncIndicator::setVisible) }
-                launch {
-                    // The sweep is the app's most visible accent, so it follows the chosen colour.
-                    viewModel.accentColor.collect { binding.passwordsSyncIndicator.setIndicatorColor(it) }
-                }
             }
         }
     }

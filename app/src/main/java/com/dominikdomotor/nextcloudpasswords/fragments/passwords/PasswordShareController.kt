@@ -24,6 +24,8 @@ import com.dominikdomotor.nextcloudpasswords.managers.UiMessageManager
 import com.dominikdomotor.nextcloudpasswords.ui.AppDialog
 import com.dominikdomotor.nextcloudpasswords.ui.ListGroupBackground
 import com.dominikdomotor.nextcloudpasswords.ui.asGroupedList
+import com.dominikdomotor.nextcloudpasswords.ui.theme.themeColor
+import com.google.android.material.R as MaterialR
 
 /** The "shared with" section of the details sheet, plus the recipient picker. */
 class PasswordShareController(
@@ -184,7 +186,8 @@ class PasswordShareController(
         TooltipCompat.setTooltipText(button, description)
         button.alpha = if (enabled) 1f else DISABLED_ALPHA
         button.setColorFilter(
-            ContextCompat.getColor(activity, if (enabled) R.color.password_status_secure else R.color.normal_text_color)
+            if (enabled) ContextCompat.getColor(activity, R.color.password_status_secure)
+            else activity.themeColor(MaterialR.attr.colorOnSurface)
         )
         button.setOnClickListener { onClick() }
     }

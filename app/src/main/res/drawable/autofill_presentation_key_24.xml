@@ -5,13 +5,16 @@
     A separate drawable from icon_vpn_key_24 because RemoteViews are inflated by the requesting app
     without AppCompat, so `app:tint` on the ImageView is ignored and `android:tint` there cannot be
     cleared below API 31 (RemoteViews#setColorStateList). Carrying the tint in the drawable keeps the
-    placeholder theme-aware while leaving the ImageView untinted, so a favicon bitmap set on it shows
+    placeholder legible while leaving the ImageView untinted, so a favicon bitmap set on it shows
     in its own colours on every supported version.
+
+    The tint must stay a plain colour resource: the whole tree is inflated in the requesting app's
+    process, which cannot resolve `?attr/…` from this package's theme.
 -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="24dp"
     android:height="24dp"
-    android:tint="@color/normal_text_color"
+    android:tint="@color/autofill_presentation_text"
     android:viewportWidth="24"
     android:viewportHeight="24">
     <path

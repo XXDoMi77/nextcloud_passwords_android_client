@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dominikdomotor.nextcloudpasswords.R
-import com.dominikdomotor.nextcloudpasswords.data.AccentColor
 import com.dominikdomotor.nextcloudpasswords.data.PasswordRepository
 import com.dominikdomotor.nextcloudpasswords.data.PasswordSearch
 import com.dominikdomotor.nextcloudpasswords.dataclasses.passwords.Password
@@ -20,7 +19,6 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -43,16 +41,6 @@ constructor(
      * Shared across tabs, so pulling here and switching to the other list keeps showing progress.
      */
     val isRefreshing: StateFlow<Boolean> = repository.isUserRefreshing
-
-    /** The accent to paint the sync sweep with: the user's colour, else the server's, else the built-in one. */
-    val accentColor: StateFlow<Int> =
-        repository.settings
-            .map { AccentColor.of(context, it) }
-            .stateIn(
-                viewModelScope,
-                SharingStarted.WhileSubscribed(STOP_TIMEOUT_MILLIS),
-                AccentColor.of(context, repository.settings.value),
-            )
 
     /**
      * True while search reordering should apply instantly.

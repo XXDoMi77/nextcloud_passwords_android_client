@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dominikdomotor.nextcloudpasswords.R
-import com.dominikdomotor.nextcloudpasswords.data.AccentColor
 import com.dominikdomotor.nextcloudpasswords.data.ApiResult
 import com.dominikdomotor.nextcloudpasswords.data.FolderTree
 import com.dominikdomotor.nextcloudpasswords.data.PasswordRepository
@@ -50,16 +49,6 @@ constructor(
      * Shared across tabs, so pulling here and switching to the other list keeps showing progress.
      */
     val isRefreshing: StateFlow<Boolean> = repository.isUserRefreshing
-
-    /** The accent to paint the sync sweep with: the user's colour, else the server's, else the built-in one. */
-    val accentColor: StateFlow<Int> =
-        repository.settings
-            .map { AccentColor.of(context, it) }
-            .stateIn(
-                viewModelScope,
-                SharingStarted.WhileSubscribed(STOP_TIMEOUT_MILLIS),
-                AccentColor.of(context, repository.settings.value),
-            )
 
     val items: StateFlow<List<FolderListItem>> =
         combine(repository.folders, repository.passwords, _currentFolderId) { folders, passwords, currentId ->

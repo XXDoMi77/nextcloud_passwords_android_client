@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <!-- Material You: derived from the user's wallpaper. -->
-    <color name="sync_indicator_color">@android:color/system_accent1_600</color>
-</resources>

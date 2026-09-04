@@ -29,6 +29,8 @@ import com.dominikdomotor.nextcloudpasswords.managers.FaviconStore
 import com.dominikdomotor.nextcloudpasswords.managers.UiMessageManager
 import com.dominikdomotor.nextcloudpasswords.ui.AppDialog
 import com.dominikdomotor.nextcloudpasswords.ui.FaviconBinder
+import com.dominikdomotor.nextcloudpasswords.ui.theme.themeColor
+import com.google.android.material.R as MaterialR
 import com.google.android.material.textfield.TextInputLayout
 import dagger.hilt.android.AndroidEntryPoint
 import jakarta.inject.Inject
@@ -101,10 +103,6 @@ class FoldersFragment : Fragment(), BackHandler {
                 launch { viewModel.breadcrumbs.collect(::renderBreadcrumbs) }
                 launch { faviconStore.updates.collect(adapter::notifyFaviconChanged) }
                 launch { viewModel.isRefreshing.collect(binding.foldersSyncIndicator::setVisible) }
-                launch {
-                    // The sweep is the app's most visible accent, so it follows the chosen colour.
-                    viewModel.accentColor.collect { binding.foldersSyncIndicator.setIndicatorColor(it) }
-                }
             }
         }
     }
@@ -132,10 +130,10 @@ class FoldersFragment : Fragment(), BackHandler {
                 minHeight = (BREADCRUMB_HEIGHT_DP * density).toInt()
                 setPadding((BREADCRUMB_PADDING_DP * density).toInt(), 0, (BREADCRUMB_PADDING_DP * density).toInt(), 0)
                 setTextColor(
-                    ContextCompat.getColor(
-                        requireContext(),
-                        if (isCurrent) R.color.breadcrumb_current else R.color.breadcrumb_parent,
-                    )
+                    requireContext()
+                        .themeColor(
+                            if (isCurrent) MaterialR.attr.colorOnSurface else MaterialR.attr.colorOnSurfaceVariant
+                        )
                 )
                 textSize = BREADCRUMB_TEXT_SIZE_SP
                 if (!isCurrent) setOnClickListener { viewModel.open(id) }
@@ -151,7 +149,7 @@ class FoldersFragment : Fragment(), BackHandler {
                 gravity = Gravity.CENTER
                 minHeight = (BREADCRUMB_HEIGHT_DP * resources.displayMetrics.density).toInt()
                 setPadding(padding, 0, padding, 0)
-                setTextColor(ContextCompat.getColor(requireContext(), R.color.breadcrumb_parent))
+                setTextColor(requireContext().themeColor(MaterialR.attr.colorOnSurfaceVariant))
                 textSize = BREADCRUMB_TEXT_SIZE_SP
             }
         )

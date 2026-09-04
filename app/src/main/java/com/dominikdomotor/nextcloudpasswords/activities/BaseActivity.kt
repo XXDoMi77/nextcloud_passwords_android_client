@@ -11,6 +11,8 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.dominikdomotor.nextcloudpasswords.managers.StorageManager
 import com.dominikdomotor.nextcloudpasswords.managers.UiMessageDuration
 import com.dominikdomotor.nextcloudpasswords.managers.UiMessageManager
+import com.dominikdomotor.nextcloudpasswords.ui.theme.ThemeApplier
+import com.dominikdomotor.nextcloudpasswords.ui.theme.ThemeCache
 import dagger.hilt.android.AndroidEntryPoint
 import jakarta.inject.Inject
 import kotlinx.coroutines.launch
@@ -24,6 +26,12 @@ abstract class BaseActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        // The one safe window to re-seed the palette, and the reason this lives in the base class rather than in each
+        // activity. It has to be after super.onCreate(), which is where AppCompat resolves night mode and where the
+        // splash screen hands over to postSplashScreenTheme, and before any binding is inflated - every widget reads
+        // its colours once, at inflation. All four activities extend this, so :autofill_process is covered too.
+        ThemeApplier.apply(this)
+
         // Secure by default: settings load asynchronously, and the window must never be capturable
         // in the window between the activity starting and that load finishing.
         window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
@@ -36,6 +44,12 @@ abstract class BaseActivity : AppCompatActivity() {
                 storageManager.settings.collect { settings ->
                     if (settings.allowScreenshots) window.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
                     else window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
+
+                    // Mirror the theme where the next start can read it synchronously. Writing it - never applying it
+                    // - is the whole job here: this runs on every settings emission, and recreating from inside a
+                    // collect would loop. A colour the admin changed server-side therefore lands on the next start
+                    // rather than yanking the palette out from under whatever the user is doing.
+                    ThemeCache.write(this@BaseActivity, settings)
                 }
             }
         }

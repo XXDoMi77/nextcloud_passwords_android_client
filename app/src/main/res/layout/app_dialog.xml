@@ -22,7 +22,7 @@
         android:paddingTop="20dp"
         android:paddingEnd="@dimen/spacing_horizontal"
         android:paddingBottom="4dp"
-        android:textColor="@color/normal_text_color"
+        android:textColor="?attr/colorOnSurface"
         android:textSize="20sp"
         android:textStyle="bold" />
 

@@ -2,38 +2,106 @@
 
     <!-- Base application theme -->
     <style name="Theme.App.Starting" parent="Theme.SplashScreen">
-        <item name="windowSplashScreenBackground">@color/background_color</item>
+        <!--
+            Static, and unavoidably so: the system reads this before our process starts, so no palette
+            can reach it. Chosen to sit near the default seed's surface tone to keep the handover quiet.
+        -->
+        <item name="windowSplashScreenBackground">@color/splash_background</item>
         <item name="windowSplashScreenAnimatedIcon">@mipmap/launcher_icon</item>
         <item name="postSplashScreenTheme">@style/Theme.NextcloudPasswords</item>
     </style>
 
+    <!--
+        The app theme, and the single place the generated palette reaches the widget layer.
+
+        Every Material 3 role is mapped, not only the ones a screen names today: a role left unmapped
+        falls back to Material's baseline purple from inside some widget's own style, and it surfaces as
+        one stray lilac chip long after the change that caused it. The AppCompat bridge attributes below
+        matter for the same reason - the vector drawables tint themselves with colorControlNormal, and
+        every ripple in the app comes from colorControlHighlight.
+
+        The @color/npac_* values are static defaults; ColorResourceOverride replaces them at runtime.
+    -->
     <style name="Theme.NextcloudPasswords" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Every screen used to repaint this over the window, filling the display twice per frame. -->
-        <item name="android:windowBackground">@color/background_color</item>
+        <item name="android:windowBackground">@color/npac_surface</item>
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
+
+        <item name="colorPrimary">@color/npac_primary</item>
+        <item name="colorOnPrimary">@color/npac_on_primary</item>
+        <item name="colorPrimaryContainer">@color/npac_primary_container</item>
+        <item name="colorOnPrimaryContainer">@color/npac_on_primary_container</item>
+        <item name="colorPrimaryInverse">@color/npac_inverse_primary</item>
+        <item name="colorSecondary">@color/npac_secondary</item>
+        <item name="colorOnSecondary">@color/npac_on_secondary</item>
+        <item name="colorSecondaryContainer">@color/npac_secondary_container</item>
+        <item name="colorOnSecondaryContainer">@color/npac_on_secondary_container</item>
+        <item name="colorTertiary">@color/npac_tertiary</item>
+        <item name="colorOnTertiary">@color/npac_on_tertiary</item>
+        <item name="colorTertiaryContainer">@color/npac_tertiary_container</item>
+        <item name="colorOnTertiaryContainer">@color/npac_on_tertiary_container</item>
+
+        <item name="android:colorBackground">@color/npac_background</item>
+        <item name="colorOnBackground">@color/npac_on_background</item>
+        <item name="colorSurface">@color/npac_surface</item>
+        <item name="colorOnSurface">@color/npac_on_surface</item>
+        <item name="colorSurfaceVariant">@color/npac_surface_variant</item>
+        <item name="colorOnSurfaceVariant">@color/npac_on_surface_variant</item>
+        <item name="colorSurfaceInverse">@color/npac_inverse_surface</item>
+        <item name="colorOnSurfaceInverse">@color/npac_inverse_on_surface</item>
+        <item name="colorSurfaceDim">@color/npac_surface_dim</item>
+        <item name="colorSurfaceBright">@color/npac_surface_bright</item>
+        <item name="colorSurfaceContainerLowest">@color/npac_surface_container_lowest</item>
+        <item name="colorSurfaceContainerLow">@color/npac_surface_container_low</item>
+        <item name="colorSurfaceContainer">@color/npac_surface_container</item>
+        <item name="colorSurfaceContainerHigh">@color/npac_surface_container_high</item>
+        <item name="colorSurfaceContainerHighest">@color/npac_surface_container_highest</item>
+
+        <item name="colorOutline">@color/npac_outline</item>
+        <item name="colorOutlineVariant">@color/npac_outline_variant</item>
+        <item name="colorError">@color/npac_error</item>
+        <item name="colorOnError">@color/npac_on_error</item>
+        <item name="colorErrorContainer">@color/npac_error_container</item>
+        <item name="colorOnErrorContainer">@color/npac_on_error_container</item>
+        <item name="android:colorControlNormal">@color/npac_on_surface_variant</item>
+        <item name="colorControlNormal">@color/npac_on_surface_variant</item>
+        <item name="colorControlActivated">@color/npac_primary</item>
+        <item name="colorControlHighlight">@color/npac_ripple</item>
+        <item name="android:textColorPrimary">@color/npac_on_surface</item>
+        <item name="android:textColorSecondary">@color/npac_on_surface_variant</item>
+        <item name="android:textColorTertiary">@color/npac_on_surface_variant</item>
+        <item name="android:textColorHint">@color/npac_on_surface_variant</item>
+        <item name="android:textColorLink">@color/npac_primary</item>
+        <item name="elevationOverlayColor">@color/npac_surface_tint</item>
+
+        <item name="materialAlertDialogTheme">@style/AlertDialogStyle</item>
     </style>
 
-    <style name="AlertDialogStyle" parent="Theme.Material3.DayNight.Dialog.Alert">
-        <!--
-            No android:minHeight or android:minWidth here. A view resolves any attribute it does not set
-            itself from the theme, and both are part of TextView's styleable, so a theme-level 46dp
-            minHeight silently became the minimum height of every TextView inflated with this theme. That
-            is what made the blocked-app rows 108dp tall: the name and the package were each forced to
-            46dp regardless of their text. Window size belongs to the dialog, not to a theme attribute
-            every widget also reads.
-        -->
-        <item name="dialogCornerRadius">16dp</item>
+    <!--
+        Dialogs.
+
+        The parent has to be a ThemeOverlay, not a full dialog theme. A full theme re-declares its own
+        colour set - pointing at Material's private m3_sys_color_* resources, which the palette loader
+        cannot reach - so under Theme.Material3.DayNight.Dialog.Alert every dialog reverted to baseline
+        purple while the rest of the app was seeded. An overlay inherits the activity's colours and adds
+        only what it names, which is what makes the five hardcoded colour items this style used to carry
+        unnecessary.
+
+        No android:minHeight or android:minWidth here. A view resolves any attribute it does not set
+        itself from the theme, and both are part of TextView's styleable, so a theme-level 46dp
+        minHeight silently became the minimum height of every TextView inflated with this theme. That
+        is what made the blocked-app rows 108dp tall: the name and the package were each forced to
+        46dp regardless of their text. Window size belongs to the dialog, not to a theme attribute
+        every widget also reads.
+    -->
+    <style name="AlertDialogStyle" parent="ThemeOverlay.Material3.Dialog.Alert">
+        <item name="dialogCornerRadius">@dimen/radius_dialog</item>
         <!-- Every dialog gets the same buttons, including the neutral one. -->
         <item name="buttonBarPositiveButtonStyle">@style/AppDialogButton</item>
         <item name="buttonBarNegativeButtonStyle">@style/AppDialogButton.Destructive</item>
         <item name="buttonBarNeutralButtonStyle">@style/AppDialogButton</item>
         <item name="buttonBarStyle">@style/AppDialogButtonBar</item>
-        <item name="colorSurface">@color/background_color</item>
-        <item name="colorOnSurface">@color/normal_text_color</item>
-        <item name="colorPrimary">@color/normal_text_color</item>
-        <item name="android:textColorPrimary">@color/normal_text_color</item>
-        <item name="android:textColorSecondary">@color/normal_text_color</item>
     </style>
 
 
@@ -66,18 +134,24 @@
         <item name="android:layout_margin">6dp</item>
     </style>
 
-    <!-- For a button that discards or cancels, using Material 3's own error container colours. -->
+    <!--
+        For a button that discards or cancels.
+
+        Literal rather than ?attr/colorErrorContainer: "this one destroys something" is a signal, and a
+        signal that re-tints with the seed stops being one. A blue-seeded palette hands the error roles a
+        blue-leaning container, which is exactly the moment this button needs to still read as red.
+    -->
     <style name="AppDialogButton.Destructive">
-        <item name="backgroundTint">?attr/colorErrorContainer</item>
-        <item name="android:textColor">?attr/colorOnErrorContainer</item>
+        <item name="backgroundTint">@color/destructive_container</item>
+        <item name="android:textColor">@color/on_destructive_container</item>
     </style>
 
     <style name="TextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
         <item name="boxStrokeColor">@color/text_input_box_stroke</item>
-        <item name="hintTextColor">@color/normal_text_color</item>
+        <item name="hintTextColor">?attr/colorOnSurface</item>
     </style>
 
     <style name="FastScrollBar">
-        <item name="colorSecondary">@color/fast_scroll_bar_button</item>
+        <item name="colorSecondary">?attr/colorPrimary</item>
     </style>
 </resources>

@@ -12,7 +12,6 @@ import android.widget.EditText
 import android.widget.LinearLayout
 import androidx.activity.addCallback
 import androidx.activity.viewModels
-import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -29,6 +28,7 @@ import com.dominikdomotor.nextcloudpasswords.fragments.passwords.PasswordsFragme
 import com.dominikdomotor.nextcloudpasswords.fragments.settings.SettingsFragment
 import com.dominikdomotor.nextcloudpasswords.managers.E2eSessionResult
 import com.dominikdomotor.nextcloudpasswords.ui.AppDialog
+import com.dominikdomotor.nextcloudpasswords.ui.theme.themeColor
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -132,7 +132,7 @@ class OverviewActivity : BaseActivity() {
             window.decorView.systemUiVisibility = if (darkMode) 0 else View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
         }
         @Suppress("DEPRECATION")
-        window.statusBarColor = ContextCompat.getColor(this, R.color.status_bar_color)
+        window.statusBarColor = themeColor(com.google.android.material.R.attr.colorSurface)
     }
 
     /** Keeps all three tabs alive and swaps visibility, so each keeps its scroll and search state. */

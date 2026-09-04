@@ -13,9 +13,9 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:navigationIcon="@drawable/icon_close_24"
-        app:navigationIconTint="@color/normal_text_color"
+        app:navigationIconTint="?attr/colorOnSurface"
         app:title="@string/select_password"
-        app:titleTextColor="@color/normal_text_color" />
+        app:titleTextColor="?attr/colorOnSurface" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/autofill_picker_search_layout"

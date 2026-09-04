@@ -10,11 +10,12 @@ import android.view.ViewGroup
 import android.view.animation.PathInterpolator
 import android.widget.FrameLayout
 import android.widget.TextView
-import androidx.core.content.ContextCompat
 import androidx.core.view.NestedScrollingParent3
 import androidx.core.view.NestedScrollingParentHelper
 import androidx.core.view.ViewCompat
 import com.dominikdomotor.nextcloudpasswords.R
+import com.dominikdomotor.nextcloudpasswords.ui.theme.themeColor
+import com.google.android.material.R as MaterialR
 import kotlin.math.abs
 import kotlin.math.min
 
@@ -52,7 +53,7 @@ constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
     private val header =
         TextView(context).apply {
             gravity = Gravity.CENTER
-            setTextColor(ContextCompat.getColor(context, R.color.shaded_text_color))
+            setTextColor(context.themeColor(MaterialR.attr.colorOnSurfaceVariant))
             textSize = HEADER_TEXT_SP
             minHeight = (HEADER_HEIGHT_DP * density).toInt()
             setText(R.string.pull_to_refresh)

@@ -165,4 +165,17 @@
     <string name="accent_colour_hue">Hue</string>
     <string name="accent_colour_saturation">Saturation</string>
     <string name="accent_colour_brightness">Brightness</string>
+
+    <!-- The theme row under Appearance -->
+    <string name="theme_setting">Theme</string>
+    <string name="theme_setting_description">%1$s, %2$s</string>
+    <string name="appearance_mode">Light and dark</string>
+    <string name="appearance_mode_system">Follow the system</string>
+    <string name="appearance_mode_light">Light</string>
+    <string name="appearance_mode_dark">Dark</string>
+    <string name="appearance_mode_amoled">Dark, pure black</string>
+    <string name="appearance_colour_source">Colour</string>
+    <string name="appearance_source_server">from Nextcloud</string>
+    <string name="appearance_source_custom">chosen by hand</string>
+    <string name="appearance_source_wallpaper">from the wallpaper</string>
 </resources>

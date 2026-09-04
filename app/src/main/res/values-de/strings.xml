@@ -164,4 +164,17 @@
     <string name="accent_colour_hue">Farbton</string>
     <string name="accent_colour_saturation">Sättigung</string>
     <string name="accent_colour_brightness">Helligkeit</string>
+
+    <!-- Das Design unter "Darstellung" -->
+    <string name="theme_setting">Design</string>
+    <string name="theme_setting_description">%1$s, %2$s</string>
+    <string name="appearance_mode">Hell und dunkel</string>
+    <string name="appearance_mode_system">Systemeinstellung folgen</string>
+    <string name="appearance_mode_light">Hell</string>
+    <string name="appearance_mode_dark">Dunkel</string>
+    <string name="appearance_mode_amoled">Dunkel, reines Schwarz</string>
+    <string name="appearance_colour_source">Farbe</string>
+    <string name="appearance_source_server">von Nextcloud</string>
+    <string name="appearance_source_custom">selbst gewählt</string>
+    <string name="appearance_source_wallpaper">vom Hintergrundbild</string>
 </resources>

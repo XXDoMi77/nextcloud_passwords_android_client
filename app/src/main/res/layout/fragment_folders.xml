@@ -10,7 +10,7 @@
         android:id="@+id/path_scroll"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="#FF000000"
+        android:background="?attr/colorSurfaceContainer"
         android:fillViewport="true"
         android:scrollbars="none"
         app:layout_constraintEnd_toEndOf="parent"
@@ -34,7 +34,7 @@
         android:layout_height="wrap_content"
         android:indeterminate="true"
         android:visibility="gone"
-        app:indicatorColor="@color/sync_indicator_color"
+        app:indicatorColor="?attr/colorPrimary"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/path_scroll"
@@ -68,12 +68,12 @@
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
         android:contentDescription="@string/create_password"
-        app:backgroundTint="@color/floating_action_button_background"
+        app:backgroundTint="?attr/colorPrimaryContainer"
         app:layout_constraintBottom_toTopOf="@id/add_folder"
         app:layout_constraintEnd_toEndOf="parent"
-        app:rippleColor="@color/floating_action_button_ripple"
+        app:rippleColor="?attr/colorControlHighlight"
         app:srcCompat="@drawable/icon_add_24"
-        app:tint="@color/floating_action_button_icon" />
+        app:tint="?attr/colorOnPrimaryContainer" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/add_folder"
@@ -82,10 +82,10 @@
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
         android:contentDescription="@string/create_folder"
-        app:backgroundTint="@color/floating_action_button_background"
+        app:backgroundTint="?attr/colorPrimaryContainer"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:rippleColor="@color/floating_action_button_ripple"
+        app:rippleColor="?attr/colorControlHighlight"
         app:srcCompat="@drawable/icon_create_new_folder_24"
-        app:tint="@color/floating_action_button_icon" />
+        app:tint="?attr/colorOnPrimaryContainer" />
 </androidx.constraintlayout.widget.ConstraintLayout>

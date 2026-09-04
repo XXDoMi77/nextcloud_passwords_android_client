@@ -21,4 +21,7 @@
     <dimen name="radius_dialog">28dp</dimen>
     <dimen name="radius_group">20dp</dimen>
     <dimen name="radius_item">4dp</dimen>
+
+    <!-- The platform's minimum comfortable touch target. -->
+    <dimen name="touch_target_minimum">48dp</dimen>
 </resources>

@@ -8,12 +8,12 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:alpha="0.28"
-        android:color="@color/normal_text_color"
+        android:color="?attr/colorOnSurface"
         android:state_enabled="false" />
     <item
-        android:color="@color/normal_text_color"
+        android:color="?attr/colorOnSurface"
         android:state_focused="true" />
     <item
         android:alpha="0.70"
-        android:color="@color/normal_text_color" />
+        android:color="?attr/colorOnSurface" />
 </selector>

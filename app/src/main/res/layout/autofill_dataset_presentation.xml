@@ -29,7 +29,7 @@
             android:layout_height="wrap_content"
             android:ellipsize="end"
             android:maxLines="1"
-            android:textColor="@color/normal_text_color"
+            android:textColor="@color/autofill_presentation_text"
             android:textSize="16sp"
             android:textStyle="bold" />
 
@@ -39,7 +39,7 @@
             android:layout_height="wrap_content"
             android:ellipsize="end"
             android:maxLines="1"
-            android:textColor="@color/shaded_text_color"
+            android:textColor="@color/autofill_presentation_shaded"
             android:textSize="14sp" />
 
     </LinearLayout>

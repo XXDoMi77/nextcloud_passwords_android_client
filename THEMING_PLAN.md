@@ -138,19 +138,35 @@ on next start.
 
 ## Work breakdown
 
-0. ~~Spike: confirm the utilities run on the JVM~~ **done** — `PaletteSpikeTest`, values above.
-1. `PaletteGenerator` + tests. Dead code, safe to land alone.
-2. `theme_colors.xml` slots, `res/color` state selectors, full M3 mapping in `themes.xml`, and the
-   `AlertDialogStyle` parent fix. Nothing renders differently except the dialogs, which get fixed.
-3. The XML migration (the large diff — its own commit). Acceptance test:
-   `grep -rn '@color/' app/src/main/res` should afterwards return only the signal colours, the autofill
-   pair, the splash background, the default seed, and `theme_colors.xml` itself.
-4. `ColorResourceOverride` + `ThemeApplier` + the `BaseActivity` hook.
-5. `ThemeMode` in `Settings`, `ThemeCache`, `setDefaultNightMode` in `MyApplication`.
-6. AMOLED branch + tests.
-7. Wallpaper option (`WallpaperManager.getWallpaperColors`, API 27+ — so it need not be limited to 31+).
-8. Settings UI: theme-colour source and an Appearance mode picker.
-9. Cleanup: `AccentColor.contrastingTextOn` is tested but unused — use it or delete it.
+Steps 0-8 landed together; what follows is the record of how it turned out, not a to-do list.
+
+0. ~~Spike: confirm the utilities run on the JVM~~ **done** - `PaletteSpikeTest`, now deleted.
+1. ~~`PaletteGenerator` + tests~~ **done**. 37 slots including a translucent `npac_ripple`.
+2. ~~`theme_colors.xml` slots, `res/color` selectors, full M3 mapping, `AlertDialogStyle` parent fix~~ **done**.
+3. ~~The XML migration~~ **done**: 122 references across 23 layouts, 4 drawables and 3 `res/color` selectors.
+4. ~~`ThemeApplier` + the `BaseActivity` hook~~ **done**.
+5. ~~`ThemeMode` in `Settings`, `ThemeCache`, `setDefaultNightMode` in `MyApplication`~~ **done**.
+6. ~~AMOLED branch + tests~~ **done** - generated, asserted, not yet looked at on a device.
+7. ~~Wallpaper option~~ **done** - `WallpaperManager.getWallpaperColors`, also unverified on a device.
+8. ~~Settings UI~~ **done** - one Theme row opening `AppearanceDialog` (mode + colour source).
+9. `AccentColor.contrastingTextOn` is tested but unused - use it or delete it. **Still open.**
+
+### Two corrections the implementation forced
+
+- **`ColorResourcesLoaderCreator` is package-private**, so the plan's "drive the loader ourselves and skip
+  Material's theme overlay" is not available. `ColorResourcesOverride.applyIfPossible` is the only way in,
+  and it force-applies `ThemeOverlay.Material3.PersonalizedColors` - which re-points every M3 role at
+  Material's own private resources and would have handed the app baseline purple. The fix in
+  `ThemeApplier.materialTwinsOf` is to override **both** id sets with the same values, so it no longer
+  matters which mapping wins. Material's resources being private only blocks a compile-time `R`
+  reference; they are merged into our package, so a runtime lookup by name works.
+- **`colorSurfaceTint` is not a Material attribute.** `elevationOverlayColor` is the one that exists.
+
+### What has not been checked on a device
+
+AMOLED mode, wallpaper mode, and the API 29 static-palette fallback (still no Android 10 AVD). Verified on
+the emulator: the default blue seed, a red custom seed re-tinting the whole app after recreate, and the
+dialogs under the new `ThemeOverlay` parent.
 
 ## Verification
 

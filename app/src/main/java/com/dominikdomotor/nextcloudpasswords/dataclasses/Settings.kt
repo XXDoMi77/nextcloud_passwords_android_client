@@ -29,6 +29,10 @@ data class Settings(
     @SerializedName("serverThemeColor") var serverThemeColor: String = "",
     /** Set only when the user picked a colour by hand; empty means "follow the server". */
     @SerializedName("accentColorOverride") var accentColorOverride: String = "",
+    /** Which of the three colours above the whole generated palette is seeded from. */
+    @SerializedName("themeSeedSource") var themeSeedSource: ThemeSeedSource = ThemeSeedSource.SERVER,
+    /** Light, dark, or either flavour of dark. AMOLED implies dark rather than sitting beside it. */
+    @SerializedName("themeMode") var themeMode: ThemeMode = ThemeMode.SYSTEM,
     @SerializedName("loginInProgress") var loginInProgress: Boolean = false,
 ) {
     companion object {

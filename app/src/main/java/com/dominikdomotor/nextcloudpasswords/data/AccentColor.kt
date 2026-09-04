@@ -1,9 +1,7 @@
 package com.dominikdomotor.nextcloudpasswords.data
 
-import android.content.Context
-import androidx.core.content.ContextCompat
-import com.dominikdomotor.nextcloudpasswords.R
 import com.dominikdomotor.nextcloudpasswords.dataclasses.Settings
+import com.dominikdomotor.nextcloudpasswords.ui.theme.PaletteGenerator
 
 /**
  * The one colour the app treats as its accent, and where it comes from.
@@ -13,15 +11,18 @@ import com.dominikdomotor.nextcloudpasswords.dataclasses.Settings
  * meaningful - the app can always go back to what the server says without another round trip.
  */
 object AccentColor {
-    /** The colour to actually paint with. */
-    fun of(context: Context, settings: Settings): Int =
-        parse(settings.accentColorOverride)
-            ?: parse(settings.serverThemeColor)
-            ?: ContextCompat.getColor(context, R.color.accent_color)
+    /**
+     * The seed colour, which the whole palette is then generated from.
+     *
+     * No `Context` any more: the fallback used to be a colour resource, and a resource is exactly what this can no
+     * longer read - `@color/npac_*` is overridden at runtime *from* this value, so asking the resources for it would be
+     * circular. The default now sits next to the generator that consumes it.
+     */
+    fun of(settings: Settings): Int =
+        parse(settings.accentColorOverride) ?: parse(settings.serverThemeColor) ?: PaletteGenerator.NEXTCLOUD_BLUE
 
     /** What the reset button goes back to: the server's colour, or the built-in one if the server has none. */
-    fun serverDefault(context: Context, settings: Settings): Int =
-        parse(settings.serverThemeColor) ?: ContextCompat.getColor(context, R.color.accent_color)
+    fun serverDefault(settings: Settings): Int = parse(settings.serverThemeColor) ?: PaletteGenerator.NEXTCLOUD_BLUE
 
     /** True when the app is showing the server's colour rather than a hand-picked one. */
     fun isServerColour(settings: Settings): Boolean = parse(settings.accentColorOverride) == null

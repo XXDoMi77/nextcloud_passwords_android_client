@@ -25,7 +25,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:divider="@color/shaded_text_color"
+            android:divider="?attr/colorOnSurfaceVariant"
             android:orientation="vertical"
             android:showDividers="none">
 
@@ -38,7 +38,7 @@
                 android:paddingEnd="8dp"
                 android:paddingBottom="8dp"
                 android:text="@string/autofill_section"
-                android:textColor="@color/normal_text_color"
+                android:textColor="?attr/colorOnSurface"
                 android:textSize="20sp"
                 android:textStyle="bold" />
 
@@ -60,7 +60,7 @@
                     app:layout_constraintBottom_toBottomOf="@+id/openAutofillOptionsSettingDescription"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="@+id/openAutofillOptionsSettingLabel"
-                    app:tint="@color/normal_text_color" />
+                    app:tint="?attr/colorOnSurface" />
 
                 <TextView
                     android:id="@+id/openAutofillOptionsSettingLabel"
@@ -70,7 +70,7 @@
                     android:layout_marginTop="16dp"
                     android:layout_marginEnd="16dp"
                     android:text="@string/set_autofill_service"
-                    android:textColor="@color/normal_text_color"
+                    android:textColor="?attr/colorOnSurface"
                     android:textSize="16sp"
                     android:textStyle="bold"
                     app:layout_constraintEnd_toStartOf="@+id/openAutofillOptionsSettingActionIcon"
@@ -87,7 +87,7 @@
                     android:autoSizeTextType="none"
                     android:breakStrategy="high_quality"
                     android:text="@string/open_autofill_options_in_phone_settings"
-                    android:textColor="@color/shaded_text_color"
+                    android:textColor="?attr/colorOnSurfaceVariant"
                     android:textSize="14sp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/openAutofillOptionsSettingActionIcon"
@@ -106,7 +106,7 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:tint="@color/normal_text_color" />
+                    app:tint="?attr/colorOnSurface" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -125,7 +125,7 @@
                     app:layout_constraintBottom_toBottomOf="@id/inlineAutofillSuggestionsSettingDescription"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="@id/inlineAutofillSuggestionsSettingLabel"
-                    app:tint="@color/normal_text_color" />
+                    app:tint="?attr/colorOnSurface" />
 
                 <TextView
                     android:id="@+id/inlineAutofillSuggestionsSettingLabel"
@@ -135,7 +135,7 @@
                     android:layout_marginTop="16dp"
                     android:layout_marginEnd="16dp"
                     android:text="@string/inline_autofill_suggestions"
-                    android:textColor="@color/normal_text_color"
+                    android:textColor="?attr/colorOnSurface"
                     android:textSize="16sp"
                     android:textStyle="bold"
                     app:layout_constraintEnd_toStartOf="@id/inlineAutofillSuggestionsSettingSwitch"
@@ -149,7 +149,7 @@
                     android:layout_marginEnd="16dp"
                     android:layout_marginBottom="16dp"
                     android:text="@string/inline_autofill_suggestions_description"
-                    android:textColor="@color/shaded_text_color"
+                    android:textColor="?attr/colorOnSurfaceVariant"
                     android:textSize="14sp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@id/inlineAutofillSuggestionsSettingSwitch"
@@ -185,7 +185,7 @@
                     app:layout_constraintBottom_toBottomOf="@id/manualAutofillFallbackSettingDescription"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="@id/manualAutofillFallbackSettingLabel"
-                    app:tint="@color/normal_text_color" />
+                    app:tint="?attr/colorOnSurface" />
 
                 <TextView
                     android:id="@+id/manualAutofillFallbackSettingLabel"
@@ -195,7 +195,7 @@
                     android:layout_marginTop="16dp"
                     android:layout_marginEnd="16dp"
                     android:text="@string/manual_autofill_fallback"
-                    android:textColor="@color/normal_text_color"
+                    android:textColor="?attr/colorOnSurface"
                     android:textSize="16sp"
                     android:textStyle="bold"
                     app:layout_constraintEnd_toStartOf="@id/manualAutofillFallbackSettingSwitch"
@@ -209,7 +209,7 @@
                     android:layout_marginEnd="16dp"
                     android:layout_marginBottom="16dp"
                     android:text="@string/manual_autofill_fallback_description"
-                    android:textColor="@color/shaded_text_color"
+                    android:textColor="?attr/colorOnSurfaceVariant"
                     android:textSize="14sp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@id/manualAutofillFallbackSettingSwitch"
@@ -248,7 +248,7 @@
                     app:layout_constraintBottom_toBottomOf="@id/autofillBlockedAppsSettingDescription"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="@id/autofillBlockedAppsSettingLabel"
-                    app:tint="@color/normal_text_color" />
+                    app:tint="?attr/colorOnSurface" />
 
                 <TextView
                     android:id="@+id/autofillBlockedAppsSettingLabel"
@@ -258,7 +258,7 @@
                     android:layout_marginTop="16dp"
                     android:layout_marginEnd="16dp"
                     android:text="@string/autofill_blocked_apps"
-                    android:textColor="@color/normal_text_color"
+                    android:textColor="?attr/colorOnSurface"
                     android:textSize="16sp"
                     android:textStyle="bold"
                     app:layout_constraintEnd_toStartOf="@id/autofillBlockedAppsSettingActionIcon"
@@ -272,7 +272,7 @@
                     android:layout_marginEnd="16dp"
                     android:layout_marginBottom="16dp"
                     android:text="@string/autofill_blocked_apps_description"
-                    android:textColor="@color/shaded_text_color"
+                    android:textColor="?attr/colorOnSurfaceVariant"
                     android:textSize="14sp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@id/autofillBlockedAppsSettingActionIcon"
@@ -289,7 +289,7 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:tint="@color/normal_text_color" />
+                    app:tint="?attr/colorOnSurface" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -311,7 +311,7 @@
                     app:layout_constraintBottom_toBottomOf="@id/autofillHintWordsSettingDescription"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="@id/autofillHintWordsSettingLabel"
-                    app:tint="@color/normal_text_color" />
+                    app:tint="?attr/colorOnSurface" />
 
                 <TextView
                     android:id="@+id/autofillHintWordsSettingLabel"
@@ -321,7 +321,7 @@
                     android:layout_marginTop="16dp"
                     android:layout_marginEnd="16dp"
                     android:text="@string/autofill_hint_words"
-                    android:textColor="@color/normal_text_color"
+                    android:textColor="?attr/colorOnSurface"
                     android:textSize="16sp"
                     android:textStyle="bold"
                     app:layout_constraintEnd_toStartOf="@id/autofillHintWordsSettingActionIcon"
@@ -335,7 +335,7 @@
                     android:layout_marginEnd="16dp"
                     android:layout_marginBottom="16dp"
                     android:text="@string/autofill_hint_words_description"
-                    android:textColor="@color/shaded_text_color"
+                    android:textColor="?attr/colorOnSurfaceVariant"
                     android:textSize="14sp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@id/autofillHintWordsSettingActionIcon"
@@ -352,7 +352,7 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:tint="@color/normal_text_color" />
+                    app:tint="?attr/colorOnSurface" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -365,7 +365,7 @@
                 android:paddingEnd="8dp"
                 android:paddingBottom="8dp"
                 android:text="@string/password_generation"
-                android:textColor="@color/normal_text_color"
+                android:textColor="?attr/colorOnSurface"
                 android:textSize="20sp"
                 android:textStyle="bold" />
 
@@ -385,7 +385,7 @@
                     app:layout_constraintBottom_toBottomOf="@+id/passwordLengthSettingDescription"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="@+id/passwordLengthSettingLabel"
-                    app:tint="@color/normal_text_color" />
+                    app:tint="?attr/colorOnSurface" />
 
                 <TextView
                     android:id="@+id/passwordLengthSettingLabel"
@@ -396,7 +396,7 @@
                     android:layout_marginTop="16dp"
                     android:layout_marginEnd="16dp"
                     android:text="@string/password_length"
-                    android:textColor="@color/normal_text_color"
+                    android:textColor="?attr/colorOnSurface"
                     android:textSize="16sp"
                     android:textStyle="bold"
                     app:layout_constraintEnd_toStartOf="@+id/passwordLengthSettingRemove"
@@ -410,7 +410,7 @@
                     android:layout_marginEnd="16dp"
                     android:layout_marginBottom="16dp"
                     android:text="@string/number_of_character_for_password"
-                    android:textColor="@color/shaded_text_color"
+                    android:textColor="?attr/colorOnSurfaceVariant"
                     android:textSize="14sp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/passwordLengthSettingRemove"
@@ -428,7 +428,7 @@
                     app:layout_constraintBottom_toBottomOf="@+id/passwordLengthSettingNumber"
                     app:layout_constraintEnd_toStartOf="@+id/passwordLengthSettingNumber"
                     app:layout_constraintTop_toTopOf="@+id/passwordLengthSettingNumber"
-                    app:tint="@color/normal_text_color" />
+                    app:tint="?attr/colorOnSurface" />
 
                 <EditText
                     android:id="@+id/passwordLengthSettingNumber"
@@ -457,7 +457,7 @@
                     app:layout_constraintBottom_toBottomOf="@+id/passwordLengthSettingNumber"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@+id/passwordLengthSettingNumber"
-                    app:tint="@color/normal_text_color" />
+                    app:tint="?attr/colorOnSurface" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -477,7 +477,7 @@
                     app:layout_constraintBottom_toBottomOf="@+id/includeSymbolsSettingDescription"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="@+id/includeSymbolsSettingLabel"
-                    app:tint="@color/normal_text_color" />
+                    app:tint="?attr/colorOnSurface" />
 
                 <TextView
                     android:id="@+id/includeSymbolsSettingLabel"
@@ -488,7 +488,7 @@
                     android:layout_marginTop="16dp"
                     android:layout_marginEnd="16dp"
                     android:text="@string/include_symbols"
-                    android:textColor="@color/normal_text_color"
+                    android:textColor="?attr/colorOnSurface"
                     android:textSize="16sp"
                     android:textStyle="bold"
                     app:layout_constraintEnd_toStartOf="@+id/includeSymbolsSettingRemove"
@@ -502,7 +502,7 @@
                     android:layout_marginEnd="16dp"
                     android:layout_marginBottom="16dp"
                     android:text="@string/increase_password_security_by_including_symbols_such_as"
-                    android:textColor="@color/shaded_text_color"
+                    android:textColor="?attr/colorOnSurfaceVariant"
                     android:textSize="14sp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/includeSymbolsSettingRemove"
@@ -520,7 +520,7 @@
                     app:layout_constraintBottom_toBottomOf="@+id/includeSymbolsSettingNumber"
                     app:layout_constraintEnd_toStartOf="@+id/includeSymbolsSettingNumber"
                     app:layout_constraintTop_toTopOf="@+id/includeSymbolsSettingNumber"
-                    app:tint="@color/normal_text_color" />
+                    app:tint="?attr/colorOnSurface" />
 
                 <EditText
                     android:id="@+id/includeSymbolsSettingNumber"
@@ -549,7 +549,7 @@
                     app:layout_constraintBottom_toBottomOf="@+id/includeSymbolsSettingNumber"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@+id/includeSymbolsSettingNumber"
-                    app:tint="@color/normal_text_color" />
+                    app:tint="?attr/colorOnSurface" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -564,7 +564,7 @@
                 app:endIconContentDescription="@string/reset_symbols_to_default"
                 app:endIconDrawable="@drawable/icon_autorenew_24"
                 app:endIconMode="custom"
-                app:endIconTint="@color/normal_text_color">
+                app:endIconTint="?attr/colorOnSurface">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/includedSymbolCharacters"
@@ -590,7 +590,7 @@
                     app:layout_constraintBottom_toBottomOf="@+id/excludeSimilarCharactersSettingDescription"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="@+id/excludeSimilarCharactersSettingLabel"
-                    app:tint="@color/normal_text_color" />
+                    app:tint="?attr/colorOnSurface" />
 
                 <TextView
                     android:id="@+id/excludeSimilarCharactersSettingLabel"
@@ -600,7 +600,7 @@
                     android:layout_marginTop="16dp"
                     android:layout_marginEnd="16dp"
                     android:text="@string/exclude_similar_characters"
-                    android:textColor="@color/normal_text_color"
+                    android:textColor="?attr/colorOnSurface"
                     android:textSize="16sp"
                     android:textStyle="bold"
                     app:layout_constraintEnd_toStartOf="@+id/excludeSimilarCharactersSettingSwitch"
@@ -614,7 +614,7 @@
                     android:layout_marginEnd="16dp"
                     android:layout_marginBottom="16dp"
                     android:text="@string/dont_use_characters_like"
-                    android:textColor="@color/shaded_text_color"
+                    android:textColor="?attr/colorOnSurfaceVariant"
                     android:textSize="14sp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/excludeSimilarCharactersSettingSwitch"
@@ -650,7 +650,7 @@
                 app:endIconContentDescription="@string/reset_similar_characters_to_default"
                 app:endIconDrawable="@drawable/icon_autorenew_24"
                 app:endIconMode="custom"
-                app:endIconTint="@color/normal_text_color">
+                app:endIconTint="?attr/colorOnSurface">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/similarCharacters"
@@ -669,7 +669,7 @@
                 android:paddingEnd="8dp"
                 android:paddingBottom="8dp"
                 android:text="@string/appearance"
-                android:textColor="@color/normal_text_color"
+                android:textColor="?attr/colorOnSurface"
                 android:textSize="20sp"
                 android:textStyle="bold" />
 
@@ -689,7 +689,7 @@
                     app:layout_constraintBottom_toBottomOf="@+id/expandBottomSheetSettingDescription"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="@+id/expandBottomSheetSettingLabel"
-                    app:tint="@color/normal_text_color" />
+                    app:tint="?attr/colorOnSurface" />
 
                 <TextView
                     android:id="@+id/expandBottomSheetSettingLabel"
@@ -699,7 +699,7 @@
                     android:layout_marginTop="16dp"
                     android:layout_marginEnd="16dp"
                     android:text="@string/expand_bottom_sheet"
-                    android:textColor="@color/normal_text_color"
+                    android:textColor="?attr/colorOnSurface"
                     android:textSize="16sp"
                     android:textStyle="bold"
                     app:layout_constraintEnd_toStartOf="@+id/expandBottomSheetSettingSwitch"
@@ -713,7 +713,7 @@
                     android:layout_marginEnd="16dp"
                     android:layout_marginBottom="16dp"
                     android:text="@string/expand_bottom_sheet_description"
-                    android:textColor="@color/shaded_text_color"
+                    android:textColor="?attr/colorOnSurfaceVariant"
                     android:textSize="14sp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/expandBottomSheetSettingSwitch"
@@ -756,7 +756,7 @@
                     app:layout_constraintBottom_toBottomOf="@id/accentColourSettingDescription"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="@id/accentColourSettingLabel"
-                    app:tint="@color/normal_text_color" />
+                    app:tint="?attr/colorOnSurface" />
 
                 <TextView
                     android:id="@+id/accentColourSettingLabel"
@@ -766,7 +766,7 @@
                     android:layout_marginTop="16dp"
                     android:layout_marginEnd="16dp"
                     android:text="@string/accent_colour"
-                    android:textColor="@color/normal_text_color"
+                    android:textColor="?attr/colorOnSurface"
                     android:textSize="16sp"
                     android:textStyle="bold"
                     app:layout_constraintEnd_toStartOf="@id/accentColourSwatch"
@@ -780,7 +780,7 @@
                     android:layout_marginEnd="16dp"
                     android:layout_marginBottom="16dp"
                     android:text="@string/accent_colour_description"
-                    android:textColor="@color/shaded_text_color"
+                    android:textColor="?attr/colorOnSurfaceVariant"
                     android:textSize="14sp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@id/accentColourSwatch"
@@ -800,6 +800,58 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/appearanceSetting"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true">
+
+                <ImageView
+                    android:id="@+id/appearanceSettingIcon"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginStart="16dp"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/icon_outline_dark_mode_24"
+                    app:layout_constraintBottom_toBottomOf="@id/appearanceSettingDescription"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/appearanceSettingLabel"
+                    app:tint="?attr/colorOnSurface" />
+
+                <TextView
+                    android:id="@+id/appearanceSettingLabel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:text="@string/theme_setting"
+                    android:textColor="?attr/colorOnSurface"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/appearanceSettingIcon"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/appearanceSettingDescription"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:text="@string/theme_setting_description"
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    android:textSize="14sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="@id/appearanceSettingLabel"
+                    app:layout_constraintTop_toBottomOf="@id/appearanceSettingLabel" />
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/animateSearchResultsSetting"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -815,7 +867,7 @@
                     app:layout_constraintBottom_toBottomOf="@+id/animateSearchResultsSettingDescription"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="@+id/animateSearchResultsSettingLabel"
-                    app:tint="@color/normal_text_color" />
+                    app:tint="?attr/colorOnSurface" />
 
                 <TextView
                     android:id="@+id/animateSearchResultsSettingLabel"
@@ -825,7 +877,7 @@
                     android:layout_marginTop="16dp"
                     android:layout_marginEnd="16dp"
                     android:text="@string/animate_search_results"
-                    android:textColor="@color/normal_text_color"
+                    android:textColor="?attr/colorOnSurface"
                     android:textSize="16sp"
                     android:textStyle="bold"
                     app:layout_constraintEnd_toStartOf="@+id/animateSearchResultsSettingSwitch"
@@ -839,7 +891,7 @@
                     android:layout_marginEnd="16dp"
                     android:layout_marginBottom="16dp"
                     android:text="@string/animate_search_results_description"
-                    android:textColor="@color/shaded_text_color"
+                    android:textColor="?attr/colorOnSurfaceVariant"
                     android:textSize="14sp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/animateSearchResultsSettingSwitch"
@@ -873,7 +925,7 @@
                 android:paddingEnd="8dp"
                 android:paddingBottom="8dp"
                 android:text="@string/security"
-                android:textColor="@color/normal_text_color"
+                android:textColor="?attr/colorOnSurface"
                 android:textSize="20sp"
                 android:textStyle="bold" />
 
@@ -892,7 +944,7 @@
                     app:layout_constraintBottom_toBottomOf="@id/allowScreenshotsSettingDescription"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="@id/allowScreenshotsSettingLabel"
-                    app:tint="@color/normal_text_color" />
+                    app:tint="?attr/colorOnSurface" />
 
                 <TextView
                     android:id="@+id/allowScreenshotsSettingLabel"
@@ -902,7 +954,7 @@
                     android:layout_marginTop="16dp"
                     android:layout_marginEnd="16dp"
                     android:text="@string/allow_screenshots"
-                    android:textColor="@color/normal_text_color"
+                    android:textColor="?attr/colorOnSurface"
                     android:textSize="16sp"
                     android:textStyle="bold"
                     app:layout_constraintEnd_toStartOf="@id/allowScreenshotsSettingSwitch"
@@ -916,7 +968,7 @@
                     android:layout_marginEnd="16dp"
                     android:layout_marginBottom="16dp"
                     android:text="@string/allow_screenshots_description"
-                    android:textColor="@color/shaded_text_color"
+                    android:textColor="?attr/colorOnSurfaceVariant"
                     android:textSize="14sp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@id/allowScreenshotsSettingSwitch"
@@ -952,7 +1004,7 @@
                     app:layout_constraintBottom_toBottomOf="@+id/storedE2ePassphraseDescription"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="@+id/storedE2ePassphraseLabel"
-                    app:tint="@color/normal_text_color" />
+                    app:tint="?attr/colorOnSurface" />
 
                 <TextView
                     android:id="@+id/storedE2ePassphraseLabel"
@@ -962,7 +1014,7 @@
                     android:layout_marginTop="16dp"
                     android:layout_marginEnd="16dp"
                     android:text="@string/stored_e2e_passphrase"
-                    android:textColor="@color/normal_text_color"
+                    android:textColor="?attr/colorOnSurface"
                     android:textSize="16sp"
                     android:textStyle="bold"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -975,7 +1027,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="16dp"
                     android:text="@string/forget_stored_e2e_passphrase"
-                    android:textColor="@color/shaded_text_color"
+                    android:textColor="?attr/colorOnSurfaceVariant"
                     android:textSize="14sp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="@+id/storedE2ePassphraseLabel"
@@ -993,7 +1045,7 @@
                 android:paddingEnd="8dp"
                 android:paddingBottom="8dp"
                 android:text="@string/data_and_account"
-                android:textColor="@color/normal_text_color"
+                android:textColor="?attr/colorOnSurface"
                 android:textSize="20sp"
                 android:textStyle="bold" />
 
@@ -1015,7 +1067,7 @@
                     app:layout_constraintBottom_toBottomOf="@+id/clearPasswordCacheSettingDescription"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="@+id/clearPasswordCacheSettingLabel"
-                    app:tint="@color/normal_text_color" />
+                    app:tint="?attr/colorOnSurface" />
 
                 <TextView
                     android:id="@+id/clearPasswordCacheSettingLabel"
@@ -1025,7 +1077,7 @@
                     android:layout_marginTop="16dp"
                     android:layout_marginEnd="16dp"
                     android:text="@string/clear_offline_storage"
-                    android:textColor="@color/normal_text_color"
+                    android:textColor="?attr/colorOnSurface"
                     android:textSize="16sp"
                     android:textStyle="bold"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -1040,7 +1092,7 @@
                     android:layout_marginEnd="16dp"
                     android:layout_marginBottom="16dp"
                     android:text="@string/clear_offline_password_storage"
-                    android:textColor="@color/shaded_text_color"
+                    android:textColor="?attr/colorOnSurfaceVariant"
                     android:textSize="14sp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -1068,7 +1120,7 @@
                     app:layout_constraintBottom_toBottomOf="@+id/logoutSettingDescription"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="@+id/logoutSettingLabel"
-                    app:tint="@color/normal_text_color" />
+                    app:tint="?attr/colorOnSurface" />
 
                 <TextView
                     android:id="@+id/logoutSettingLabel"
@@ -1077,7 +1129,7 @@
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="16dp"
                     android:text="@string/logout"
-                    android:textColor="@color/normal_text_color"
+                    android:textColor="?attr/colorOnSurface"
                     android:textSize="16sp"
                     android:textStyle="bold"
                     app:layout_constraintStart_toEndOf="@+id/logoutSettingIcon"
@@ -1090,7 +1142,7 @@
                     android:layout_marginEnd="16dp"
                     android:layout_marginBottom="16dp"
                     android:text="@string/completely_logout_of_the_application"
-                    android:textColor="@color/shaded_text_color"
+                    android:textColor="?attr/colorOnSurfaceVariant"
                     android:textSize="14sp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"

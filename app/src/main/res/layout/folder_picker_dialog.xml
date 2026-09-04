@@ -17,7 +17,7 @@
         android:paddingHorizontal="@dimen/spacing_horizontal"
         android:ellipsize="start"
         android:singleLine="true"
-        android:textColor="@color/shaded_text_color"
+        android:textColor="?attr/colorOnSurfaceVariant"
         android:textSize="13sp"
         tools:text="Home / My Folder" />
 

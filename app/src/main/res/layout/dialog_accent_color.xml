@@ -42,7 +42,7 @@
         android:layout_marginTop="@dimen/spacing_vertical"
         android:labelFor="@+id/accent_hue"
         android:text="@string/accent_colour_hue"
-        android:textColor="@color/shaded_text_color"
+        android:textColor="?attr/colorOnSurfaceVariant"
         android:textSize="14sp" />
 
     <SeekBar
@@ -56,7 +56,7 @@
         android:layout_height="wrap_content"
         android:labelFor="@+id/accent_saturation"
         android:text="@string/accent_colour_saturation"
-        android:textColor="@color/shaded_text_color"
+        android:textColor="?attr/colorOnSurfaceVariant"
         android:textSize="14sp" />
 
     <SeekBar
@@ -70,7 +70,7 @@
         android:layout_height="wrap_content"
         android:labelFor="@+id/accent_brightness"
         android:text="@string/accent_colour_brightness"
-        android:textColor="@color/shaded_text_color"
+        android:textColor="?attr/colorOnSurfaceVariant"
         android:textSize="14sp" />
 
     <SeekBar

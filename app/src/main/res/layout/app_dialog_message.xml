@@ -7,5 +7,5 @@
     android:paddingTop="20dp"
     android:paddingEnd="@dimen/spacing_horizontal"
     android:paddingBottom="12dp"
-    android:textColor="@color/normal_text_color"
+    android:textColor="?attr/colorOnSurface"
     android:textSize="16sp" />
