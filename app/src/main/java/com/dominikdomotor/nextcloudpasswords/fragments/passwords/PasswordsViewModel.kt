@@ -36,11 +36,13 @@ constructor(
     val query: StateFlow<String> = _query.asStateFlow()
 
     /**
-     * True while a refresh the user asked for is running, wherever they started it.
+     * True while a sync worth showing is running, wherever it started.
      *
-     * Shared across tabs, so pulling here and switching to the other list keeps showing progress.
+     * Shared across tabs, so pulling here and switching to the other list keeps showing progress. Covers the sync at
+     * start-up as well as the ones the user asks for; only a silent refresh on returning from the background is left
+     * out. See [PasswordRepository.isSyncVisible].
      */
-    val isRefreshing: StateFlow<Boolean> = repository.isUserRefreshing
+    val isRefreshing: StateFlow<Boolean> = repository.isSyncVisible
 
     /**
      * True while search reordering should apply instantly.
@@ -82,7 +84,7 @@ constructor(
     fun refresh() {
         if (isRefreshing.value) return
         viewModelScope.launch {
-            if (repository.sync(userInitiated = true).reportFailure(uiMessageManager).isSuccess) {
+            if (repository.sync(showProgress = true).reportFailure(uiMessageManager).isSuccess) {
                 uiMessageManager.show(R.string.password_list_fetch_successful)
             }
             // Deliberately after the indicator clears: favicons are rate limited server-side and can

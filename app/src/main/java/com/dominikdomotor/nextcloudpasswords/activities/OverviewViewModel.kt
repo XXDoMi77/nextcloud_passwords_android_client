@@ -53,7 +53,8 @@ constructor(
             val result = e2eSessionManager.ensureSession(passphrase, storePassphrase)
             onResult(result)
             if (result == E2eSessionResult.READY) {
-                repository.sync().reportFailure(uiMessageManager)
+                // The user typed a passphrase and is waiting on the result of it.
+                repository.sync(showProgress = true).reportFailure(uiMessageManager)
                 repository.downloadFavicons()
             }
         }

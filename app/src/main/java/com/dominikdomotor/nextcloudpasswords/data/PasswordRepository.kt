@@ -54,16 +54,20 @@ constructor(
     /** True while a refresh is in flight, wherever it was triggered from. */
     val isSyncing: StateFlow<Boolean> = _isSyncing.asStateFlow()
 
-    private val _isUserRefreshing = MutableStateFlow(false)
+    private val _showsSyncProgress = MutableStateFlow(false)
 
     /**
-     * True only while a refresh the user asked for is running.
+     * True while a sync the user should be able to see is running.
      *
      * Lives here rather than in a view model so the indicator survives a tab switch: pulling on the password list and
-     * moving to the folder browser keeps showing progress in both. Automatic syncs (cold start, returning to the
-     * foreground) deliberately leave this false, so nothing flashes at someone who did not ask for it.
+     * moving to the folder browser keeps showing progress in both.
+     *
+     * Not every sync sets it. Returning to the app from the background refreshes silently, because that happens on
+     * every single switch back and a bar appearing each time is noise nobody asked for. A pull, an unlock and the one
+     * sync that runs at start-up do set it - at start-up especially, since on a first run there is no cached data yet,
+     * so without it the app is an empty screen that gives no sign of doing anything.
      */
-    val isUserRefreshing: StateFlow<Boolean> = _isUserRefreshing.asStateFlow()
+    val isSyncVisible: StateFlow<Boolean> = _showsSyncProgress.asStateFlow()
 
     /**
      * Loads the encrypted data document. Idempotent; safe to call from every screen's start-up.
@@ -85,10 +89,10 @@ constructor(
      * Serialised: the two list screens and the foreground refresh all call this, and running several at once would just
      * compete for the same endpoints.
      */
-    suspend fun sync(userInitiated: Boolean = false): ApiResult<Unit> {
+    suspend fun sync(showProgress: Boolean = false): ApiResult<Unit> {
         // Set before taking the lock: a pull that queues behind a background sync should still show
         // an indicator while it waits.
-        if (userInitiated) _isUserRefreshing.value = true
+        if (showProgress) _showsSyncProgress.value = true
         try {
             return syncMutex.withLock {
                 _isSyncing.value = true
@@ -99,7 +103,7 @@ constructor(
                 }
             }
         } finally {
-            if (userInitiated) _isUserRefreshing.value = false
+            if (showProgress) _showsSyncProgress.value = false
         }
     }
 
