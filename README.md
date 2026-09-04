@@ -23,14 +23,13 @@ welcome — see [CHANGELOG.md](CHANGELOG.md) for what has changed.
 ## Screenshots
 
 <p float="left">
-  <img alt="view" src="https://github.com/user-attachments/assets/708b88f2-34ce-42ab-adb3-fede4f2a0c81" width="150" />
-  <img alt="night_mode" src="https://github.com/user-attachments/assets/c2f82626-18fe-4e6b-a493-1aaa43956b36" width="150" />
-  <img alt="settings" src="https://github.com/user-attachments/assets/e05e392e-4805-4053-9df1-a257c621f537" width="150" />
-  <img alt="autofill" src="https://github.com/user-attachments/assets/b113cd5c-21b3-4e40-991f-c344b3458608" width="150" />
-  <img alt="autofill_example" src="https://github.com/user-attachments/assets/9d54b15f-6ffe-473e-82ad-eab8ae140005" width="150" />
-  <img alt="search" src="https://github.com/user-attachments/assets/c0908273-0925-4b5f-8112-b7467bf08254" width="150" />
-  <img alt="edit" src="https://github.com/user-attachments/assets/45f7f1cc-9009-428b-ab2e-7a30e99d91a1" width="150" />
-  <img alt="create" src="https://github.com/user-attachments/assets/018984a7-95c3-4340-94d3-0152b49dd909" width="150" />
+  <img alt="Password list" src="https://github.com/user-attachments/assets/708b88f2-34ce-42ab-adb3-fede4f2a0c81" width="150" />
+  <img alt="Dark mode" src="https://github.com/user-attachments/assets/c2f82626-18fe-4e6b-a493-1aaa43956b36" width="150" />
+  <img alt="Password generation settings" src="https://github.com/user-attachments/assets/e05e392e-4805-4053-9df1-a257c621f537" width="150" />
+  <img alt="Autofill in another app" src="https://github.com/user-attachments/assets/b113cd5c-21b3-4e40-991f-c344b3458608" width="150" />
+  <img alt="Search" src="https://github.com/user-attachments/assets/c0908273-0925-4b5f-8112-b7467bf08254" width="150" />
+  <img alt="Password details" src="https://github.com/user-attachments/assets/45f7f1cc-9009-428b-ab2e-7a30e99d91a1" width="150" />
+  <img alt="Creating a password" src="https://github.com/user-attachments/assets/018984a7-95c3-4340-94d3-0152b49dd909" width="150" />
 </p>
 
 ---
@@ -86,6 +85,17 @@ welcome — see [CHANGELOG.md](CHANGELOG.md) for what has changed.
   forward events.
 - **`PasswordsApiClient`** issues every API call in one place, so connection handling, session-token
   capture and status-code mapping are not repeated per endpoint.
+- **`ui/theme/`** generates the Material 3 palette from a seed colour and delivers it by overriding the
+  app's own colour resources at runtime, so the theme itself stays static and every `?attr/` reference
+  follows the seed. `PaletteGenerator` is a pure function of the seed and is unit-tested as one,
+  including its contrast guarantees.
+
+## Documentation
+
+- [CHANGELOG.md](CHANGELOG.md) — what changed, per release.
+- [docs/DESIGN_NOTES.md](docs/DESIGN_NOTES.md) — decisions and traps that are expensive to rediscover:
+  why the theme is static while the resource values move, why the dialog style has to be a
+  `ThemeOverlay`, which colours must stay literal because they are inflated in another app's process.
 
 ---
 
