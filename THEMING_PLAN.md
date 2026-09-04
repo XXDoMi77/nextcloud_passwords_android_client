@@ -162,11 +162,30 @@ Steps 0-8 landed together; what follows is the record of how it turned out, not 
   reference; they are merged into our package, so a runtime lookup by name works.
 - **`colorSurfaceTint` is not a Material attribute.** `elevationOverlayColor` is the one that exists.
 
+### System bars and text tint
+
+Both landed after the first pass, from feedback on the screenshots.
+
+- **The bars.** `targetSdk 36` means edge-to-edge is enforced and `android:statusBarColor` is a no-op, so a
+  bar's colour is whatever the app paints behind it. `BaseActivity` now calls `WindowCompat.enableEdgeToEdge`
+  (which supersedes `setDecorFitsSystemWindows`) and derives each bar's icon appearance from the luminance of
+  that colour, per bar, via `AccentColor.contrastingTextOn` - which also closes step 9. It had been hardcoded
+  to light-on-dark, so a light palette put white icons on a near-white status bar. The bottom inset now goes
+  to the `BottomNavigationView` rather than the root, so its container tone runs behind the gesture bar
+  instead of leaving a seam.
+- **`elevationOverlayEnabled` is off.** Overlays composite `colorPrimary` over a surface to fake a raised
+  tone; with a saturated seed the toolbar came out visibly redder than the window, reading as a seam under
+  the status bar. M3 separates surfaces with the `surfaceContainer` ramp, which this app now maps in full.
+- **Body text is neutral by default.** `SchemeContent` carries the seed's chroma into the neutral palette,
+  which is the point for surfaces but gave pink paragraphs from a red seed. The four on-surface text roles
+  are re-emitted at chroma 0 and the same HCT tone, so contrast is unchanged - asserted - and a
+  `tintedText` setting turns it back on.
+
 ### What has not been checked on a device
 
 AMOLED mode, wallpaper mode, and the API 29 static-palette fallback (still no Android 10 AVD). Verified on
-the emulator: the default blue seed, a red custom seed re-tinting the whole app after recreate, and the
-dialogs under the new `ThemeOverlay` parent.
+the emulator: the default blue seed, a red custom seed re-tinting the whole app after recreate, the dialogs
+under the new `ThemeOverlay` parent, and both system bars in light and dark.
 
 ## Verification
 

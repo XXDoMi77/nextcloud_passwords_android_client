@@ -1,12 +1,8 @@
 package com.dominikdomotor.nextcloudpasswords.activities
 
 import android.content.Intent
-import android.content.res.Configuration
-import android.os.Build
 import android.os.Bundle
 import android.text.InputType
-import android.view.View
-import android.view.WindowInsetsController
 import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.LinearLayout
@@ -28,7 +24,9 @@ import com.dominikdomotor.nextcloudpasswords.fragments.passwords.PasswordsFragme
 import com.dominikdomotor.nextcloudpasswords.fragments.settings.SettingsFragment
 import com.dominikdomotor.nextcloudpasswords.managers.E2eSessionResult
 import com.dominikdomotor.nextcloudpasswords.ui.AppDialog
+import com.dominikdomotor.nextcloudpasswords.ui.theme.applySystemBarAppearance
 import com.dominikdomotor.nextcloudpasswords.ui.theme.themeColor
+import com.google.android.material.R as MaterialR
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -48,7 +46,7 @@ class OverviewActivity : BaseActivity() {
         binding = ActivityOverviewBinding.inflate(layoutInflater)
         supportActionBar?.hide()
         applyWindowInsets()
-        applyStatusBarAppearance()
+        applySystemBars()
         setContentView(binding.root)
 
         setUpTabs(savedInstanceState)
@@ -114,25 +112,27 @@ class OverviewActivity : BaseActivity() {
     private fun applyWindowInsets() {
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
             val bars = insets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
-            view.updatePadding(left = bars.left, top = bars.top, right = bars.right, bottom = bars.bottom)
+            view.updatePadding(left = bars.left, top = bars.top, right = bars.right, bottom = 0)
+            // The gesture bar is transparent, so the strip it occupies is painted by whatever sits behind it - and
+            // that is the bottom navigation. Giving the inset to the root instead ended the navigation bar above the
+            // strip and left the window background showing through below it: two tones with a seam between them.
+            binding.navView.updatePadding(bottom = bars.bottom)
             WindowInsetsCompat.CONSUMED
         }
     }
 
-    private fun applyStatusBarAppearance() {
-        val darkMode =
-            resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            window.insetsController?.setSystemBarsAppearance(
-                if (darkMode) 0 else WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS,
-                WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS,
-            )
-        } else {
-            @Suppress("DEPRECATION")
-            window.decorView.systemUiVisibility = if (darkMode) 0 else View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-        }
-        @Suppress("DEPRECATION")
-        window.statusBarColor = themeColor(com.google.android.material.R.attr.colorSurface)
+    /**
+     * The two bars sit on different tones here, so they are told apart.
+     *
+     * The status bar is over the window surface; the gesture bar is over the bottom navigation, which is a container
+     * tone above it. A single decision for both - which is what reading the night mode amounted to - got one of them
+     * wrong whenever a seed made those two tones fall on opposite sides of readable.
+     */
+    private fun applySystemBars() {
+        applySystemBarAppearance(
+            statusBarBackground = themeColor(MaterialR.attr.colorSurface),
+            navigationBarBackground = themeColor(MaterialR.attr.colorSurfaceContainer),
+        )
     }
 
     /** Keeps all three tabs alive and swaps visibility, so each keeps its scroll and search state. */

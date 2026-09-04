@@ -178,4 +178,7 @@
     <string name="appearance_source_server">from Nextcloud</string>
     <string name="appearance_source_custom">chosen by hand</string>
     <string name="appearance_source_wallpaper">from the wallpaper</string>
+
+    <string name="tinted_text">Tint text with the theme colour</string>
+    <string name="tinted_text_description">Let text carry the theme colour too. Off keeps it a shade of black or white, which is easier to read.</string>
 </resources>

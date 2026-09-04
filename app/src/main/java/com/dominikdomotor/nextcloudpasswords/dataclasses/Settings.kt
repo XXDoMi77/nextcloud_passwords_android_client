@@ -33,6 +33,8 @@ data class Settings(
     @SerializedName("themeSeedSource") var themeSeedSource: ThemeSeedSource = ThemeSeedSource.SERVER,
     /** Light, dark, or either flavour of dark. AMOLED implies dark rather than sitting beside it. */
     @SerializedName("themeMode") var themeMode: ThemeMode = ThemeMode.SYSTEM,
+    /** Whether text carries the seed's hue too, or stays a shade of black and white. Off is the readable default. */
+    @SerializedName("tintedText") var tintedText: Boolean = false,
     @SerializedName("loginInProgress") var loginInProgress: Boolean = false,
 ) {
     companion object {

@@ -8,8 +8,8 @@ import com.dominikdomotor.nextcloudpasswords.dataclasses.ThemeMode
 import com.dominikdomotor.nextcloudpasswords.dataclasses.ThemeSeedSource
 import java.io.File
 
-/** The seed and mode to paint one activity with. */
-data class AppTheme(val seed: Int, val mode: ThemeMode)
+/** Everything an activity needs to paint itself, before settings have finished loading. */
+data class AppTheme(val seed: Int, val mode: ThemeMode, val tintedText: Boolean = false)
 
 /**
  * The theme, mirrored somewhere an activity can read it synchronously.
@@ -29,7 +29,7 @@ object ThemeCache {
         val parts = runCatching { file(context).readText().trim().split(SEPARATOR) }.getOrNull()
         val seed = parts?.getOrNull(0)?.toIntOrNull() ?: PaletteGenerator.NEXTCLOUD_BLUE
         val mode = parts?.getOrNull(1)?.let { name -> ThemeMode.entries.firstOrNull { it.name == name } }
-        return AppTheme(seed, mode ?: ThemeMode.SYSTEM)
+        return AppTheme(seed, mode ?: ThemeMode.SYSTEM, parts?.getOrNull(2).toBoolean())
     }
 
     /**
@@ -39,12 +39,12 @@ object ThemeCache {
      * critical path of every activity start.
      */
     fun write(context: Context, settings: Settings) {
-        val theme = AppTheme(seedFrom(context, settings), settings.themeMode)
+        val theme = AppTheme(seedFrom(context, settings), settings.themeMode, settings.tintedText)
         // Written via a temporary file and renamed: a half-written cache read by the next start would otherwise be
         // indistinguishable from a corrupt one, and the app would silently lose the user's theme.
         runCatching {
             val temp = File(file(context).parentFile, "$FILE_NAME.tmp")
-            temp.writeText("${theme.seed}$SEPARATOR${theme.mode.name}")
+            temp.writeText("${theme.seed}$SEPARATOR${theme.mode.name}$SEPARATOR${theme.tintedText}")
             temp.renameTo(file(context))
         }
     }

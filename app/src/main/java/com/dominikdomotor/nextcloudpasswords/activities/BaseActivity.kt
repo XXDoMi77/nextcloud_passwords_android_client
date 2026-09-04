@@ -13,6 +13,7 @@ import com.dominikdomotor.nextcloudpasswords.managers.UiMessageDuration
 import com.dominikdomotor.nextcloudpasswords.managers.UiMessageManager
 import com.dominikdomotor.nextcloudpasswords.ui.theme.ThemeApplier
 import com.dominikdomotor.nextcloudpasswords.ui.theme.ThemeCache
+import com.dominikdomotor.nextcloudpasswords.ui.theme.applySystemBarAppearance
 import dagger.hilt.android.AndroidEntryPoint
 import jakarta.inject.Inject
 import kotlinx.coroutines.launch
@@ -36,8 +37,17 @@ abstract class BaseActivity : AppCompatActivity() {
         // in the window between the activity starting and that load finishing.
         window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
 
-        WindowCompat.setDecorFitsSystemWindows(window, false)
-        WindowCompat.getInsetsController(window, window.decorView).isAppearanceLightStatusBars = false
+        // Draw behind the system bars. Not a choice any more - Android 15 enforces edge-to-edge for apps
+        // targeting 35+, and on 16 the opt-out attribute is disabled outright - so each screen takes the insets
+        // and pads itself. enableEdgeToEdge supersedes setDecorFitsSystemWindows and also makes both bars
+        // transparent on versions that still honour a bar colour.
+        WindowCompat.enableEdgeToEdge(window)
+
+        // After enableEdgeToEdge, which picks the bar icons from the device theme. The palette is what decides
+        // here instead: it can produce a light surface while the phone is in dark mode, and the previous code
+        // hardcoded light-on-dark, so white icons ended up on a near-white status bar. In the base class so the
+        // login and autofill screens are covered as well.
+        applySystemBarAppearance()
 
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {

@@ -27,7 +27,6 @@ import com.dominikdomotor.nextcloudpasswords.R
 import com.dominikdomotor.nextcloudpasswords.activities.EnterServerURLActivity
 import com.dominikdomotor.nextcloudpasswords.data.AccentColor
 import com.dominikdomotor.nextcloudpasswords.dataclasses.Settings
-import com.dominikdomotor.nextcloudpasswords.dataclasses.ThemeMode
 import com.dominikdomotor.nextcloudpasswords.dataclasses.ThemeSeedSource
 import com.dominikdomotor.nextcloudpasswords.ui.AppDialog
 import com.dominikdomotor.nextcloudpasswords.ui.theme.ThemeApplier
@@ -84,6 +83,7 @@ class SettingsFragment : Fragment() {
         view.findViewById<SwitchCompat>(R.id.excludeSimilarCharactersSettingSwitch).isChecked =
             settings.excludeSimilarCharacters
         view.findViewById<SwitchCompat>(R.id.allowScreenshotsSettingSwitch).isChecked = settings.allowScreenshots
+        view.findViewById<SwitchCompat>(R.id.tintedTextSettingSwitch).isChecked = settings.tintedText
 
         view.setTextIfChanged(R.id.passwordLengthSettingNumber, settings.passwordLength.toString())
         view.setTextIfChanged(R.id.includeSymbolsSettingNumber, settings.includedSymbolsQuantity.toString())
@@ -192,6 +192,15 @@ class SettingsFragment : Fragment() {
         view.bindSwitch(R.id.excludeSimilarCharactersSettingSwitch) { s, on -> s.excludeSimilarCharacters = on }
         view.findViewById<ConstraintLayout>(R.id.accentColourSetting).setOnClickListener { showAccentColourDialog() }
         view.findViewById<ConstraintLayout>(R.id.appearanceSetting).setOnClickListener { showAppearanceDialog() }
+
+        // Not bindSwitch: this one has to regenerate the palette and restart the activity, which a plain settings
+        // write does not do.
+        val tintedText = view.findViewById<SwitchCompat>(R.id.tintedTextSettingSwitch)
+        tintedText.setOnClickListener {
+            if (applyingState) return@setOnClickListener
+            val enabled = tintedText.isChecked
+            applyAppearance { it.tintedText = enabled }
+        }
         view.bindSwitch(R.id.expandBottomSheetSettingSwitch) { s, on -> s.expandBottomSheet = on }
         view.bindSwitch(R.id.animateSearchResultsSettingSwitch) { s, on -> s.animateSearchResults = on }
     }
@@ -218,34 +227,36 @@ class SettingsFragment : Fragment() {
     }
 
     /**
-     * Applies a new appearance and restarts the activity so it takes effect.
+     * Saves an appearance change and restarts the activity so it takes effect.
      *
      * The tabs are shown and hidden rather than recreated, so nothing short of an activity restart re-inflates them
-     * with the new palette. Setting the night mode already triggers one, which is why the recreate is in the `else`:
-     * doing both would restart the activity twice and flash the old colours in between. This lives in the click handler
-     * and not in the settings observer on purpose - `render()` runs on every emission, and recreating from there would
-     * loop forever.
+     * with the new palette. Whether one is needed is decided by comparing the theme cache before and after: the cache
+     * holds exactly the values that change how the app is painted, so "did the cache change" is the same question as
+     * "does anything need repainting", and no caller has to work that out for itself.
+     *
+     * Setting the night mode already triggers a restart, which is why the explicit one is in the `else` - doing both
+     * restarts the activity twice and flashes the old colours in between. This lives in a click handler and not in the
+     * settings observer on purpose: `render()` runs on every emission, and recreating from there would loop forever.
      */
-    private fun applyAppearance(mode: ThemeMode, source: ThemeSeedSource) {
-        val settings = viewModel.settings.value
-        val seedChanged = ThemeCache.seedFrom(requireContext(), settings) != cachedSeed
-        if (mode == settings.themeMode && source == settings.themeSeedSource && !seedChanged) return
-        viewModel.update {
-            it.themeMode = mode
-            it.themeSeedSource = source
-        }
-        ThemeCache.write(requireContext(), settings.copy(themeMode = mode, themeSeedSource = source))
-        val nightMode = ThemeApplier.nightModeFor(mode)
+    private fun applyAppearance(update: (Settings) -> Unit) {
+        val before = ThemeCache.read(requireContext())
+        viewModel.update(update)
+        ThemeCache.write(requireContext(), viewModel.settings.value)
+        if (ThemeCache.read(requireContext()) == before) return
+
+        val nightMode = ThemeApplier.nightModeFor(viewModel.settings.value.themeMode)
         if (AppCompatDelegate.getDefaultNightMode() != nightMode) AppCompatDelegate.setDefaultNightMode(nightMode)
         else requireActivity().recreate()
     }
 
-    /** The seed this activity was actually painted with, so a colour change is a change even if the mode is not. */
-    private val cachedSeed by lazy { ThemeCache.read(requireContext()).seed }
-
     private fun showAppearanceDialog() {
         val settings = viewModel.settings.value
-        AppearanceDialog.show(requireActivity(), settings.themeMode, settings.themeSeedSource, ::applyAppearance)
+        AppearanceDialog.show(requireActivity(), settings.themeMode, settings.themeSeedSource) { mode, source ->
+            applyAppearance {
+                it.themeMode = mode
+                it.themeSeedSource = source
+            }
+        }
     }
 
     private fun showAccentColourDialog() {
@@ -256,11 +267,13 @@ class SettingsFragment : Fragment() {
             serverDefault = AccentColor.serverDefault(settings),
         ) { chosen ->
             // Null means the picker landed back on the server's colour, which is stored as "no override".
-            viewModel.update { it.accentColorOverride = chosen?.let(AccentColor::format).orEmpty() }
-            // Choosing a colour is the whole point, so it also becomes the seed the palette is generated from -
+            // Choosing a colour is also the whole point, so it becomes the seed the palette is generated from -
             // otherwise the picker would set a swatch the app then ignored because the source still said SERVER.
             // Resetting hands it back, which is what makes the reset button mean "go back to the server's colour".
-            applyAppearance(settings.themeMode, if (chosen == null) ThemeSeedSource.SERVER else ThemeSeedSource.CUSTOM)
+            applyAppearance {
+                it.accentColorOverride = chosen?.let(AccentColor::format).orEmpty()
+                it.themeSeedSource = if (chosen == null) ThemeSeedSource.SERVER else ThemeSeedSource.CUSTOM
+            }
         }
     }
 

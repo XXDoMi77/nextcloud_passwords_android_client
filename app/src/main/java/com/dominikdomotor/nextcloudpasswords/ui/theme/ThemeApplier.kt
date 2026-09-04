@@ -31,7 +31,7 @@ object ThemeApplier {
      */
     fun apply(context: Context, theme: AppTheme = ThemeCache.read(context)) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) return
-        val palette = PaletteGenerator.generate(theme.seed, isDark(context), theme.mode.isAmoled)
+        val palette = PaletteGenerator.generate(theme.seed, isDark(context), theme.mode.isAmoled, theme.tintedText)
         runCatching { attach(context, palette) }
             .onFailure { GF.println("Palette not applied, keeping the static defaults: ${it.message}") }
     }

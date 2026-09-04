@@ -33,6 +33,9 @@ class PaletteGeneratorTest {
 
     private val modes = listOf(Triple("light", false, false), Triple("dark", true, false), Triple("amoled", true, true))
 
+    /** Both text treatments, because the readable one is the default and the tinted one is still a supported look. */
+    private val textTreatments = listOf("neutral text" to false, "tinted text" to true)
+
     @Test
     fun `text is readable on every surface it is shown on`() {
         // Only the pairs the app actually puts on screen. A role pair Material defines but no screen uses would fail
@@ -97,6 +100,43 @@ class PaletteGeneratorTest {
     }
 
     @Test
+    fun `body text is a shade of grey unless tinting is asked for`() {
+        // Text carrying the seed's hue is legible but distracting - a red seed gave pink paragraphs - so by default
+        // only the surfaces are tinted. The pure-red seed is the one that makes a regression here obvious.
+        seeds.forEach { (seedName, seed) ->
+            modes.forEach { (modeName, dark, amoled) ->
+                val palette = PaletteGenerator.generate(seed, dark, amoled, tintedText = false)
+                BODY_TEXT_SLOTS.forEach { slot ->
+                    val color = palette.getValue(slot)
+                    val r = (color shr RED_SHIFT) and 0xFF
+                    val g = (color shr GREEN_SHIFT) and 0xFF
+                    val b = color and 0xFF
+                    assertEquals("$slot is not grey for $seedName / $modeName: %06X".format(color and 0xFFFFFF), r, g)
+                    assertEquals("$slot is not grey for $seedName / $modeName: %06X".format(color and 0xFFFFFF), g, b)
+                }
+            }
+        }
+    }
+
+    @Test
+    fun `neutralising the text does not cost contrast`() {
+        // Holding the tone and dropping only the chroma is what makes the readable default safe: it must not quietly
+        // trade legibility for neutrality. A tenth of a ratio point covers the rounding in the sRGB conversion.
+        seeds.forEach { (seedName, seed) ->
+            modes.forEach { (modeName, dark, amoled) ->
+                val tinted = PaletteGenerator.generate(seed, dark, amoled, tintedText = true)
+                val neutral = PaletteGenerator.generate(seed, dark, amoled, tintedText = false)
+                val before = contrast(tinted.getValue("npac_on_surface"), tinted.getValue("npac_surface"))
+                val after = contrast(neutral.getValue("npac_on_surface"), neutral.getValue("npac_surface"))
+                assertTrue(
+                    "greying the text cost contrast for $seedName / $modeName: $before:1 -> $after:1",
+                    after >= before - CONTRAST_TOLERANCE,
+                )
+            }
+        }
+    }
+
+    @Test
     fun `generation is deterministic`() {
         // The palette is regenerated on every activity start. If it were not stable, a rotation would re-tint the app.
         seeds.values.forEach { seed ->
@@ -135,7 +175,9 @@ class PaletteGeneratorTest {
     private fun forEachPalette(check: (String, Map<String, Int>) -> Unit) {
         seeds.forEach { (seedName, seed) ->
             modes.forEach { (modeName, dark, amoled) ->
-                check("$seedName / $modeName", PaletteGenerator.generate(seed, dark, amoled))
+                textTreatments.forEach { (textName, tinted) ->
+                    check("$seedName / $modeName / $textName", PaletteGenerator.generate(seed, dark, amoled, tinted))
+                }
             }
         }
     }
@@ -188,5 +230,12 @@ class PaletteGeneratorTest {
         const val RED_SHIFT = 16
         const val GREEN_SHIFT = 8
         const val HEX_RADIX = 16
+
+        /** Enough to absorb the rounding in the HCT-to-sRGB conversion, not enough to hide a real regression. */
+        const val CONTRAST_TOLERANCE = 0.1
+
+        /** The roles that carry body copy, and therefore the ones the tinting toggle applies to. */
+        val BODY_TEXT_SLOTS =
+            listOf("npac_on_surface", "npac_on_surface_variant", "npac_on_background", "npac_inverse_on_surface")
     }
 }

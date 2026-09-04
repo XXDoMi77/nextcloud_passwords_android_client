@@ -26,7 +26,7 @@ object PaletteGenerator {
      * A map rather than a data class because the caller's job is to hand the pairs to a `ResourcesLoader` by name, and
      * a test can then assert that these keys are exactly the resources the XML declares.
      */
-    fun generate(seed: Int, isDark: Boolean, isAmoled: Boolean): Map<String, Int> {
+    fun generate(seed: Int, isDark: Boolean, isAmoled: Boolean, tintedText: Boolean = false): Map<String, Int> {
         val scheme = SchemeContent(Hct.fromInt(opaque(seed)), isDark || isAmoled, CONTRAST_DEFAULT)
         val palette =
             mapOf(
@@ -68,14 +68,21 @@ object PaletteGenerator {
                 "npac_scrim" to scheme.scrim,
             )
         val surfaced = if (isAmoled) palette + amoledSurfaces(scheme) else palette
-        val opaqued = surfaced.mapValues { (_, value) -> opaque(value) }
+        val texted = if (tintedText) surfaced else surfaced + neutralBodyText(surfaced)
+        val opaqued = texted.mapValues { (_, value) -> opaque(value) }
         // The ripple is the one slot that must stay translucent: it is drawn over whatever it touches, so an opaque
         // value would blank out the row, button or icon underneath instead of tinting it.
         return opaqued + ("npac_ripple" to translucent(opaqued.getValue("npac_on_surface"), RIPPLE_ALPHA))
     }
 
-    /** Every slot the app declares, so a slot added here and forgotten in the XML fails a test rather than a screen. */
-    val SLOTS: Set<String> = generate(NEXTCLOUD_BLUE, isDark = false, isAmoled = false).keys
+    /**
+     * Every slot the app declares, so one added here and forgotten in the XML fails a test rather than a screen.
+     *
+     * Lazy, not eager: it is derived by running [generate], which reads private state declared further down this
+     * object. An eager initialiser runs before that state exists and threw a NullPointerException from inside the class
+     * initialiser - a failure that points nowhere near its cause.
+     */
+    val SLOTS: Set<String> by lazy { generate(NEXTCLOUD_BLUE, isDark = false, isAmoled = false).keys }
 
     /**
      * Pushes the surfaces to true black without flattening the ramp.
@@ -104,6 +111,27 @@ object PaletteGenerator {
         )
     }
 
+    /**
+     * Re-emits the body-text roles as greys, at exactly the tone the scheme chose for them.
+     *
+     * `SchemeContent` keeps the seed's chroma all the way through the neutral palette, which is what makes the surfaces
+     * read as tinted - the point of the mode. Carried into the text roles, though, the same chroma is a cast over every
+     * word in the app: a saturated red seed gives pink paragraphs. Text is the one thing being *itself* matters more
+     * than being on-brand for, so by default it is a shade of black or white and only the surfaces are tinted.
+     * `tintedText` turns that off for anyone who wants the full effect.
+     *
+     * Tone is what carries luminance in HCT, so holding the tone and dropping the chroma to zero leaves contrast where
+     * it was - the WCAG assertions hold identically either way, which is what makes this safe to default to.
+     *
+     * Only the roles that sit on a surface. `onPrimary` and the on-container roles belong to the accent itself, and
+     * greying a button's own label would just make the button look broken.
+     */
+    private fun neutralBodyText(palette: Map<String, Int>): Map<String, Int> =
+        BODY_TEXT_SLOTS.associateWith { slot -> greyOf(palette.getValue(slot)) }
+
+    /** The same colour with its hue and chroma removed, and therefore the same perceived lightness. */
+    private fun greyOf(color: Int): Int = Hct.from(0.0, 0.0, Hct.fromInt(color).tone).toInt()
+
     /** A seed arriving as `#rrggbb` has no alpha; a translucent surface would let the window show through. */
     private fun opaque(color: Int): Int = color or OPAQUE
 
@@ -122,6 +150,9 @@ object PaletteGenerator {
 
     /** Material's neutral contrast. Positive values raise it; the roles already meet WCAG AA at zero. */
     private const val CONTRAST_DEFAULT = 0.0
+
+    private val BODY_TEXT_SLOTS =
+        listOf("npac_on_surface", "npac_on_surface_variant", "npac_on_background", "npac_inverse_on_surface")
 
     private const val AMOLED_CONTAINER_LOW = 6
     private const val AMOLED_CONTAINER = 9

@@ -177,4 +177,7 @@
     <string name="appearance_source_server">von Nextcloud</string>
     <string name="appearance_source_custom">selbst gewählt</string>
     <string name="appearance_source_wallpaper">vom Hintergrundbild</string>
+
+    <string name="tinted_text">Text in der Themenfarbe</string>
+    <string name="tinted_text_description">Text die Themenfarbe mitgeben. Ausgeschaltet bleibt er ein Schwarz- oder Weißton und ist besser lesbar.</string>
 </resources>

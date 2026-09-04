@@ -73,7 +73,28 @@
         <item name="android:textColorTertiary">@color/npac_on_surface_variant</item>
         <item name="android:textColorHint">@color/npac_on_surface_variant</item>
         <item name="android:textColorLink">@color/npac_primary</item>
-        <item name="elevationOverlayColor">@color/npac_surface_tint</item>
+        <!--
+            Elevation overlays off. They composite colorPrimary over a surface to fake a raised tone, which
+            is the pre-M3 way of separating a card from its background - and with a saturated seed the
+            result is a visible wash: the toolbar came out noticeably redder than the window behind it,
+            which read as a seam under the status bar. Material 3 separates surfaces with the
+            surfaceContainer ramp instead, and this app now maps that whole ramp, so the overlay has
+            nothing left to do.
+        -->
+        <item name="elevationOverlayEnabled">false</item>
+
+        <!--
+            Both system bars are transparent, so their colour is whatever the app paints behind them.
+            android:statusBarColor has been ignored since API 35 and the app targets 36; setting both here
+            makes every version from 29 up behave the same way rather than only the newest. The two
+            contrast flags switch off the scrim the platform would otherwise draw over a transparent bar,
+            which would show up as a grey band that follows neither the palette nor the layout.
+            SystemBars.kt then picks dark or light icons from the luminance underneath.
+        -->
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:enforceStatusBarContrast">false</item>
+        <item name="android:enforceNavigationBarContrast">false</item>
 
         <item name="materialAlertDialogTheme">@style/AlertDialogStyle</item>
     </style>
