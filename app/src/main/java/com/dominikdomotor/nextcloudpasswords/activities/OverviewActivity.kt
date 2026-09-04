@@ -172,6 +172,9 @@ class OverviewActivity : BaseActivity() {
                     .commit()
                 selectedTabId = item.itemId
             }
+            // Also on a re-tap of the current tab: someone who cleared the offline copy and comes back to an empty
+            // list will press the tab again before they think to pull.
+            if (item.itemId == R.id.navigation_passwords) viewModel.syncIfCacheEmpty()
             true
         }
     }

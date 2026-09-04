@@ -17,14 +17,14 @@ data class Settings(
     @SerializedName("includedSymbolCharacters") var includedSymbols: String = DEFAULT_SYMBOLS,
     @SerializedName("excludeSimilarCharacters") var excludeSimilarCharacters: Boolean = true,
     @SerializedName("similarCharacters") var similarCharacters: String = DEFAULT_SIMILAR_CHARACTERS,
-    @SerializedName("expandBottomSheet") var expandBottomSheet: Boolean = false,
+    @SerializedName("expandBottomSheet") var expandBottomSheet: Boolean = true,
     @SerializedName("animateSearchResults") var animateSearchResults: Boolean = true,
-    @SerializedName("inlineAutofillSuggestions") var inlineAutofillSuggestions: Boolean = true,
+    @SerializedName("inlineAutofillSuggestions") var inlineAutofillSuggestions: Boolean = false,
     @SerializedName("autofillManualFallback") var autofillManualFallback: Boolean = false,
     @SerializedName("autofillBlockedApps") var autofillBlockedApps: List<String> = emptyList(),
     @SerializedName("autofillUsernameWords") var autofillUsernameWords: List<String> = HintWords.DEFAULT_USERNAME_WORDS,
     @SerializedName("autofillPasswordWords") var autofillPasswordWords: List<String> = HintWords.DEFAULT_PASSWORD_WORDS,
-    @SerializedName("allowScreenshots") var allowScreenshots: Boolean = false,
+    @SerializedName("allowScreenshots") var allowScreenshots: Boolean = true,
     /** The colour the Nextcloud admin set in the Theming app, refreshed on every sync. */
     @SerializedName("serverThemeColor") var serverThemeColor: String = "",
     /** Set only when the user picked a colour by hand; empty means "follow the server". */

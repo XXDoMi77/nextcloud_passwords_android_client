@@ -180,4 +180,7 @@
 
     <string name="tinted_text">Text in der Themenfarbe</string>
     <string name="tinted_text_description">Text die Themenfarbe mitgeben. Ausgeschaltet bleibt er ein Schwarz- oder Weißton und ist besser lesbar.</string>
+
+    <string name="clear">Löschen</string>
+    <string name="clear_offline_storage_confirmation">Die auf diesem Gerät gespeicherte Kopie deiner Passwörter entfernen? Auf deiner Nextcloud wird nichts gelöscht - die App lädt sie beim nächsten Synchronisieren erneut herunter. Bis dahin funktionieren Autofill und der Offline-Zugriff nicht.</string>
 </resources>

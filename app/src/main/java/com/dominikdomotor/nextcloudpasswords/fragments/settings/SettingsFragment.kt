@@ -53,7 +53,12 @@ class SettingsFragment : Fragment() {
         setUpSecuritySection(view)
 
         view.findViewById<ConstraintLayout>(R.id.clearOfflinePasswordCacheSetting).setOnClickListener {
-            viewModel.clearCaches()
+            AppDialog(requireActivity())
+                .title(R.string.clear_offline_storage)
+                .message(R.string.clear_offline_storage_confirmation)
+                .button(R.string.cancel)
+                .button(R.string.clear, destructive = true) { viewModel.clearCaches() }
+                .showCompact()
         }
         view.findViewById<ConstraintLayout>(R.id.logoutSetting).setOnClickListener { confirmLogout() }
 
@@ -193,23 +198,15 @@ class SettingsFragment : Fragment() {
         view.findViewById<ConstraintLayout>(R.id.accentColourSetting).setOnClickListener { showAccentColourDialog() }
         view.findViewById<ConstraintLayout>(R.id.appearanceSetting).setOnClickListener { showAppearanceDialog() }
 
-        // Not bindSwitch: this one has to regenerate the palette and restart the activity, which a plain settings
-        // write does not do.
-        val tintedText = view.findViewById<SwitchCompat>(R.id.tintedTextSettingSwitch)
-        tintedText.setOnClickListener {
-            if (applyingState) return@setOnClickListener
-            val enabled = tintedText.isChecked
-            applyAppearance { it.tintedText = enabled }
-        }
+        // Not bindSwitch: this one regenerates the palette and restarts the activity, which a plain settings write
+        // does not do.
+        view.bindSwitchRow(R.id.tintedTextSettingSwitch) { enabled -> applyAppearance { it.tintedText = enabled } }
         view.bindSwitch(R.id.expandBottomSheetSettingSwitch) { s, on -> s.expandBottomSheet = on }
         view.bindSwitch(R.id.animateSearchResultsSettingSwitch) { s, on -> s.animateSearchResults = on }
     }
 
     private fun setUpSecuritySection(view: View) {
-        val allowScreenshots = view.findViewById<SwitchCompat>(R.id.allowScreenshotsSettingSwitch)
-        allowScreenshots.setOnClickListener {
-            if (applyingState) return@setOnClickListener
-            val enabled = allowScreenshots.isChecked
+        view.bindSwitchRow(R.id.allowScreenshotsSettingSwitch) { enabled ->
             viewModel.update { it.allowScreenshots = enabled }
             requireActivity().window.apply {
                 if (enabled) clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
@@ -357,12 +354,28 @@ class SettingsFragment : Fragment() {
     }
 
     private fun View.bindSwitch(id: Int, apply: (Settings, Boolean) -> Unit) {
+        bindSwitchRow(id) { checked -> viewModel.update { apply(it, checked) } }
+    }
+
+    /**
+     * Wires a switch and the whole row it sits in to the same action.
+     *
+     * The row is what people actually aim at: the switch is a small target pinned to the far edge, and every other row
+     * on this screen already opens on a tap anywhere along it, so hitting one of these and having nothing happen reads
+     * as the screen being broken. Taken from the switch's own parent rather than a row id passed in, so a row cannot be
+     * given the affordance in the layout and left without a handler behind it.
+     *
+     * Returns the switch for callers that need it for anything else.
+     */
+    private fun View.bindSwitchRow(id: Int, onToggled: (Boolean) -> Unit): SwitchCompat {
         val switch = findViewById<SwitchCompat>(id)
-        switch.setOnClickListener {
+        switch.setOnClickListener { if (!applyingState) onToggled(switch.isChecked) }
+        (switch.parent as? View)?.setOnClickListener {
             if (applyingState) return@setOnClickListener
-            val checked = switch.isChecked
-            viewModel.update { apply(it, checked) }
+            switch.isChecked = !switch.isChecked
+            onToggled(switch.isChecked)
         }
+        return switch
     }
 
     /** Avoids moving the cursor while the user is typing in the field being rendered. */

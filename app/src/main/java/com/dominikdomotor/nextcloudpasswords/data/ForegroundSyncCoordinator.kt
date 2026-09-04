@@ -24,15 +24,6 @@ constructor(private val repository: PasswordRepository, private val uiMessageMan
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
     private var job: Job? = null
 
-    /**
-     * Whether the next sync is this process's first.
-     *
-     * Flipped where the sync actually happens rather than when the job starts, because the first pass usually does not
-     * sync at all: the app opens on the login screen, returns here with no account and stops. The sync that matters is
-     * the one after the browser hands the user back, and that is the one this is still true for.
-     */
-    private var isFirstSync = true
-
     fun onEnterForeground() {
         if (job?.isActive == true) return
         job =
@@ -42,12 +33,11 @@ constructor(private val repository: PasswordRepository, private val uiMessageMan
                 // own requests.
                 if (!repository.settings.value.loggedIn) return@launch
 
-                // Start-up shows a progress bar; a later return from the background does not. On a first run
-                // there is nothing cached to look at, so the bar is the only thing telling the user that their
-                // passwords are on the way - and re-entering the app is far too frequent to announce.
-                val showProgress = isFirstSync
-                isFirstSync = false
-                repository.sync(showProgress = showProgress).reportFailure(uiMessageManager)
+                // A bar only when there is nothing cached to look at - after a first login, or after the offline
+                // copy has been cleared. Then it is the only thing telling the user their passwords are on the way.
+                // With a list already on screen the sync is silent, because returning to the app happens constantly
+                // and an empty screen is the only case that actually needs explaining.
+                repository.sync(showProgress = repository.passwords.value.isEmpty()).reportFailure(uiMessageManager)
                 repository.downloadFavicons()
             }
     }

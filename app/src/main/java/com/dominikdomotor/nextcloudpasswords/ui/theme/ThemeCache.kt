@@ -2,6 +2,7 @@ package com.dominikdomotor.nextcloudpasswords.ui.theme
 
 import android.app.WallpaperManager
 import android.content.Context
+import com.dominikdomotor.nextcloudpasswords.GF
 import com.dominikdomotor.nextcloudpasswords.data.AccentColor
 import com.dominikdomotor.nextcloudpasswords.dataclasses.Settings
 import com.dominikdomotor.nextcloudpasswords.dataclasses.ThemeMode
@@ -40,13 +41,25 @@ object ThemeCache {
      */
     fun write(context: Context, settings: Settings) {
         val theme = AppTheme(seedFrom(context, settings), settings.themeMode, settings.tintedText)
-        // Written via a temporary file and renamed: a half-written cache read by the next start would otherwise be
-        // indistinguishable from a corrupt one, and the app would silently lose the user's theme.
+        val contents = "${theme.seed}$SEPARATOR${theme.mode.name}$SEPARATOR${theme.tintedText}"
+
+        // Written to a temporary file and renamed over the real one, so a start that reads it midway through cannot
+        // see half a line and fall back to the default palette.
+        //
+        // The rename is checked rather than assumed. `File.renameTo` reports failure by returning false, and swallowing
+        // that leaves the old theme on disk while everything else in the app believes the new one was saved - which
+        // surfaces much later as a colour that simply did not take. Falling back to writing in place gives up
+        // atomicity, but a torn write is recoverable on the next save and a lost one is not.
         runCatching {
-            val temp = File(file(context).parentFile, "$FILE_NAME.tmp")
-            temp.writeText("${theme.seed}$SEPARATOR${theme.mode.name}$SEPARATOR${theme.tintedText}")
-            temp.renameTo(file(context))
-        }
+                val target = file(context)
+                val temp = File(target.parentFile, "$FILE_NAME.tmp")
+                temp.writeText(contents)
+                if (!temp.renameTo(target)) {
+                    temp.delete()
+                    target.writeText(contents)
+                }
+            }
+            .onFailure { GF.println("Theme cache not saved, the next start will use the previous colours: $it") }
     }
 
     /** The colour the whole palette is generated from. */

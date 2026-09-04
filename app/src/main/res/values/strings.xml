@@ -134,7 +134,8 @@
     <string name="decrease_password_length">Decrease password length</string>
     <string name="increase_symbol_count">Increase number of symbols</string>
     <string name="decrease_symbol_count">Decrease number of symbols</string>
-    <string name="breadcrumb_separator" translatable="false">/</string>
+    <!-- Non-breaking spaces keep the chevron glued to the folder names on either side. -->
+    <string name="breadcrumb_separator" translatable="false">\u00A0›\u00A0</string>
     <string name="exit_app_confirmation">Close Nextcloud Passwords?</string>
     <string name="autofill_section">Autofill</string>
     <string name="appearance">Appearance</string>
@@ -181,4 +182,7 @@
 
     <string name="tinted_text">Tint text with the theme colour</string>
     <string name="tinted_text_description">Let text carry the theme colour too. Off keeps it a shade of black or white, which is easier to read.</string>
+
+    <string name="clear">Clear</string>
+    <string name="clear_offline_storage_confirmation">Remove the copy of your passwords stored on this device? Nothing is deleted from your Nextcloud - the app downloads them again on the next sync. Until then, autofill and offline access will not work.</string>
 </resources>

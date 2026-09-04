@@ -34,15 +34,14 @@ class PasswordEditorSheet(
     private val folderPicker: FolderPicker,
 ) {
     /**
-     * @param defaultFolderId folder pre-selected in the picker
-     * @param onSave invoked with the new password; the sheet stays open until [dismissOn] is called
-     */
-    /**
      * Inflated with a null root on purpose: the dialog is the parent, and it does not exist until this content is
      * handed to it.
+     *
+     * @param defaultFolderId folder pre-selected in the picker
+     * @param onSave invoked with the new password; the sheet waits, frozen, until the outcome comes back
      */
     @SuppressLint("InflateParams")
-    fun show(defaultFolderId: String = Folder.ROOT_ID, onSave: (Password, dismiss: () -> Unit) -> Unit) {
+    fun show(defaultFolderId: String = Folder.ROOT_ID, onSave: (Password, SaveOutcome) -> Unit) {
         val dialog = BottomSheetDialog(activity)
         val view = activity.layoutInflater.inflate(R.layout.password_edit_bottom_sheet_dialog, null)
         val fields = view.findViewById<LinearLayout>(R.id.myLinearLayout)
@@ -117,6 +116,17 @@ class PasswordEditorSheet(
         }
 
         val inputs = listOf(label, username, password, url, notes)
+        // The same switch the details sheet uses for its read-only state; disabling the EditText alone leaves the box
+        // around it looking editable.
+        val editors =
+            (inputs + folder).map { PasswordDetailsController.EditorField(it.inputLayout, it, it.actionButton) }
+        val setSaving = { saving: Boolean ->
+            editors.forEach {
+                it.setEditable(!saving)
+                it.action.isEnabled = !saving
+            }
+            saveButton.isEnabled = !saving
+        }
         val confirmAndClose = {
             if (inputs.none { it.text.isNotEmpty() }) {
                 dialog.dismiss()
@@ -161,7 +171,10 @@ class PasswordEditorSheet(
                     password.error = activity.getString(R.string.password_is_required_for_password_creation)
                 enteredUrl.isNotEmpty() && !android.webkit.URLUtil.isValidUrl(enteredUrl) ->
                     url.error = activity.getString(R.string.not_a_valid_url_alert_message)
-                else ->
+                else -> {
+                    // A second tap would create the password twice, and a request with no visible effect looks like
+                    // nothing happened at all.
+                    setSaving(true)
                     onSave(
                         Password(
                             label = label.text.toString(),
@@ -170,10 +183,10 @@ class PasswordEditorSheet(
                             url = enteredUrl,
                             notes = notes.text.toString(),
                             folder = selectedFolderId,
-                        )
-                    ) {
-                        dialog.dismiss()
-                    }
+                        ),
+                        SaveOutcome { created -> if (created) dialog.dismiss() else setSaving(false) },
+                    )
+                }
             }
         }
 
@@ -198,6 +211,21 @@ class PasswordEditorSheet(
         item.findViewById<ImageButton>(R.id.imagebutton_right).visibility = if (showAction) View.VISIBLE else View.GONE
         parent.addView(item)
         return item.findViewById<EditText>(R.id.edittext_middle_left).apply { this.inputType = inputType }
+    }
+
+    /**
+     * How the save went, reported back by whoever ran the request.
+     *
+     * The sheet freezes itself the moment Save is tapped, so it has to hear about a failure as well: a plain `dismiss:
+     * () -> Unit` could only say "created", which left a failed attempt with disabled fields and no way to correct and
+     * retry.
+     */
+    class SaveOutcome internal constructor(private val report: (created: Boolean) -> Unit) {
+        /** The password was created; the sheet closes. */
+        operator fun invoke() = report(true)
+
+        /** The request failed; the fields come back so the user can correct and try again. */
+        fun failed() = report(false)
     }
 
     private companion object {

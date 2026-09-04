@@ -47,6 +47,23 @@ constructor(
         }
     }
 
+    /**
+     * Fetches if the offline copy is empty, which is the state the user cannot get out of on their own.
+     *
+     * Clearing the offline storage leaves the password list blank until something syncs, and the automatic sync only
+     * runs when the app comes to the foreground - so without this, clearing it from the settings and switching back to
+     * the list showed an empty screen with no way to fill it but a pull. Cheap to call on every tab switch: with a
+     * populated list or a sync already running it does nothing.
+     */
+    fun syncIfCacheEmpty() {
+        if (!repository.settings.value.loggedIn) return
+        if (repository.passwords.value.isNotEmpty() || repository.isSyncing.value) return
+        viewModelScope.launch {
+            repository.sync(showProgress = true).reportFailure(uiMessageManager)
+            repository.downloadFavicons()
+        }
+    }
+
     /** Attempts to open the E2E session; on success triggers a full sync. */
     fun unlock(passphrase: String, storePassphrase: Boolean, onResult: (E2eSessionResult) -> Unit) {
         viewModelScope.launch {

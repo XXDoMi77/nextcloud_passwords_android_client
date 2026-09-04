@@ -37,15 +37,21 @@ constructor(
 
     fun sharesFor(passwordId: String): List<SharesItem> = repository.shares.value.filter { it.password == passwordId }
 
-    fun create(password: Password, onCreated: () -> Unit = {}) {
+    /** [onFailed] runs on failure so the editor can hand its fields back for a correction and a second try. */
+    fun create(password: Password, onCreated: () -> Unit = {}, onFailed: () -> Unit = {}) {
         viewModelScope.launch {
             when (val result = repository.createPassword(password)) {
                 is ApiResult.Success -> {
                     uiMessageManager.show(R.string.password_successfully_created)
-                    repository.downloadFavicons()
+                    // Before the favicons, which are a separate round of requests: the editor is waiting on this to
+                    // close, and the new row is already in the list.
                     onCreated()
+                    repository.downloadFavicons()
                 }
-                is ApiResult.Failure -> result.reportFailure(uiMessageManager)
+                is ApiResult.Failure -> {
+                    result.reportFailure(uiMessageManager)
+                    onFailed()
+                }
             }
         }
     }

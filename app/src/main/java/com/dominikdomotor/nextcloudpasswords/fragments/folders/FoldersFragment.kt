@@ -164,8 +164,10 @@ class FoldersFragment : Fragment(), BackHandler {
     private fun showCreatePasswordDialog() {
         PasswordEditorSheet(requireActivity(), actionsViewModel.settings, folderPicker()).show(
             defaultFolderId = viewModel.currentFolderId.value
-        ) { password, dismiss ->
-            actionsViewModel.create(password) { dismiss() }
+        ) { password, outcome ->
+            // onFailed matters as much as onCreated: the sheet disables its fields while the request is in flight, so
+            // without it a failed create would leave the user staring at a frozen form.
+            actionsViewModel.create(password, onCreated = { outcome() }, onFailed = outcome::failed)
         }
     }
 

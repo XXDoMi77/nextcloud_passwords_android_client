@@ -113,7 +113,10 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/inlineAutofillSuggestionsSetting"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:background="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true">
 
                 <ImageView
                     android:id="@+id/inlineAutofillSuggestionsSettingIcon"
@@ -173,7 +176,10 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/manualAutofillFallbackSetting"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:background="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true">
 
                 <ImageView
                     android:id="@+id/manualAutofillFallbackSettingIcon"
@@ -578,7 +584,9 @@
                 android:id="@+id/excludeSimilarCharactersSetting"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:clickable="false">
+                android:background="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true">
 
                 <ImageView
                     android:id="@+id/excludeSimilarCharactersSettingIcon"
@@ -677,7 +685,9 @@
                 android:id="@+id/expandBottomSheetSetting"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:clickable="false">
+                android:background="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true">
 
                 <ImageView
                     android:id="@+id/expandBottomSheetSettingIcon"
@@ -855,7 +865,9 @@
                 android:id="@+id/animateSearchResultsSetting"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:clickable="false">
+                android:background="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true">
 
                 <ImageView
                     android:id="@+id/animateSearchResultsSettingIcon"
@@ -920,7 +932,9 @@
                 android:id="@+id/tintedTextSetting"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:clickable="false">
+                android:background="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true">
 
                 <ImageView
                     android:id="@+id/tintedTextSettingIcon"
@@ -941,7 +955,7 @@
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="16dp"
                     android:layout_marginEnd="16dp"
-                    android:text="@string/animate_search_results"
+                    android:text="@string/tinted_text"
                     android:textColor="?attr/colorOnSurface"
                     android:textSize="16sp"
                     android:textStyle="bold"
@@ -955,7 +969,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="16dp"
                     android:layout_marginBottom="16dp"
-                    android:text="@string/animate_search_results_description"
+                    android:text="@string/tinted_text_description"
                     android:textColor="?attr/colorOnSurfaceVariant"
                     android:textSize="14sp"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -997,7 +1011,10 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/allowScreenshotsSetting"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:background="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true">
 
                 <ImageView
                     android:id="@+id/allowScreenshotsSettingIcon"

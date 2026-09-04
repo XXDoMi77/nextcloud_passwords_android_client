@@ -50,6 +50,9 @@ class PasswordsFragment : Fragment(), BackHandler {
     private var fastScroller: FastScroller? = null
     private var listAnimator: RecyclerView.ItemAnimator? = null
 
+    /** Ids the list held before a create whose new row has not been found yet; null when nothing is waiting. */
+    private var idsBeforeCreate: Set<String>? = null
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentPasswordsBinding.inflate(inflater, container, false)
         return binding.root
@@ -113,7 +116,10 @@ class PasswordsFragment : Fragment(), BackHandler {
             object : RecyclerView.OnScrollListener() {
                 override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                     // Re-prioritise once the user settles somewhere new in the list.
-                    if (newState == RecyclerView.SCROLL_STATE_IDLE) warmFaviconsVisibleFirst()
+                    if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                        warmFaviconsVisibleFirst()
+                        adapter.playPendingHighlight()
+                    }
                 }
             }
         )
@@ -160,7 +166,10 @@ class PasswordsFragment : Fragment(), BackHandler {
                             // Wait for the layout pass the new list triggers: until it runs, the layout manager
                             // still reports positions from the previous list, so "visible first" would prioritise
                             // rows that have moved or disappeared.
-                            _binding?.recyclerviewPasswords?.post { warmFaviconsVisibleFirst() }
+                            _binding?.recyclerviewPasswords?.post {
+                                warmFaviconsVisibleFirst()
+                                revealPendingCreation()
+                            }
                         }
                     }
                 }
@@ -198,9 +207,46 @@ class PasswordsFragment : Fragment(), BackHandler {
         PasswordDetailsController(requireActivity(), actionsViewModel, folderPicker(), uiMessageManager)
 
     private fun showCreatePasswordDialog() {
-        PasswordEditorSheet(requireActivity(), actionsViewModel.settings, folderPicker()).show { password, dismiss ->
-            actionsViewModel.create(password) { dismiss() }
+        PasswordEditorSheet(requireActivity(), actionsViewModel.settings, folderPicker()).show { password, outcome ->
+            // The create call answers with nothing but success, so the new row is whichever id the list did not hold
+            // before it.
+            val idsBefore = adapter.currentList.mapTo(mutableSetOf()) { it.id }
+            actionsViewModel.create(
+                password,
+                onCreated = {
+                    outcome()
+                    revealCreatedPassword(idsBefore)
+                },
+                onFailed = outcome::failed,
+            )
         }
+    }
+
+    /**
+     * Scrolls to the password that was just created and flashes it.
+     *
+     * The refreshed list may not have reached the adapter yet when the request returns, so the ids are kept and
+     * [revealPendingCreation] tries again from the next list update.
+     */
+    private fun revealCreatedPassword(idsBefore: Set<String>) {
+        if (!scrollToCreatedPassword(idsBefore)) idsBeforeCreate = idsBefore
+    }
+
+    private fun revealPendingCreation() {
+        // One attempt only: a row that is not there by now is filtered out by the search, and a later sync must not
+        // flash whatever it happens to bring in.
+        val idsBefore = idsBeforeCreate ?: return
+        idsBeforeCreate = null
+        scrollToCreatedPassword(idsBefore)
+    }
+
+    private fun scrollToCreatedPassword(idsBefore: Set<String>): Boolean {
+        val recyclerView = _binding?.recyclerviewPasswords ?: return true
+        val index = adapter.currentList.indexOfFirst { it.id !in idsBefore }
+        if (index < 0) return false
+        adapter.highlight(adapter.currentList[index].id)
+        recyclerView.smoothScrollToPosition(index)
+        return true
     }
 
     /**
@@ -213,6 +259,8 @@ class PasswordsFragment : Fragment(), BackHandler {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        adapter.cancelHighlight()
+        idsBeforeCreate = null
         fastScroller = null
         listAnimator = null
         _binding = null
