@@ -3,6 +3,10 @@ package com.dominikdomotor.nextcloudpasswords.ui.theme
 import android.annotation.SuppressLint
 import com.google.android.material.color.utilities.Hct
 import com.google.android.material.color.utilities.SchemeContent
+import com.google.android.material.color.utilities.TonalPalette
+import kotlin.math.max
+import kotlin.math.min
+import kotlin.math.pow
 
 /**
  * Turns one seed colour into the full set of Material 3 roles the app paints with.
@@ -67,7 +71,8 @@ object PaletteGenerator {
                 "npac_on_error_container" to scheme.onErrorContainer,
                 "npac_scrim" to scheme.scrim,
             )
-        val surfaced = if (isAmoled) palette + amoledSurfaces(scheme) else palette
+        val readable = palette + readableOnContainers(scheme)
+        val surfaced = if (isAmoled) readable + amoledSurfaces(scheme) else readable
         val texted = if (tintedText) surfaced else surfaced + neutralBodyText(surfaced)
         val opaqued = texted.mapValues { (_, value) -> opaque(value) }
         // The ripple is the one slot that must stay translucent: it is drawn over whatever it touches, so an opaque
@@ -83,6 +88,76 @@ object PaletteGenerator {
      * initialiser - a failure that points nowhere near its cause.
      */
     val SLOTS: Set<String> by lazy { generate(NEXTCLOUD_BLUE, isDark = false, isAmoled = false).keys }
+
+    /**
+     * Makes the filled containers readable, which for the secondary one means moving the container too.
+     *
+     * `SchemeContent` aims its on-container colours at roughly 4.5:1 - the WCAG floor, and no more. That is a
+     * defensible choice for a scheme meant to stay faithful to one source colour, but it is thin for text, and this app
+     * puts text on `secondaryContainer` more than anywhere else: every row of the folder picker, the share list and the
+     * blocked-apps list, plus every tonal button in a dialog. At 4.5:1 those rows read as washed out.
+     *
+     * Two steps, because fixing only the text is not enough. Each on-container role is taken from its own tonal palette
+     * at whichever end reads best against the container - decided per container, since `primaryContainer` under
+     * `SchemeContent` is the source colour itself and may be light or dark, so one fixed tone would be right for one
+     * seed and unreadable for the next.
+     *
+     * `secondaryContainer` is then also put back on Material's own tones, 90 in light and 30 in dark. A container that
+     * lands mid-tone cannot carry readable text at all - a pure red seed produced one where even black-or-white only
+     * reached 5.4:1 - so no choice of text colour would have fixed it. At the standard tones the pair clears 8:1 for
+     * every seed. The vivid containers are left alone: `primaryContainer` is the floating action button, where being
+     * eye-catching is the job and the only thing on it is an icon.
+     */
+    private fun readableOnContainers(scheme: SchemeContent): Map<String, Int> {
+        val secondaryContainer =
+            scheme.secondaryPalette.tone(if (scheme.isDark) DARK_CONTAINER_TONE else LIGHT_CONTAINER_TONE)
+        return mapOf(
+            "npac_secondary_container" to secondaryContainer,
+            "npac_on_primary_container" to readableOn(scheme.primaryContainer, scheme.primaryPalette),
+            "npac_on_secondary_container" to readableOn(secondaryContainer, scheme.secondaryPalette),
+            "npac_on_tertiary_container" to readableOn(scheme.tertiaryContainer, scheme.tertiaryPalette),
+            "npac_on_error_container" to readableOn(scheme.errorContainer, scheme.errorPalette),
+        )
+    }
+
+    /**
+     * The most readable text tone for a filled container, preferring one that still carries the hue.
+     *
+     * Tinted first: tones 10 and 98 keep the palette's hue and chroma, so a label still belongs to the container it
+     * sits on, and against a container at either end of the tone range one of them is far away and gives 8:1 or more.
+     *
+     * The escalation is for containers that land in the middle, which `SchemeContent` produces because it uses the
+     * source colour itself as `primaryContainer`. Neither tinted tone is far enough from a tone-50 container to be
+     * comfortable, so the choice widens to the palette's extremes - effectively black and white - and takes whichever
+     * is better. Readable and untinted beats tinted and unreadable.
+     *
+     * Chosen by measuring contrast rather than by comparing tones, because at the boundary the two disagree: against
+     * `#007ABD`, tone 98 and tone 10 are almost equidistant, but white is a fifth more readable than black.
+     */
+    private fun readableOn(container: Int, palette: TonalPalette): Int {
+        val tinted = mostReadable(container, palette, TINTED_TEXT_TONES)
+        return if (contrast(tinted, container) >= MINIMUM_CONTRAST) tinted
+        else mostReadable(container, palette, EXTREME_TEXT_TONES)
+    }
+
+    private fun mostReadable(container: Int, palette: TonalPalette, tones: List<Int>): Int =
+        tones.map(palette::tone).maxBy { contrast(it, container) }
+
+    /** WCAG contrast. Every colour here is opaque, so there is no alpha to flatten first. */
+    private fun contrast(a: Int, b: Int): Double {
+        val first = relativeLuminance(a)
+        val second = relativeLuminance(b)
+        return (max(first, second) + WCAG_OFFSET) / (min(first, second) + WCAG_OFFSET)
+    }
+
+    private fun relativeLuminance(color: Int): Double {
+        fun channel(shift: Int): Double {
+            val value = ((color shr shift) and CHANNEL) / CHANNEL_MAX
+            return if (value <= SRGB_KNEE) value / SRGB_SLOPE
+            else ((value + SRGB_OFFSET) / (1 + SRGB_OFFSET)).pow(SRGB_GAMMA)
+        }
+        return RED_LUMA * channel(RED_SHIFT) + GREEN_LUMA * channel(GREEN_SHIFT) + BLUE_LUMA * channel(0)
+    }
 
     /**
      * Pushes the surfaces to true black without flattening the ramp.
@@ -144,12 +219,39 @@ object PaletteGenerator {
     private const val BLACK = 0xFF000000.toInt()
     private const val RGB_MASK = 0x00FFFFFF
     private const val ALPHA_SHIFT = 24
+    private const val CHANNEL = 0xFF
+    private const val RED_SHIFT = 16
+    private const val GREEN_SHIFT = 8
 
     /** Material's own press-state opacity, about 12%. */
     private const val RIPPLE_ALPHA = 0x1F
 
     /** Material's neutral contrast. Positive values raise it; the roles already meet WCAG AA at zero. */
     private const val CONTRAST_DEFAULT = 0.0
+
+    /** Above this the container is light enough for dark text; below it, the other way round. */
+    /** Material's own container tones, which are chosen to carry text. */
+    private const val LIGHT_CONTAINER_TONE = 90
+    private const val DARK_CONTAINER_TONE = 30
+
+    /** Tones that keep the palette's hue, so a readable label is still a tinted one wherever it can be. */
+    private val TINTED_TEXT_TONES = listOf(10, 98)
+
+    /** The fallback for a mid-tone container: the ends of the tone range, which are effectively black and white. */
+    private val EXTREME_TEXT_TONES = listOf(0, 100)
+
+    /** WCAG AA for body text. Text on a container is still text, so this is the floor the choice has to clear. */
+    private const val MINIMUM_CONTRAST = 4.5
+
+    private const val WCAG_OFFSET = 0.05
+    private const val CHANNEL_MAX = 255.0
+    private const val SRGB_KNEE = 0.03928
+    private const val SRGB_SLOPE = 12.92
+    private const val SRGB_OFFSET = 0.055
+    private const val SRGB_GAMMA = 2.4
+    private const val RED_LUMA = 0.2126
+    private const val GREEN_LUMA = 0.7152
+    private const val BLUE_LUMA = 0.0722
 
     private val BODY_TEXT_SLOTS =
         listOf("npac_on_surface", "npac_on_surface_variant", "npac_on_background", "npac_inverse_on_surface")

@@ -61,6 +61,23 @@ class PaletteGeneratorTest {
     }
 
     @Test
+    fun `labels on a grouped list row are comfortably readable, not merely compliant`() {
+        // The folder picker, the share list and the blocked-apps list all put their labels straight onto
+        // secondaryContainer. SchemeContent aims its on-container colours at the 4.5:1 floor and no higher, and at
+        // that ratio the rows read as washed out - which is what prompted the generator to re-tone them. 4.5 is
+        // therefore too permissive a threshold to catch a regression here: this is the pairing that has to be good,
+        // not just legal.
+        forEachPalette { name, palette ->
+            val ratio =
+                contrast(palette.getValue("npac_on_secondary_container"), palette.getValue("npac_secondary_container"))
+            assertTrue(
+                "a list row label in $name is only ${"%.2f".format(ratio)}:1, below $COMFORTABLE_TEXT_MINIMUM:1",
+                ratio >= COMFORTABLE_TEXT_MINIMUM,
+            )
+        }
+    }
+
+    @Test
     fun `surfaces stay distinguishable from the containers stacked on them`() {
         // Cards, dialogs, the bottom sheet and the nav bar are told apart from their background only by tone. This is
         // the assertion that stops AMOLED mode from blacking out the whole ramp and losing every edge.
@@ -219,6 +236,9 @@ class PaletteGeneratorTest {
 
         /** WCAG AA for large or bold text, and for icons. */
         const val LARGE_TEXT_MINIMUM = 3.0
+
+        /** WCAG AAA. What the app's most-used text-on-container pairing is held to. */
+        const val COMFORTABLE_TEXT_MINIMUM = 7.0
 
         /** Enough for an edge to be visible without the container reading as a different colour. */
         const val SURFACE_SEPARATION_MINIMUM = 1.05

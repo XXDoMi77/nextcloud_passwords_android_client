@@ -14,16 +14,16 @@
     <color name="npac_primary">#FF006097</color>
     <color name="npac_on_primary">#FFFFFFFF</color>
     <color name="npac_primary_container">#FF007ABD</color>
-    <color name="npac_on_primary_container">#FFFDFCFF</color>
+    <color name="npac_on_primary_container">#FFFFFFFF</color>
     <color name="npac_inverse_primary">#FF96CCFF</color>
     <color name="npac_secondary">#FF43617D</color>
     <color name="npac_on_secondary">#FFFFFFFF</color>
-    <color name="npac_secondary_container">#FFBEDDFE</color>
-    <color name="npac_on_secondary_container">#FF44627E</color>
+    <color name="npac_secondary_container">#FFCEE5FF</color>
+    <color name="npac_on_secondary_container">#FF001D32</color>
     <color name="npac_tertiary">#FF7E429A</color>
     <color name="npac_on_tertiary">#FFFFFFFF</color>
     <color name="npac_tertiary_container">#FF995BB5</color>
-    <color name="npac_on_tertiary_container">#FFFFFBFF</color>
+    <color name="npac_on_tertiary_container">#FFFFFFFF</color>
     <color name="npac_background">#FFF7F9FF</color>
     <color name="npac_on_background">#FF1C1C1C</color>
     <color name="npac_surface">#FFF7F9FF</color>
@@ -45,7 +45,7 @@
     <color name="npac_error">#FFBA1A1A</color>
     <color name="npac_on_error">#FFFFFFFF</color>
     <color name="npac_error_container">#FFFFDAD6</color>
-    <color name="npac_on_error_container">#FF93000A</color>
+    <color name="npac_on_error_container">#FF410002</color>
     <color name="npac_scrim">#FF000000</color>
     <color name="npac_ripple">#1F1C1C1C</color>
 </resources>
