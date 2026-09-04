@@ -117,7 +117,6 @@
     <string name="folder_successfully_updated">Ordner aktualisiert.</string>
     <string name="folder_successfully_deleted">Ordner gelöscht.</string>
     <string name="home">Start</string>
-    <string name="navigate_up">Zum übergeordneten Ordner</string>
     <string name="open_url">Link öffnen</string>
     <string name="copy_value">Kopieren</string>
     <string name="generate_password">Neues Passwort erzeugen</string>

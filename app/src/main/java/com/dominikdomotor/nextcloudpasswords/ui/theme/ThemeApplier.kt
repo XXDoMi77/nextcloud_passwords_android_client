@@ -95,8 +95,6 @@ object ThemeApplier {
             "npac_ripple" -> listOf("material_personalized_color_control_highlight")
             "npac_on_surface_variant" -> listOf(prefixed, "material_personalized_color_control_normal")
             "npac_primary" -> listOf(prefixed, "material_personalized_color_control_activated")
-            "npac_surface_tint",
-            "npac_scrim" -> emptyList()
             else -> listOf(prefixed)
         }
     }

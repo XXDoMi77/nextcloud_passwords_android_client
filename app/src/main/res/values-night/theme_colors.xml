@@ -39,13 +39,11 @@
     <color name="npac_surface_container_highest">#FF31353A</color>
     <color name="npac_inverse_surface">#FFE0E2E9</color>
     <color name="npac_inverse_on_surface">#FF313131</color>
-    <color name="npac_surface_tint">#FF96CCFF</color>
     <color name="npac_outline">#FF89919C</color>
     <color name="npac_outline_variant">#FF404851</color>
     <color name="npac_error">#FFFFB4AB</color>
     <color name="npac_on_error">#FF690005</color>
     <color name="npac_error_container">#FF93000A</color>
     <color name="npac_on_error_container">#FFFFF8F7</color>
-    <color name="npac_scrim">#FF000000</color>
     <color name="npac_ripple">#1FE2E2E2</color>
 </resources>

@@ -6,6 +6,7 @@ import android.text.InputType
 import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.activity.addCallback
 import androidx.activity.viewModels
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
@@ -208,6 +209,13 @@ class OverviewActivity : BaseActivity() {
                 orientation = LinearLayout.VERTICAL
                 setPadding(padding, padding / 2, padding, 0)
             }
+        // The string existed but nothing displayed it, so the one consequence worth knowing - that repeated wrong
+        // attempts can cost the user this app's login - was never actually said.
+        val explanation =
+            TextView(this).apply {
+                setText(R.string.e2e_unlock_description)
+                setPadding(0, 0, 0, padding / 2)
+            }
         val passphraseInput =
             EditText(this).apply {
                 hint = getString(R.string.e2e_passphrase)
@@ -218,6 +226,7 @@ class OverviewActivity : BaseActivity() {
                 text = getString(R.string.store_e2e_passphrase)
                 isChecked = storageManager.settings.value.e2ePassphrase.isNotEmpty()
             }
+        content.addView(explanation)
         content.addView(passphraseInput)
         content.addView(storePassphrase)
 

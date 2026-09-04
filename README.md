@@ -14,8 +14,9 @@ An open-source Android client for the [Nextcloud Passwords](https://apps.nextclo
 
 This project aims to be a fully-featured, secure, and user-friendly password manager for Android that syncs with your self-hosted Nextcloud instance. It leverages the Android Autofill framework for seamless integration with other apps and browsers.
 
-#### Current Status: **Stable Preview**
-This application is currently in a stable preview state. It is functional for daily use, but as it is under active development, please use it with care. Feedback and contributions are always welcome!
+#### Current Status: **1.0.0-beta01**
+Functional for daily use and in beta while the 1.0 line settles. Feedback and contributions are always
+welcome — see [CHANGELOG.md](CHANGELOG.md) for what has changed.
 
 ---
 
@@ -50,8 +51,13 @@ This application is currently in a stable preview state. It is functional for da
   the Android Keystore, and are readable without a connection.
 - **Password generation:** configurable length, symbol set and symbol count, with an option to
   exclude look-alike characters.
-- **Privacy:** `FLAG_SECURE` by default so the app is hidden from screenshots and the recents
-  preview, and copied secrets are marked sensitive and cleared from the clipboard after 30 seconds.
+- **Theming:** the whole interface is a Material 3 palette generated from one seed colour — the colour
+  your Nextcloud admin set in the Theming app, one you pick, or your wallpaper. Light, dark and an
+  AMOLED mode with true-black surfaces. Status colours stay literal so they still read as signals.
+- **Privacy:** the window opens with `FLAG_SECURE` set and only relaxes it if you allow screenshots,
+  and copied secrets are marked sensitive and cleared from the clipboard after 30 seconds.
+- **No backup by default:** the offline store is encrypted with a key that never leaves the device, so
+  it is excluded from cloud backup and device-to-device transfer rather than restored unreadable.
 - **Self-signed certificates:** pin and trust a certificate after showing you its SHA-256
   fingerprint and expiry.
 
@@ -106,6 +112,9 @@ To build and run this project yourself, follow these simple steps:
 ./gradlew :app:lintDebug         # Android lint
 ```
 
+`lintDebug` is stricter than it looks: `MissingTranslation` is fatal, so every user-visible string
+needs its German twin in `values-de/strings.xml` before a release build will pass.
+
 Formatting is enforced by the build, not only by the IDE. Run `./gradlew :app:ktfmtFormat` to fix.
 
 ### Release builds
@@ -114,6 +123,20 @@ Release signing material is deliberately kept outside this repository, so a sign
 produced from a clean clone. The build script reads the keystore path from the
 `NPAC_KEYSTORE_PROPERTIES` environment variable (or the `releaseKeystoreProperties` Gradle property)
 and falls back to an unsigned release build when neither is set.
+
+---
+
+## Versioning
+
+`versionName` is semantic, with a pre-release tag while a line is still settling —
+`1.0.0-beta01`, then `1.0.0` once it is stable.
+
+`versionCode` is a plain counter. Play only requires that it be larger than the last upload, and
+deriving it from the version number invites a collision the first time a beta and a patch release
+want the same slot. Bump it on **every** upload, including a re-upload of the same `versionName`.
+
+A `versionName` carrying a pre-release tag belongs on a testing track, not production; the release
+script prints a warning to that effect and records it in `BUILD_INFO.txt`.
 
 ---
 

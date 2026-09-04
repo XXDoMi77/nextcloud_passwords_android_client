@@ -30,8 +30,12 @@ android {
         applicationId = "com.dominikdomotor.nextcloudpasswords"
         minSdk = 29
         targetSdk = 36
-        versionCode = 10
-        versionName = "Preview 10"
+        // versionName is semantic, with a pre-release tag while the 1.0 line settles; drop the suffix for the
+        // stable release. versionCode stays a plain counter: Play only enforces "larger than the last upload",
+        // and deriving it from the version number invites a collision the first time a beta and a patch want the
+        // same slot. Bump it on every upload, including a re-upload of the same versionName.
+        versionCode = 11
+        versionName = "1.0.0-beta01"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 

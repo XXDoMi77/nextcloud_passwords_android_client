@@ -117,7 +117,6 @@
     <string name="folder_successfully_updated">Folder updated.</string>
     <string name="folder_successfully_deleted">Folder deleted.</string>
     <string name="home">Home</string>
-    <string name="navigate_up">Go to parent folder</string>
     <string name="open_url">Open link</string>
     <string name="copy_value">Copy</string>
     <string name="generate_password">Generate a new password</string>

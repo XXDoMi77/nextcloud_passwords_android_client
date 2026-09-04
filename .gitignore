@@ -56,5 +56,9 @@ Thumbs.db
 !.idea/vcs.xml
 !.idea/runConfigurations/
 
+# Screenshot captures. They belong beside the release scripts, outside the repo - the README links
+# to uploaded copies rather than carrying binaries.
+screenshots/
+
 # Scratch files at the repo root
 test.kt

@@ -62,14 +62,12 @@ object PaletteGenerator {
                 "npac_surface_container_highest" to scheme.surfaceContainerHighest,
                 "npac_inverse_surface" to scheme.inverseSurface,
                 "npac_inverse_on_surface" to scheme.inverseOnSurface,
-                "npac_surface_tint" to scheme.primary,
                 "npac_outline" to scheme.outline,
                 "npac_outline_variant" to scheme.outlineVariant,
                 "npac_error" to scheme.error,
                 "npac_on_error" to scheme.onError,
                 "npac_error_container" to scheme.errorContainer,
                 "npac_on_error_container" to scheme.onErrorContainer,
-                "npac_scrim" to scheme.scrim,
             )
         val readable = palette + readableOnContainers(scheme)
         val surfaced = if (isAmoled) readable + amoledSurfaces(scheme) else readable
