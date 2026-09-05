@@ -8,6 +8,15 @@ pre-release tag means the line is still settling and belongs on a testing track.
 The first version under semantic versioning. It follows the "Preview 10" series, and carries a large
 architecture and interface rebuild.
 
+### Upgrading
+
+Updating from Preview 10 signs you out once. The stored document now carries the layout it was
+written with, and anything written before that tag is cleared rather than reinterpreted - the shapes
+happen to line up this time, but only by luck, and checking that by hand every release is the kind of
+task that is fine until the once it is not. Nothing is deleted from your Nextcloud; sign in again and
+everything syncs back. The app explains this on the login screen rather than just appearing signed
+out.
+
 ### Added
 
 - **Material 3 theming from a single seed colour.** Every colour in the app is generated from one

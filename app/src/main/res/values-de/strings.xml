@@ -182,4 +182,9 @@
 
     <string name="clear">Löschen</string>
     <string name="clear_offline_storage_confirmation">Die auf diesem Gerät gespeicherte Kopie deiner Passwörter entfernen? Auf deiner Nextcloud wird nichts gelöscht - die App lädt sie beim nächsten Synchronisieren erneut herunter. Bis dahin funktionieren Autofill und der Offline-Zugriff nicht.</string>
+
+    <!-- Wird angezeigt, wenn ein Update gespeicherte Daten entfernt, die es nicht lesen kann -->
+    <string name="sign_in_again">Erneut anmelden</string>
+    <string name="sign_in_again_explanation">Dieses Update hat geändert, wie Passwörter auf diesem Gerät gespeichert werden. Die alte Kopie wurde daher entfernt. Auf deiner Nextcloud wurde nichts gelöscht - melde dich erneut an, dann wird alles wieder synchronisiert.</string>
+    <string name="got_it">Verstanden</string>
 </resources>

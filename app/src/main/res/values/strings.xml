@@ -184,4 +184,9 @@
 
     <string name="clear">Clear</string>
     <string name="clear_offline_storage_confirmation">Remove the copy of your passwords stored on this device? Nothing is deleted from your Nextcloud - the app downloads them again on the next sync. Until then, autofill and offline access will not work.</string>
+
+    <!-- Shown when an update clears a stored document it cannot read -->
+    <string name="sign_in_again">Sign in again</string>
+    <string name="sign_in_again_explanation">This update changed how passwords are stored on this device, so the old copy was cleared. Nothing was deleted from your Nextcloud - sign in again and everything syncs back.</string>
+    <string name="got_it">Got it</string>
 </resources>

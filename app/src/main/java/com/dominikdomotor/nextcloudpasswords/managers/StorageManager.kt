@@ -32,6 +32,8 @@ class StorageManager @Inject constructor(private val encryptedFileManager: Encry
     @Volatile private var loaded = false
     @Volatile var apiSessionToken: String = ""
 
+    @Volatile private var upgradeNotice = false
+
     private val _passwords = MutableStateFlow<List<Password>>(emptyList())
     private val _folders = MutableStateFlow<List<Folder>>(emptyList())
     private val _shares = MutableStateFlow<List<SharesItem>>(emptyList())
@@ -62,12 +64,49 @@ class StorageManager @Inject constructor(private val encryptedFileManager: Encry
     private fun ensureLoadedLocked() {
         if (loaded) return
         val startedAt = System.currentTimeMillis()
-        data = readData() ?: Data()
+        val stored = readData()
         loaded = true
+
+        if (stored != null && stored.schemaVersion < SCHEMA_VERSION) {
+            discardForUpgradeLocked()
+            return
+        }
+
+        data = stored ?: Data()
         migrateLegacyDefaults()
         publish()
         GF.println("Loaded ${data.passwords.size} passwords in ${System.currentTimeMillis() - startedAt} ms")
     }
+
+    /**
+     * Throws away a document written by an older version, leaving a fresh install.
+     *
+     * The alternative was to migrate it, and for this particular change the shapes do line up - but only by luck, and
+     * checking that by hand for every future release is the kind of task that is fine until the once it is not.
+     * Everything here is a cache of what the server already holds, so the cost of being wrong the other way is one
+     * sign-in, which is why this is the safe direction.
+     *
+     * The account goes with it: the credentials live in this same document, so there is nothing left to sign in with.
+     * [consumeUpgradeNotice] is how the login screen learns to explain that.
+     */
+    private fun discardForUpgradeLocked() {
+        GF.println("Stored document predates this version's layout; clearing it and asking for a sign-in")
+        data = Data()
+        apiSessionToken = ""
+        encryptedFileManager.deleteAllFiles()
+        upgradeNotice = true
+        writeData()
+        publish()
+    }
+
+    /**
+     * True once, if the last load discarded an older document.
+     *
+     * Read and cleared by the login screen, which is the only thing that needs it. In memory rather than on disk
+     * because the wipe and the screen that reports it happen in the same process: the app cannot reach the login screen
+     * without having loaded first.
+     */
+    fun consumeUpgradeNotice(): Boolean = upgradeNotice.also { upgradeNotice = false }
 
     /**
      * Re-reads the document from disk, discarding in-memory state.
@@ -138,6 +177,9 @@ class StorageManager @Inject constructor(private val encryptedFileManager: Encry
     }
 
     private fun writeData() {
+        // Stamped here rather than at each call site, so every file this app writes is tagged and no
+        // future write can forget to.
+        data.schemaVersion = SCHEMA_VERSION
         encryptedFileManager.store(Keys.DATA, Gson().toJson(data))
     }
 
@@ -153,5 +195,15 @@ class StorageManager @Inject constructor(private val encryptedFileManager: Encry
         _folders.value = data.folders
         _shares.value = data.shares
         _settings.value = data.settings.copy()
+    }
+
+    private companion object {
+        /**
+         * The layout of the stored document.
+         *
+         * Raise this whenever a change would make an older document read incorrectly rather than merely incompletely -
+         * a renamed or retyped field, not an added one. Anything older is discarded and the user signs in again.
+         */
+        const val SCHEMA_VERSION = 1
     }
 }

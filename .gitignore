@@ -1,6 +1,6 @@
 # ---------------------------------------------------------------------------
-# Secrets — never commit. Keep these in
-# C:\Users\DoMi7\Dominikscloud\Cuccok\Keys\Nextcloud Passwords Android App Keys
+# Secrets - never commit. Signing material lives outside the repository entirely;
+# the build finds it through the NPAC_KEYSTORE_PROPERTIES environment variable.
 # ---------------------------------------------------------------------------
 *.jks
 *.keystore

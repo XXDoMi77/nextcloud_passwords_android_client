@@ -28,6 +28,16 @@ class EnterServerURLActivity : BaseActivity() {
         supportActionBar?.hide()
         setContentView(R.layout.activity_enter_server_url)
 
+        // Shown once, when the last load found a document this version cannot read and cleared it.
+        // The user is looking at a sign-in screen they did not ask for, so it owes them a reason.
+        if (storageManager.consumeUpgradeNotice()) {
+            AppDialog(this)
+                .title(R.string.sign_in_again)
+                .message(R.string.sign_in_again_explanation)
+                .button(R.string.got_it)
+                .showCompact()
+        }
+
         val urlInput = findViewById<EditText>(R.id.URL_input)
 
         urlInput.requestFocus()
