@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+    One remembered site or app.
+
+    Laid out like the blocked-app row so the two autofill lists in settings read as the same kind of thing, with the
+    checkbox replaced by a button that forgets this one. The row grows to fit rather than sitting at a fixed height,
+    because a long host name and a long entry label both wrap.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:minHeight="64dp"
+    android:orientation="horizontal"
+    android:paddingHorizontal="@dimen/spacing_horizontal"
+    android:paddingVertical="@dimen/spacing_group_vertical">
+
+    <ImageView
+        android:id="@+id/remembered_icon"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:contentDescription="@null" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/spacing_group_horizontal"
+        android:layout_weight="1"
+        android:gravity="center|start"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/remembered_target"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:textColor="?attr/colorOnSecondaryContainer"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/remembered_detail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:alpha="0.7"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:textColor="?attr/colorOnSecondaryContainer"
+            android:textSize="12sp" />
+    </LinearLayout>
+
+    <ImageButton
+        android:id="@+id/remembered_forget"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:background="?android:attr/selectableItemBackgroundBorderless"
+        android:contentDescription="@string/autofill_remembered_forget"
+        android:src="@drawable/icon_delete_24"
+        app:tint="?attr/colorOnSecondaryContainer"
+        xmlns:app="http://schemas.android.com/apk/res-auto" />
+</LinearLayout>

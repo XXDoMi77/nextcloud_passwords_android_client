@@ -217,4 +217,10 @@
     <string name="autofill_fill_username">Fill username</string>
     <string name="autofill_fill_password">Fill password</string>
     <string name="autofill_fill_both">Fill username and password</string>
+    <string name="autofill_remembered">Remembered choices</string>
+    <string name="autofill_remembered_description">Sites and apps where you picked an entry yourself, and what you searched for to find it</string>
+    <string name="autofill_remembered_empty">Nothing has been remembered yet. Pick an entry from \"Search all passwords\" and this is where it will appear.</string>
+    <string name="autofill_remembered_detail">%1$s, found by searching for \"%2$s\"</string>
+    <string name="autofill_remembered_missing_entry">The entry is no longer in your vault</string>
+    <string name="autofill_remembered_forget">Forget this site or app</string>
 </resources>

@@ -215,4 +215,10 @@
     <string name="autofill_fill_username">Benutzernamen einfügen</string>
     <string name="autofill_fill_password">Passwort einfügen</string>
     <string name="autofill_fill_both">Benutzernamen und Passwort einfügen</string>
+    <string name="autofill_remembered">Gemerkte Zuordnungen</string>
+    <string name="autofill_remembered_description">Seiten und Apps, für die du selbst einen Eintrag ausgewählt hast, samt deinem Suchbegriff</string>
+    <string name="autofill_remembered_empty">Bisher wurde nichts gemerkt. Wähle einen Eintrag über „Alle Passwörter durchsuchen“ aus, dann erscheint er hier.</string>
+    <string name="autofill_remembered_detail">%1$s, gefunden mit der Suche nach \"%2$s\"</string>
+    <string name="autofill_remembered_missing_entry">Der Eintrag ist nicht mehr im Tresor</string>
+    <string name="autofill_remembered_forget">Diese Seite oder App vergessen</string>
 </resources>

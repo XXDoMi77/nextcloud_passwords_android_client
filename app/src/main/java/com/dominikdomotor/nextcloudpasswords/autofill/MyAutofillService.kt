@@ -40,6 +40,7 @@ import jakarta.inject.Inject
 @AndroidEntryPoint
 class MyAutofillService : AutofillService() {
     @Inject lateinit var storageManager: StorageManager
+    @Inject lateinit var linkStore: AutofillLinkStore
     @Inject lateinit var faviconStore: FaviconStore
 
     override fun onFillRequest(request: FillRequest, cancellationSignal: CancellationSignal, callback: FillCallback) {
@@ -84,6 +85,9 @@ class MyAutofillService : AutofillService() {
                     settings.autofillManualFallback && it in fields.unknownIds
                 }
             val fillableIds = (fields.usernameIds + fields.passwordIds + listOfNotNull(fallbackId)).toList()
+            val targetKey = AutofillTarget.keyFor(fields.webDomain, requestingPackage)
+            val remembered = linkStore.linkFor(targetKey)
+            val linkedPasswordId = remembered?.passwordId?.takeIf(String::isNotBlank)
 
             // Debug builds keep the structure so the inspector can show why a field was or was not recognised.
             // `enabled` is a compile time constant, so this and everything it reaches is gone from a release build.
@@ -102,7 +106,8 @@ class MyAutofillService : AutofillService() {
                     "manualFallback=${settings.autofillManualFallback} " +
                     // The single-field rows target the focused field, so a request that arrives without one
                     // silently falls back to whatever was detected - which is the case worth spotting.
-                    "focused=${fillContext.focusedId != null}/${fields.focusedId != null}"
+                    "focused=${fillContext.focusedId != null}/${fields.focusedId != null} " +
+                    "linked=${linkedPasswordId != null}"
             )
             if (fillableIds.isEmpty() || cancellationSignal.isCanceled) {
                 GF.println("Autofill: nothing fillable found, returning no datasets")
@@ -122,6 +127,7 @@ class MyAutofillService : AutofillService() {
                         storageManager.passwords.value,
                         fields.webDomain,
                         applicationName,
+                        linkedPasswordId,
                     )
                     .take(MAX_CREDENTIAL_DATASETS)
 
@@ -227,7 +233,12 @@ class MyAutofillService : AutofillService() {
                         fields,
                         inlineRequest,
                         matches.size,
-                        AutofillSearchQuery.from(fields.webDomain, applicationName),
+                        targetKey,
+                        // What the user typed here last time beats what this app can work out from a host name.
+                        // A vault where nothing is named after the site it belongs to then only has to be searched
+                        // once, which is the whole reason the picker exists.
+                        remembered?.query?.takeIf(String::isNotBlank)
+                            ?: AutofillSearchQuery.from(fields.webDomain, applicationName),
                     )
                 )
             }
@@ -378,6 +389,7 @@ class MyAutofillService : AutofillService() {
         fields: ParsedFields,
         inlineRequest: InlineSuggestionsRequest?,
         inlineIndex: Int,
+        targetKey: String?,
         initialQuery: String,
     ) =
         AutofillDatasetFactory.authenticationDataset(
@@ -407,6 +419,7 @@ class MyAutofillService : AutofillService() {
                             ArrayList(fields.passwordIds),
                         )
                         .putExtra(AutofillPickerActivity.EXTRA_FOCUSED_ID, targetId)
+                        .putExtra(AutofillPickerActivity.EXTRA_TARGET_KEY, targetKey)
                         .putExtra(AutofillPickerActivity.EXTRA_INITIAL_QUERY, initialQuery),
                     PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE,
                 )

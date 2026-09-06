@@ -34,11 +34,13 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class AutofillPickerActivity : BaseActivity() {
     @Inject lateinit var faviconStore: FaviconStore
+    @Inject lateinit var linkStore: AutofillLinkStore
 
     private lateinit var usernameIds: List<AutofillId>
     private lateinit var passwordIds: List<AutofillId>
     private lateinit var passwords: List<Password>
     private var focusedId: AutofillId? = null
+    private var targetKey: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,6 +56,7 @@ class AutofillPickerActivity : BaseActivity() {
         usernameIds = intent.autofillIds(EXTRA_USERNAME_IDS)
         passwordIds = intent.autofillIds(EXTRA_PASSWORD_IDS)
         focusedId = intent.autofillId(EXTRA_FOCUSED_ID)
+        targetKey = intent.getStringExtra(EXTRA_TARGET_KEY)
         if (usernameIds.isEmpty() && passwordIds.isEmpty() && focusedId == null) {
             cancel()
             return
@@ -104,7 +107,24 @@ class AutofillPickerActivity : BaseActivity() {
             }
     }
 
+    /**
+     * Files this entry, and the words that found it, as what the user did for the app or site that asked.
+     *
+     * The entry is offered first next time; the words become what this screen opens with. Whatever is in the search
+     * box at the moment of the choice is what gets kept, including the term this screen was opened with when the user
+     * did not change it, because that is equally the search that worked.
+     *
+     * Called for every way out of this screen that fills something, whether the whole credential or one value: the
+     * user reached this screen because the guess was wrong, and picking an entry says which one is right regardless
+     * of how much of it they went on to use.
+     */
+    private fun rememberChoice(password: Password) {
+        val query = findViewById<EditText>(R.id.autofill_picker_search).text?.toString().orEmpty()
+        linkStore.remember(targetKey, password.id, query, passwords.mapTo(mutableSetOf()) { it.id })
+    }
+
     private fun returnCredential(password: Password) {
+        rememberChoice(password)
         val presentation = presentation(password.label)
         val dataset =
             AutofillDatasetFactory.credentialDataset(
@@ -120,6 +140,7 @@ class AutofillPickerActivity : BaseActivity() {
 
     private fun returnSingleValue(password: Password, value: String) {
         val targetId = focusedId ?: return
+        rememberChoice(password)
         val dataset = AutofillDatasetFactory.singleFieldDataset(targetId, value, presentation(password.label))
         returnDataset(dataset)
     }
@@ -220,6 +241,7 @@ class AutofillPickerActivity : BaseActivity() {
         const val EXTRA_USERNAME_IDS = "autofill_username_ids"
         const val EXTRA_PASSWORD_IDS = "autofill_password_ids"
         const val EXTRA_FOCUSED_ID = "autofill_focused_id"
+        const val EXTRA_TARGET_KEY = "autofill_target_key"
         const val EXTRA_INITIAL_QUERY = "autofill_initial_query"
     }
 }

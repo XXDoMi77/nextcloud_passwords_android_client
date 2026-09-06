@@ -147,6 +147,9 @@ class SettingsFragment : Fragment() {
         view.findViewById<ConstraintLayout>(R.id.autofillBlockedAppsSetting).setOnClickListener {
             showBlockedAppsDialog()
         }
+        view.findViewById<ConstraintLayout>(R.id.autofillRememberedSetting).setOnClickListener {
+            showRememberedDialog()
+        }
         view.findViewById<ConstraintLayout>(R.id.autofillHintWordsSetting).setOnClickListener { showHintWordsDialog() }
         setUpChromeAutofillRow(view)
 
@@ -332,6 +335,21 @@ class SettingsFragment : Fragment() {
             AutofillBlockedAppsDialog.show(requireActivity(), apps, blocked) { selected ->
                 viewModel.update { it.autofillBlockedApps = selected.sorted() }
             }
+        }
+    }
+
+    private fun showRememberedDialog() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            val links = viewModel.rememberedAutofillChoices()
+            val rows =
+                AutofillRememberedDialog.load(
+                    requireContext(),
+                    links,
+                    viewModel.passwordsForDisplay(),
+                    viewModel::faviconFor,
+                )
+            if (!isAdded) return@launch
+            AutofillRememberedDialog.show(requireActivity(), rows) { viewModel.keepRememberedAutofillChoices(it) }
         }
     }
 

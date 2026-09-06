@@ -35,6 +35,48 @@ class AutofillCredentialMatcherTest {
         assertEquals(listOf(credential), matches)
     }
 
-    private fun password(label: String, url: String) =
-        Password(label = label, url = url, username = "user", password = "secret")
+    @Test
+    fun aRememberedChoiceOutranksAPerfectHostMatch() {
+        val perfect = password("Perfect", "https://example.com", id = "perfect")
+        val chosen = password("Chosen", "https://somewhere-else.test", id = "chosen")
+
+        val matches =
+            AutofillCredentialMatcher.matchingPasswords(
+                listOf(perfect, chosen),
+                "example.com",
+                "Chrome",
+                linkedPasswordId = "chosen",
+            )
+
+        assertEquals(listOf(chosen, perfect), matches)
+    }
+
+    /** The reason someone opens the picker is usually that nothing matched, so the entry they chose has to be let in. */
+    @Test
+    fun aRememberedChoiceIsOfferedEvenWhenNothingAboutItMatches() {
+        val chosen = password("Nothing In Common", "", id = "chosen")
+
+        val matches =
+            AutofillCredentialMatcher.matchingPasswords(
+                listOf(chosen),
+                "example.com",
+                "Chrome",
+                linkedPasswordId = "chosen",
+            )
+
+        assertEquals(listOf(chosen), matches)
+    }
+
+    @Test
+    fun anEntryWithoutAnIdIsNotMistakenForTheRememberedOne() {
+        val unsaved = password("Never Synced", "https://somewhere-else.test")
+
+        val matches =
+            AutofillCredentialMatcher.matchingPasswords(listOf(unsaved), "example.com", "Chrome", linkedPasswordId = "")
+
+        assertTrue(matches.isEmpty())
+    }
+
+    private fun password(label: String, url: String, id: String = "") =
+        Password(id = id, label = label, url = url, username = "user", password = "secret")
 }

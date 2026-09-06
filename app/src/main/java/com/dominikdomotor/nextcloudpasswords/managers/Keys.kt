@@ -15,4 +15,7 @@ object Keys {
 
     /** The single-blob favicon cache this replaced; read once, then deleted. */
     const val LEGACY_FAVICON_BLOB: String = "favicons"
+
+    /** The entry the user picked by hand for each site or app, kept out of [DATA] so the two cannot clobber. */
+    const val AUTOFILL_LINKS: String = "autofill_links"
 }
