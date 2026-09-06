@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.dominikdomotor.nextcloudpasswords.R
 import com.dominikdomotor.nextcloudpasswords.data.ApiResult
 import com.dominikdomotor.nextcloudpasswords.data.PasswordRepository
+import com.dominikdomotor.nextcloudpasswords.data.ShareDirection
 import com.dominikdomotor.nextcloudpasswords.dataclasses.Settings
 import com.dominikdomotor.nextcloudpasswords.dataclasses.passwords.Password
 import com.dominikdomotor.nextcloudpasswords.dataclasses.shares.SharesItem
@@ -36,6 +37,14 @@ constructor(
     fun foldersSnapshot() = repository.folders.value
 
     fun sharesFor(passwordId: String): List<SharesItem> = repository.shares.value.filter { it.password == passwordId }
+
+    /** Shares of this password that this account granted to other people - the ones it may edit or revoke. */
+    fun outgoingSharesFor(passwordId: String): List<SharesItem> =
+        ShareDirection.outgoing(sharesFor(passwordId), settings.username)
+
+    /** The share this password arrived through, when somebody else granted it to this account. */
+    fun incomingShareFor(passwordId: String): SharesItem? =
+        ShareDirection.incoming(sharesFor(passwordId), settings.username)
 
     /** [onFailed] runs on failure so the editor can hand its fields back for a correction and a second try. */
     fun create(password: Password, onCreated: () -> Unit = {}, onFailed: () -> Unit = {}) {

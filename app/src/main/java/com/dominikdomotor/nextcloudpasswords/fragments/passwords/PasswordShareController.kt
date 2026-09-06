@@ -74,7 +74,7 @@ class PasswordShareController(
         list.asGroupedList()
 
         fun showMatches(query: String) {
-            val alreadyShared = actions.sharesFor(password.id).mapTo(hashSetOf()) { it.receiver.id }
+            val alreadyShared = actions.outgoingSharesFor(password.id).mapTo(hashSetOf()) { it.receiver.id }
             val matches =
                 recipients.values
                     .filterNot { it.id in alreadyShared }
@@ -145,7 +145,21 @@ class PasswordShareController(
         val container = shareContainer ?: return
         container.removeAllViews()
 
-        actions.sharesFor(password.id).forEach { share ->
+        // A password somebody else granted to this account is not something to list as a recipient - the receiver
+        // there is the current user, which used to read as having shared it with oneself. It gets a line saying who
+        // it came from, and none of the owner's controls.
+        actions.incomingShareFor(password.id)?.let { received ->
+            val line =
+                activity.layoutInflater.inflate(R.layout.password_edit_bottom_sheet_dialog_share_item, container, false)
+            line.findViewById<TextView>(R.id.share_name).text =
+                activity.getString(R.string.shared_with_you_by, received.owner.name)
+            listOf(R.id.allow_edit, R.id.allow_reshare, R.id.delete_share).forEach {
+                line.findViewById<View>(it).visibility = View.GONE
+            }
+            container.addView(line)
+        }
+
+        actions.outgoingSharesFor(password.id).forEach { share ->
             val shareView =
                 activity.layoutInflater.inflate(R.layout.password_edit_bottom_sheet_dialog_share_item, container, false)
             shareView.findViewById<TextView>(R.id.share_name).text = share.receiver.name

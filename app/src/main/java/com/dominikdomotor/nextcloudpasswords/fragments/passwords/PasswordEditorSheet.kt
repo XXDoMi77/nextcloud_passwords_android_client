@@ -16,6 +16,7 @@ import com.dominikdomotor.nextcloudpasswords.dataclasses.Settings
 import com.dominikdomotor.nextcloudpasswords.dataclasses.folders.Folder
 import com.dominikdomotor.nextcloudpasswords.dataclasses.passwords.Password
 import com.dominikdomotor.nextcloudpasswords.managers.PasswordGenerator
+import com.dominikdomotor.nextcloudpasswords.ui.padBottomForSystemBars
 import com.dominikdomotor.nextcloudpasswords.ui.AppDialog
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -46,6 +47,8 @@ class PasswordEditorSheet(
         val view = activity.layoutInflater.inflate(R.layout.password_edit_bottom_sheet_dialog, null)
         val fields = view.findViewById<LinearLayout>(R.id.myLinearLayout)
         val root = view.findViewById<ViewGroup>(R.id.passwordEditPopup)
+
+        view.findViewById<View>(R.id.nestedScrollView).padBottomForSystemBars()
 
         view.findViewById<View>(R.id.tableRowButtons).visibility = View.GONE
         view.findViewById<View>(R.id.tableRowTitle).visibility = View.VISIBLE

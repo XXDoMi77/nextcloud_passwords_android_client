@@ -84,6 +84,7 @@
     <string name="share_with">Share with</string>
     <string name="shared_with">Shared with</string>
     <string name="add_user">Add user</string>
+    <string name="shared_with_you_by">Shared with you by %1$s</string>
     <string name="search_users">Search users</string>
     <string name="no_users_found">No users found</string>
     <string name="share_password_with">Share this password with %1$s?</string>

@@ -18,6 +18,7 @@ import com.dominikdomotor.nextcloudpasswords.managers.CseCryptoManager
 import com.dominikdomotor.nextcloudpasswords.managers.PasswordGenerator
 import com.dominikdomotor.nextcloudpasswords.managers.UiMessageDuration
 import com.dominikdomotor.nextcloudpasswords.managers.UiMessageManager
+import com.dominikdomotor.nextcloudpasswords.ui.padBottomForSystemBars
 import com.dominikdomotor.nextcloudpasswords.ui.AppDialog
 import com.dominikdomotor.nextcloudpasswords.ui.PasswordStatus
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -45,6 +46,8 @@ class PasswordDetailsController(
         val dialog = BottomSheetDialog(activity)
         val view = activity.layoutInflater.inflate(R.layout.password_edit_bottom_sheet_dialog, null)
         val fields = view.findViewById<LinearLayout>(R.id.myLinearLayout)
+
+        view.findViewById<View>(R.id.nestedScrollView).padBottomForSystemBars()
 
         view.findViewById<View>(R.id.tableRowButtons).visibility = View.VISIBLE
         view.findViewById<View>(R.id.tableRowTitle).visibility = View.GONE
