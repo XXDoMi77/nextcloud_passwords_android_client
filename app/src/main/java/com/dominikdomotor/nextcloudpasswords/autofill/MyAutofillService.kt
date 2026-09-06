@@ -134,22 +134,17 @@ class MyAutofillService : AutofillService() {
             // Three rows per entry where the form allows it: fill both, fill only the username, fill only the
             // password. A suggestion row has one click target, so a row per choice is the only way each choice can be
             // a single tap - and the single-field rows are what rescues a field this service classified wrongly.
-            // The platform only shows a dataset that can fill the focused field, so targeting it is also what makes
-            // both rows appear together instead of one row per field.
-            // The request's own answer where it gives one, the structure's where it does not. Without the second
-            // half, a browser that names no focused field falls back to the detected fields - and then the row for
-            // the *other* kind of field cannot be shown at all, which is the whole point of having it.
-            val focusedTarget = fillContext.focusedId ?: fields.focusedId
+            // One single-field dataset per fillable field, rather than one for whichever field happened to be
+            // focused when the request arrived.
+            //
+            // A response is built once and then reused as the user moves between fields, and the platform shows only
+            // the datasets that can fill whatever is focused now. Targeting just the field focused at request time
+            // therefore worked on that field and silently dropped both rows on every other one - the user saw three
+            // choices in one box and one in the next. Covering each field costs a few more datasets in the response,
+            // none of which are ever shown together: the list stays three rows per entry wherever the cursor is.
             var inlineIndex = 0
             matches.forEach { password ->
                 val key = password.id.ifBlank { password.label.hashCode().toString() }
-                // Both single-field rows fill the field the user is standing in, whatever this service decided that
-                // field was. That is the entire point of them: the case they exist for is a username box read as a
-                // password, and a row that obeys the wrong verdict cannot correct it. Only when there is no focused
-                // field do they fall back to what was detected.
-                val usernameTargets = focusedTarget?.let(::listOf) ?: fields.usernameIds.toList()
-                val passwordTargets = focusedTarget?.let(::listOf) ?: fields.passwordIds.toList()
-
                 if (fields.usernameIds.isNotEmpty() && fields.passwordIds.isNotEmpty()) {
                     response.addDataset(
                         AutofillDatasetFactory.credentialDataset(
@@ -163,34 +158,38 @@ class MyAutofillService : AutofillService() {
                         )
                     )
                 }
-                if (usernameTargets.isNotEmpty()) {
-                    val fill = getString(AppR.string.autofill_fill_username)
+                // Whatever this service decided a field was, the user can put either value in it. That is the point
+                // of these two: the case they exist for is a username box read as a password, and a row that obeys
+                // the wrong verdict cannot correct it.
+                fillableIds.forEachIndexed { field, target ->
+                    val putUsername = getString(AppR.string.autofill_fill_username)
                     response.addDataset(
                         AutofillDatasetFactory.credentialDataset(
                             password.username,
                             password.password,
-                            usernameTargets,
+                            listOf(target),
                             emptyList(),
-                            createPresentation(password.label, fill, password, Badge.USERNAME),
-                            createInlinePresentation(password.label, fill, inlineRequest, inlineIndex++),
-                            "username-" + key,
+                            createPresentation(password.label, putUsername, password, Badge.USERNAME),
+                            createInlinePresentation(password.label, putUsername, inlineRequest, inlineIndex),
+                            "username-$key-$field",
                         )
                     )
-                }
-                if (passwordTargets.isNotEmpty()) {
-                    val fill = getString(AppR.string.autofill_fill_password)
+                    val putPassword = getString(AppR.string.autofill_fill_password)
                     response.addDataset(
                         AutofillDatasetFactory.credentialDataset(
                             password.username,
                             password.password,
                             emptyList(),
-                            passwordTargets,
-                            createPresentation(password.label, fill, password, Badge.PASSWORD),
-                            createInlinePresentation(password.label, fill, inlineRequest, inlineIndex++),
-                            "password-" + key,
+                            listOf(target),
+                            createPresentation(password.label, putPassword, password, Badge.PASSWORD),
+                            createInlinePresentation(password.label, putPassword, inlineRequest, inlineIndex + 1),
+                            "password-$key-$field",
                         )
                     )
                 }
+                // Only one field's pair is ever on screen at once, so the inline slots they occupy are the same two
+                // however many fields the form has.
+                inlineIndex += 2
             }
             fillableIds.forEach { id ->
                 response.addDataset(
