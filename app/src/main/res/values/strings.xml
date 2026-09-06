@@ -216,4 +216,5 @@
     <string name="autofill_inspector_clear_confirm">Delete all captured fill requests?</string>
     <string name="autofill_fill_username">Fill username</string>
     <string name="autofill_fill_password">Fill password</string>
+    <string name="autofill_fill_both">Fill username and password</string>
 </resources>

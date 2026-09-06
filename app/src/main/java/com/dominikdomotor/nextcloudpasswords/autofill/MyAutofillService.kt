@@ -143,6 +143,7 @@ class MyAutofillService : AutofillService() {
             // choices in one box and one in the next. Covering each field costs a few more datasets in the response,
             // none of which are ever shown together: the list stays three rows per entry wherever the cursor is.
             var inlineIndex = 0
+            val fillBoth = getString(AppR.string.autofill_fill_both)
             matches.forEach { password ->
                 val key = password.id.ifBlank { password.label.hashCode().toString() }
                 if (fields.usernameIds.isNotEmpty() && fields.passwordIds.isNotEmpty()) {
@@ -152,8 +153,14 @@ class MyAutofillService : AutofillService() {
                             password.password,
                             fields.usernameIds,
                             fields.passwordIds,
-                            createPresentation(password.label, password.username, password),
-                            createInlinePresentation(password.label, password.username, inlineRequest, inlineIndex++),
+                            createPresentation(password.label, password.username, password, action = fillBoth),
+                            createInlinePresentation(
+                                password.label,
+                                password.username,
+                                inlineRequest,
+                                inlineIndex++,
+                                fillBoth,
+                            ),
                             "credential-" + key,
                         )
                     )
@@ -161,28 +168,50 @@ class MyAutofillService : AutofillService() {
                 // Whatever this service decided a field was, the user can put either value in it. That is the point
                 // of these two: the case they exist for is a username box read as a password, and a row that obeys
                 // the wrong verdict cannot correct it.
+                //
+                // They read like the entry's own row rather than naming their action, because naming it cost more than
+                // it gave: two accounts on one site produced six rows of which four said the same thing, and none of
+                // them said which account they belonged to. The username identifies the entry, and on the username row
+                // it doubles as a preview of the value about to be pasted. What the row does is left to the corner
+                // badge, and to the icon's content description, since a badge says nothing out loud.
+                //
+                // Built once and handed to every field's dataset rather than rebuilt inside the loop. A presentation
+                // for a given entry and badge is identical whichever field it fills, and building one is not free: it
+                // composites a bitmap and assembles a Slice. Sharing the instances is how widget code has always
+                // pushed one RemoteViews to many widgets, and nothing here mutates them afterwards.
+                val putUsername = getString(AppR.string.autofill_fill_username)
+                val putPassword = getString(AppR.string.autofill_fill_password)
+                // An entry with no username has nothing to be identified by, so there the action is still the best line.
+                val usernameLine = password.username.ifBlank { putUsername }
+                val passwordLine = password.username.ifBlank { putPassword }
+                val usernameRow =
+                    createPresentation(password.label, usernameLine, password, Badge.USERNAME, action = putUsername)
+                val passwordRow =
+                    createPresentation(password.label, passwordLine, password, Badge.PASSWORD, action = putPassword)
+                val usernameChip =
+                    createInlinePresentation(password.label, usernameLine, inlineRequest, inlineIndex, putUsername)
+                val passwordChip =
+                    createInlinePresentation(password.label, passwordLine, inlineRequest, inlineIndex + 1, putPassword)
                 fillableIds.forEachIndexed { field, target ->
-                    val putUsername = getString(AppR.string.autofill_fill_username)
                     response.addDataset(
                         AutofillDatasetFactory.credentialDataset(
                             password.username,
                             password.password,
                             listOf(target),
                             emptyList(),
-                            createPresentation(password.label, putUsername, password, Badge.USERNAME),
-                            createInlinePresentation(password.label, putUsername, inlineRequest, inlineIndex),
+                            usernameRow,
+                            usernameChip,
                             "username-$key-$field",
                         )
                     )
-                    val putPassword = getString(AppR.string.autofill_fill_password)
                     response.addDataset(
                         AutofillDatasetFactory.credentialDataset(
                             password.username,
                             password.password,
                             emptyList(),
                             listOf(target),
-                            createPresentation(password.label, putPassword, password, Badge.PASSWORD),
-                            createInlinePresentation(password.label, putPassword, inlineRequest, inlineIndex + 1),
+                            passwordRow,
+                            passwordChip,
                             "password-$key-$field",
                         )
                     )
@@ -309,10 +338,14 @@ class MyAutofillService : AutofillService() {
         password: Password? = null,
         badge: Badge? = null,
         @DrawableRes icon: Int? = null,
+        action: String? = null,
     ): RemoteViews =
         RemoteViews(packageName, AppR.layout.autofill_dataset_presentation).apply {
             setTextViewText(AppR.id.autofill_presentation_title, title)
             setTextViewText(AppR.id.autofill_presentation_subtitle, subtitle)
+            // The rows for one entry differ only by their badge, which a screen reader cannot see. Naming the action
+            // on the icon is what keeps them apart, and it replaces the layout's fixed "password" on every row.
+            action?.let { setContentDescription(AppR.id.autofill_presentation_icon, it) }
 
             val favicon = password?.id?.let(faviconStore::peek)
             // The key badge carries the entry's security rating, in the colours the password list already uses, so the
@@ -353,6 +386,7 @@ class MyAutofillService : AutofillService() {
                 getString(AppR.string.search_all_passwords),
                 getString(AppR.string.app_name),
                 icon = AppR.drawable.autofill_presentation_search_24,
+                action = getString(AppR.string.search_all_passwords),
             ),
             createInlinePresentation(
                 getString(AppR.string.search_all_passwords),
@@ -392,6 +426,7 @@ class MyAutofillService : AutofillService() {
         subtitle: String,
         request: InlineSuggestionsRequest?,
         index: Int,
+        action: String? = null,
     ): InlinePresentation? {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R || request == null) return null
         if (index >= request.maxSuggestionCount) return null
@@ -413,7 +448,7 @@ class MyAutofillService : AutofillService() {
                 .setTitle(title)
                 .setSubtitle(subtitle)
                 .setStartIcon(Icon.createWithResource(this, AppR.drawable.icon_vpn_key_24))
-                .setContentDescription("$title, $subtitle")
+                .setContentDescription(listOfNotNull(title, subtitle, action).joinToString(", "))
                 .build()
                 .slice
         return InlinePresentation(slice, spec, false)
