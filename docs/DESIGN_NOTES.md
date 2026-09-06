@@ -134,10 +134,46 @@ appearance from the luminance underneath.
 
 ---
 
+## The login foreground service earns its keep
+
+`LoginPollingService` looks removable. Login Flow v2 ends on "Account connected - you can close this
+window" and never redirects, so the obvious simplification is to poll from `LoginActivity` while it is
+on screen and let the user close the tab. That was tried, and it breaks **two** things:
+
+**The app stops returning by itself.** Polling on the login screen cannot notice the login finishing,
+because while the browser is in front that screen is stopped. Only something running behind the
+browser can see it complete and bring the app forward - which is a background activity start, and the
+opt-in for one is available to a foreground service and not to a backgrounded app.
+
+**The first sync stops happening.** `ForegroundSyncCoordinator` syncs on `ProcessLifecycleOwner`
+foreground transitions and returns early when `loggedIn` is false. With the service, the login
+completes while the app is backgrounded and *then* the app is brought forward, so the transition
+happens after `loggedIn` becomes true and the sync runs. Polling on the login screen inverts that
+order: closing the tab foregrounds the process first, the coordinator finds `loggedIn` still false and
+gives up, and the credentials arrive a moment later with nothing left to trigger a fetch. The symptom
+is an empty list after a successful login, which does not look related to the service at all.
+
+The cost of keeping it is a Play **Foreground service permissions** declaration under Policy -> App
+content, which wants a description, a justification and a demonstration video. That is a one-time form.
+Removing the service would cost two behaviours the app is better for having.
+
+---
+
 ## Build
 
-**R8 stays off.** Enabling it made the app crash at startup inside Gson deserialisation. There is
-therefore no `mapping.txt` to upload, and that is expected rather than a missing step.
+**R8 is on, and the crash that once justified turning it off was a missing attribute.** An early
+attempt crashed at startup inside Gson, and the build was left unminified with a comment saying so.
+The cause was never `-keep`: `proguard-rules.pro` already kept every class and member in the app's
+package. R8 strips the `Signature` attribute unless told otherwise, and without it the element type
+of `List<Password>` erases - Gson then builds `LinkedTreeMap` rather than the data class. Keeping
+`Signature`, plus the reflective surfaces of Gson, JNA and lazysodium, is the whole fix. The release
+went from 15.5 MB to 5.6 MB.
+
+That blanket keep is gone too. Obfuscation buys an open-source app nothing, but it was also blocking
+*shrinking* of the app's own code, which is where the size actually was.
+
+A `mapping.txt` now exists at `app/build/outputs/mapping/release/`. Upload it with each Play release,
+or crash reports arrive obfuscated.
 
 **No native debug symbols are produced.** `debugSymbolLevel` only extracts symbols from native code
 this project builds; libsodium and libjnidispatch arrive pre-stripped from their AARs.

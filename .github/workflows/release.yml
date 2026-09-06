@@ -87,6 +87,9 @@ jobs:
           mkdir -p artifacts
           cp app/build/outputs/apk/release/app-release.apk "artifacts/npac-$version.apk"
           cp app/build/outputs/bundle/release/app-release.aab "artifacts/npac-$version.aab"
+          # R8 renames things, so a crash report is unreadable without the map that produced the
+          # build. Attached here because it belongs to this exact artifact and nothing else.
+          gzip -c app/build/outputs/mapping/release/mapping.txt > "artifacts/mapping-$version.txt.gz"
           echo "version=$version" >> "$GITHUB_OUTPUT"
           ( cd artifacts && sha256sum ./* > SHA256SUMS.txt )
 
@@ -117,6 +120,7 @@ jobs:
           else
             args+=(--generate-notes)
           fi
-          # The .aab is here for the record; only the .apk is installable directly.
+          # The .aab is here for the record; only the .apk is installable directly. The mapping is
+          # what makes a crash report from this build readable.
           gh release create "$tag" "${args[@]}" \
-            artifacts/npac-*.apk artifacts/npac-*.aab artifacts/SHA256SUMS.txt
+            artifacts/npac-*.apk artifacts/npac-*.aab artifacts/mapping-*.txt.gz artifacts/SHA256SUMS.txt

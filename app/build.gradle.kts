@@ -29,12 +29,13 @@ android {
         applicationId = "com.dominikdomotor.nextcloudpasswords"
         minSdk = 29
         targetSdk = 36
-        // versionName is semantic, with a pre-release tag while the 1.0 line settles; drop the suffix for the
-        // stable release. versionCode stays a plain counter: Play only enforces "larger than the last upload",
-        // and deriving it from the version number invites a collision the first time a beta and a patch want the
-        // same slot. Bump it on every upload, including a re-upload of the same versionName.
-        versionCode = 11
-        versionName = "1.0.0-beta01"
+        // versionName is semantic. versionCode stays a plain counter, deliberately not derived from it: Play
+        // only enforces "larger than the last upload", and a derived code invites a collision the first time a
+        // pre-release and a patch want the same slot. Bump it on every upload that Play might see - a code is
+        // spent the moment it is uploaded, and deleting the release does not hand it back. 11 went to Play as
+        // 1.0.0-beta01 and is gone.
+        versionCode = 12
+        versionName = "1.0.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -55,9 +56,12 @@ android {
     buildTypes {
         release {
             signingConfig = signingConfigs.findByName("release")
-            // R8 stays off: enabling it made the app crash on startup in Gson deserialisation.
-            isMinifyEnabled = false
-            isShrinkResources = false
+            // R8 is on. It was off because an earlier attempt crashed on startup inside Gson: R8 strips
+            // the Signature attribute unless told to keep it, and without it `List<Password>` erases and
+            // Gson builds LinkedTreeMap instead of the data class. proguard-rules.pro keeps that attribute
+            // and the reflective surfaces of Gson, JNA and lazysodium; nothing else needs holding open.
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
             // Only covers native code this project builds. libsodium and libjnidispatch arrive
             // pre-stripped from their AARs, so no symbol archive is produced today; kept so symbols
@@ -135,5 +139,8 @@ dependencies {
 
     // Testing
     testImplementation(libs.junit)
+    // Test only, so it is not in the shipped app: the stored-document shape test reads Kotlin
+    // properties rather than Java fields.
+    testImplementation(libs.kotlin.reflect)
     testImplementation(libs.kotlinx.coroutines.test)
 }

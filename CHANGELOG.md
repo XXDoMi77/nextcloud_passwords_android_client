@@ -3,7 +3,7 @@
 Notable changes per release. Versions follow [semantic versioning](https://semver.org); a
 pre-release tag means the line is still settling and belongs on a testing track.
 
-## 1.0.0-beta01
+## 1.0.0
 
 The first version under semantic versioning. It follows the "Preview 10" series, and carries a large
 architecture and interface rebuild.
@@ -40,6 +40,10 @@ out.
   trade is theirs.
 
 ### Changed
+
+- The release build is optimised and shrunk with R8, which takes the download from 15.5 MB to 5.6 MB.
+  It had been disabled after an earlier attempt crashed; the cause turned out to be a stripped type
+  attribute rather than anything fundamental.
 
 - Every dialog is one shared implementation with a consistent size, button row and destructive
   colour, replacing `AlertDialog`.
