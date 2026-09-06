@@ -2,6 +2,7 @@ package com.dominikdomotor.nextcloudpasswords.data
 
 import com.dominikdomotor.nextcloudpasswords.data.LoginCallbackParser.Result
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -48,5 +49,49 @@ class LoginCallbackParserTest {
     @Test
     fun blankValuesAreNotAcceptedAsCredentials() {
         assertTrue(LoginCallbackParser.parse("nc://login/server:&user:u&password:p") is Result.ReturnedToApp)
+    }
+
+    // isSameOrigin is what stops a link on any page from pointing the app at someone else's Nextcloud. `nc://` is a
+    // custom scheme with no assetlinks.json behind it, so the callback's server is only believed when it names the
+    // server the login was actually started against.
+
+    @Test
+    fun theSameServerIsAccepted() {
+        assertTrue(LoginCallbackParser.isSameOrigin("https://cloud.example.com", "https://cloud.example.com"))
+    }
+
+    @Test
+    fun spellingsThatDoNotChangeWhereCredentialsGoAreAccepted() {
+        val expected = "https://cloud.example.com"
+        assertTrue(LoginCallbackParser.isSameOrigin(expected, "https://cloud.example.com/"))
+        assertTrue(LoginCallbackParser.isSameOrigin(expected, "https://CLOUD.Example.COM"))
+        assertTrue(LoginCallbackParser.isSameOrigin(expected, "https://cloud.example.com:443"))
+        // A subdirectory install is the same server; whoever holds the host holds all of it anyway.
+        assertTrue(LoginCallbackParser.isSameOrigin(expected, "https://cloud.example.com/nextcloud"))
+    }
+
+    @Test
+    fun aDifferentHostIsRejected() {
+        val expected = "https://cloud.example.com"
+        assertFalse(LoginCallbackParser.isSameOrigin(expected, "https://evil.example"))
+        assertFalse(LoginCallbackParser.isSameOrigin(expected, "https://cloud.example.com.evil.example"))
+        assertFalse(LoginCallbackParser.isSameOrigin(expected, "https://evil.example/?x=cloud.example.com"))
+    }
+
+    @Test
+    fun aDifferentSchemeOrPortIsRejected() {
+        val expected = "https://cloud.example.com"
+        assertFalse(LoginCallbackParser.isSameOrigin(expected, "http://cloud.example.com"))
+        assertFalse(LoginCallbackParser.isSameOrigin(expected, "https://cloud.example.com:8443"))
+    }
+
+    /** No login in flight means nothing to match, and an unparseable side must never compare equal. */
+    @Test
+    fun anythingUnusableIsRejected() {
+        assertFalse(LoginCallbackParser.isSameOrigin("", "https://cloud.example.com"))
+        assertFalse(LoginCallbackParser.isSameOrigin("https://cloud.example.com", ""))
+        assertFalse(LoginCallbackParser.isSameOrigin("", ""))
+        assertFalse(LoginCallbackParser.isSameOrigin("not a url", "not a url"))
+        assertFalse(LoginCallbackParser.isSameOrigin("https://cloud.example.com", "cloud.example.com"))
     }
 }

@@ -68,7 +68,10 @@ class LoginActivity : BaseActivity() {
 
     override fun onDestroy() {
         if (!loginCompleted && isFinishing) {
-            storageManager.updateSettings { it.loginInProgress = false }
+            storageManager.updateSettings {
+                it.loginInProgress = false
+                it.pendingLoginServer = ""
+            }
             stopService(Intent(this, LoginPollingService::class.java))
         }
         super.onDestroy()
@@ -94,7 +97,10 @@ class LoginActivity : BaseActivity() {
                     connection.readTimeout = NETWORK_TIMEOUT_MILLIS
                     connection.doOutput = true
 
-                    storageManager.updateSettings { it.loginInProgress = true }
+                    storageManager.updateSettings {
+                        it.loginInProgress = true
+                        it.pendingLoginServer = server
+                    }
 
                     val redirectUri = "nc://login"
                     val postData =
@@ -115,12 +121,18 @@ class LoginActivity : BaseActivity() {
                         startPollingService(pollUrl, token)
                         withContext(Dispatchers.Main) { openInExternalBrowser(loginUrl) }
                     } else {
-                        storageManager.updateSettings { it.loginInProgress = false }
+                        storageManager.updateSettings {
+                            it.loginInProgress = false
+                            it.pendingLoginServer = ""
+                        }
                         Log.e("LoginActivity", "Unexpected response code: $responseCode")
                     }
                 }
             } catch (e: IOException) {
-                storageManager.updateSettings { it.loginInProgress = false }
+                storageManager.updateSettings {
+                    it.loginInProgress = false
+                    it.pendingLoginServer = ""
+                }
                 Log.e("LoginActivity", "Login request failed: ${e.message}")
             }
         }
@@ -140,12 +152,34 @@ class LoginActivity : BaseActivity() {
         ContextCompat.startForegroundService(this, serviceIntent)
     }
 
+    /**
+     * Acts on an `nc://login/...` intent, if that is what arrived.
+     *
+     * The inline form carries credentials in the URL, and this activity is browsable on a custom scheme, so anything
+     * that can open a link can deliver one. It is only acted on when it answers a login this app started, against the
+     * server the user typed. Without both checks a link on any page would be enough to swap the app onto someone
+     * else's Nextcloud: the list would be replaced by theirs on the next sync, autofill would offer their entries, and
+     * anything created afterwards would be created there.
+     *
+     * A rejected callback is not an error the user has to see - nothing changed - so it is logged and dropped. If a
+     * real login is still running, polling finishes it; if there is none, this activity was opened by the link alone
+     * and has nothing to show.
+     */
     private fun handleLoginCallback(uri: Uri?): Boolean =
         when (val result = LoginCallbackParser.parse(uri?.toString())) {
             is LoginCallbackParser.Result.NotACallback -> false
             is LoginCallbackParser.Result.ReturnedToApp -> true
             is LoginCallbackParser.Result.Credentials -> {
-                saveCredentials(result.server, result.username, result.appPassword)
+                val settings = storageManager.settings.value
+                val answersOurLogin =
+                    settings.loginInProgress && LoginCallbackParser.isSameOrigin(settings.pendingLoginServer, result.server)
+
+                if (answersOurLogin) {
+                    saveCredentials(result.server, result.username, result.appPassword)
+                } else {
+                    Log.w("LoginActivity", "Ignoring a login callback that does not answer a login started here")
+                    if (!settings.loginInProgress) finish()
+                }
                 true
             }
         }
@@ -157,6 +191,7 @@ class LoginActivity : BaseActivity() {
             it.token = token
             it.loggedIn = true
             it.loginInProgress = false
+            it.pendingLoginServer = ""
         }
 
         loginCompleted = true

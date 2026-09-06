@@ -50,6 +50,15 @@ out.
 - The offline store and its favicon cache are excluded from backup and device-to-device transfer,
   because the key that decrypts them never leaves the device.
 
+### Security
+
+- An `nc://login/...` callback carrying credentials is now only acted on when it answers a login this
+  app started, against the server the user entered. The scheme is a custom one with nothing proving
+  who may use it, so previously a link on any page could have pointed the app at another Nextcloud:
+  the password list would have been replaced by that server's on the next sync, autofill would have
+  offered its entries, and anything created afterwards would have been created there. Nothing was
+  ever uploaded to such a server - syncing only reads - and no release carried this.
+
 ### Fixed
 
 - A crash when certain search terms were typed, caused by stale layout positions being used to order

@@ -18,6 +18,10 @@ jobs:
   release:
     name: Build and publish
     runs-on: ubuntu-latest
+    # The signing secrets live on this environment rather than on the repository, and it requires a
+    # review before a run may read them. A workflow added by someone who got write access can still
+    # run, but it cannot reach the upload key without a human approving that specific run.
+    environment: release
 
     steps:
       - uses: actions/checkout@v7

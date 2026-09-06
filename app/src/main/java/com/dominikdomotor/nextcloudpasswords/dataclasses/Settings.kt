@@ -40,6 +40,13 @@ data class Settings(
     /** Whether text carries the seed's hue too, or stays a shade of black and white. Off is the readable default. */
     @SerializedName("tintedText") var tintedText: Boolean = false,
     @SerializedName("loginInProgress") var loginInProgress: Boolean = false,
+    /**
+     * The server the in-flight login was started against, or empty when none is.
+     *
+     * Recorded so an inline `nc://login/...` callback can be checked against it. Kept in settings rather than in the
+     * activity because the browser can take the activity down while the user authenticates.
+     */
+    @SerializedName("pendingLoginServer") var pendingLoginServer: String = "",
 ) {
     companion object {
         const val DEFAULT_SYMBOLS = "!@#$%&*._-"
