@@ -9,7 +9,6 @@ val releaseKeystoreProperties =
 
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.hilt.android)
     alias(libs.plugins.kotlinAndroidKsp)
     alias(libs.plugins.ktfmt)
@@ -126,9 +125,6 @@ dependencies {
             type = "aar"
         }
     }
-
-    // Security
-    implementation(libs.androidx.security.crypto)
 
     // Hilt
     implementation(libs.hilt.android)

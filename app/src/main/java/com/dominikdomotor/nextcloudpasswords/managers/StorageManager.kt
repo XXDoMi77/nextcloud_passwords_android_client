@@ -64,10 +64,15 @@ class StorageManager @Inject constructor(private val encryptedFileManager: Encry
     private fun ensureLoadedLocked() {
         if (loaded) return
         val startedAt = System.currentTimeMillis()
+        // Asked before reading, because readData() answers null to two different questions: a fresh
+        // install with no document, and a document that is there but cannot be read. Only the second
+        // one owes the user an explanation, and since the AndroidX reader was removed that is exactly
+        // what a file written by an older release now looks like.
+        val hadDocument = encryptedFileManager.exists(Keys.DATA)
         val stored = readData()
         loaded = true
 
-        if (stored != null && stored.schemaVersion < SCHEMA_VERSION) {
+        if (hadDocument && (stored == null || stored.schemaVersion < SCHEMA_VERSION)) {
             discardForUpgradeLocked()
             return
         }

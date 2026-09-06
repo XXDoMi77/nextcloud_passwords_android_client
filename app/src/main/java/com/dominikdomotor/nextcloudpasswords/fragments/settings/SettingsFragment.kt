@@ -163,7 +163,6 @@ class SettingsFragment : Fragment() {
             remove = view.findViewById(R.id.passwordLengthSettingRemove),
             add = view.findViewById(R.id.passwordLengthSettingAdd),
             min = MIN_PASSWORD_LENGTH,
-            max = MAX_NUMERIC_SETTING,
         ) { value ->
             viewModel.update { it.passwordLength = value }
         }
@@ -173,7 +172,6 @@ class SettingsFragment : Fragment() {
             remove = view.findViewById(R.id.includeSymbolsSettingRemove),
             add = view.findViewById(R.id.includeSymbolsSettingAdd),
             min = 0,
-            max = MAX_NUMERIC_SETTING,
         ) { value ->
             viewModel.update { it.includedSymbolsQuantity = value }
         }
@@ -315,12 +313,11 @@ class SettingsFragment : Fragment() {
         remove: ImageButton,
         add: ImageButton,
         min: Int,
-        max: Int,
         onChanged: (Int) -> Unit,
     ) {
         fun step(delta: Int) {
             val current = number.text.toString().toIntOrNull() ?: min
-            val next = (current + delta).coerceIn(min, max)
+            val next = (current + delta).coerceIn(min, MAX_NUMERIC_SETTING)
             if (next != current) {
                 number.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
                 number.setText(next.toString())
@@ -330,7 +327,7 @@ class SettingsFragment : Fragment() {
         add.setOnClickListener { step(1) }
         number.doAfterTextChanged { text ->
             if (applyingState) return@doAfterTextChanged
-            text?.toString()?.toIntOrNull()?.takeIf { it in min..max }?.let(onChanged)
+            text?.toString()?.toIntOrNull()?.takeIf { (it in min..MAX_NUMERIC_SETTING) }?.let(onChanged)
         }
     }
 

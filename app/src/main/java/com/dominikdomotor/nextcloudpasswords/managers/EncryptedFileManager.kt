@@ -3,8 +3,6 @@ package com.dominikdomotor.nextcloudpasswords.managers
 import android.content.Context
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
-import androidx.security.crypto.EncryptedFile
-import androidx.security.crypto.MasterKey
 import com.dominikdomotor.nextcloudpasswords.GF
 import dagger.hilt.android.qualifiers.ApplicationContext
 import jakarta.inject.Inject
@@ -19,20 +17,9 @@ import javax.crypto.KeyGenerator
 import javax.crypto.SecretKey
 import javax.crypto.spec.GCMParameterSpec
 
-/**
- * Stores files in the app's private directory, encrypted with an AES-256-GCM key held in the Android Keystore.
- *
- * Files written before this scheme existed used AndroidX [EncryptedFile]; [readBytes] transparently migrates those on
- * first read. That migration path can be removed once a release window has passed.
- */
+/** Stores files in the app's private directory, encrypted with an AES-256-GCM key held in the Android Keystore. */
 @Singleton
 class EncryptedFileManager @Inject constructor(@param:ApplicationContext private val applicationContext: Context) {
-    // The AndroidX EncryptedFile/MasterKey APIs are deprecated, but they are the only way to read
-    // files written before this class moved to its own Keystore-backed format. Migration-only.
-    @Suppress("DEPRECATION")
-    private val legacyMasterKey by lazy {
-        MasterKey.Builder(applicationContext).setKeyScheme(MasterKey.KeyScheme.AES256_GCM).build()
-    }
 
     @Synchronized
     fun deleteAllFiles() {
@@ -60,10 +47,6 @@ class EncryptedFileManager @Inject constructor(@param:ApplicationContext private
     /** True only for a regular file, so a directory of the same name is not mistaken for content. */
     fun isFile(filename: String): Boolean = resolve(filename).isFile
 
-    /** Names of the files directly inside [directory], or an empty list when it does not exist. */
-    fun listFiles(directory: String): List<String> =
-        resolve(directory).listFiles()?.filter(File::isFile)?.map(File::getName).orEmpty()
-
     @Synchronized fun read(filename: String): String = readBytes(filename)?.decodeToString() ?: Keys.NOT_FOUND
 
     @Synchronized
@@ -81,11 +64,7 @@ class EncryptedFileManager @Inject constructor(@param:ApplicationContext private
             if (bytes.startsWith(MAGIC)) {
                 return decrypt(bytes)
             }
-
-            // Legacy AndroidX EncryptedFile payload: read it, then rewrite in the current format.
-            val content = readLegacyFile(file)
-            storeBytes(filename, content)
-            content
+            null
         } catch (e: Exception) {
             e.printStackTrace()
             GF.println("Something went wrong when trying to load data for $filename")
@@ -123,18 +102,6 @@ class EncryptedFileManager @Inject constructor(@param:ApplicationContext private
         file.delete()
     }
 
-    @Suppress("DEPRECATION")
-    private fun readLegacyFile(file: File): ByteArray =
-        EncryptedFile.Builder(
-                applicationContext,
-                file,
-                legacyMasterKey,
-                EncryptedFile.FileEncryptionScheme.AES256_GCM_HKDF_4KB,
-            )
-            .build()
-            .openFileInput()
-            .use { it.readBytes() }
-
     private fun encrypt(content: ByteArray): ByteArray {
         val cipher = Cipher.getInstance(TRANSFORMATION)
         cipher.init(Cipher.ENCRYPT_MODE, getOrCreateSecretKey())
@@ -144,7 +111,7 @@ class EncryptedFileManager @Inject constructor(@param:ApplicationContext private
     private fun decrypt(bytes: ByteArray): ByteArray {
         val ivSize = bytes[MAGIC.size].toInt()
         val ivStart = MAGIC.size + 1
-        require(ivSize in 12..16 && bytes.size > ivStart + ivSize) { "Invalid encrypted file format" }
+        require((ivSize in 12..16) && (bytes.size > ivStart + ivSize)) { "Invalid encrypted file format" }
         val cipher = Cipher.getInstance(TRANSFORMATION)
         cipher.init(
             Cipher.DECRYPT_MODE,
@@ -177,7 +144,7 @@ class EncryptedFileManager @Inject constructor(@param:ApplicationContext private
     }
 
     private fun ByteArray.startsWith(prefix: ByteArray): Boolean =
-        size > prefix.size && prefix.indices.all { this[it] == prefix[it] }
+        (size > prefix.size) && prefix.indices.all { this[it] == prefix[it] }
 
     private companion object {
         const val ANDROID_KEY_STORE = "AndroidKeyStore"
