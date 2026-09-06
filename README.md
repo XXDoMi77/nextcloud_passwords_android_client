@@ -24,6 +24,7 @@ welcome — see [CHANGELOG.md](CHANGELOG.md) for what has changed.
 
 <p float="left">
   <img alt="Password list" src="docs/screenshots/01.png" width="150" />
+  <img alt="Autofill" src="docs/screenshots/02.png" width="150" />
   <img alt="Search" src="docs/screenshots/03.png" width="150" />
   <img alt="Creating a password" src="docs/screenshots/04.png" width="150" />
   <img alt="Password generation settings" src="docs/screenshots/05.png" width="150" />
