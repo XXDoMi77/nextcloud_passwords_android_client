@@ -34,8 +34,8 @@ android {
         // pre-release and a patch want the same slot. Bump it on every upload that Play might see - a code is
         // spent the moment it is uploaded, and deleting the release does not hand it back. 11 went to Play as
         // 1.0.0-beta01 and is gone.
-        versionCode = 12
-        versionName = "1.0.0"
+        versionCode = 13
+        versionName = "1.0.1"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 

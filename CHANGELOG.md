@@ -3,6 +3,43 @@
 Notable changes per release. Versions follow [semantic versioning](https://semver.org); a
 pre-release tag means the line is still settling and belongs on a testing track.
 
+## 1.0.1
+
+A round of autofill work, most of it prompted by fill requests that named the wrong field or none at
+all.
+
+### Added
+
+- **Form level field detection.** Fields are now judged against the rest of the form rather than one
+  view at a time, and a username and password box are paired by where they sit on screen when
+  nothing else identifies them. Independently written, but the approach is owed to Keepass2Android.
+- **Three ways to use a suggestion.** Every entry offers filling both fields, only the username, or
+  only the password, so a box this app read wrongly can still be filled correctly. Each row wears the
+  entry's favicon with a small person or key badge, the same pair the password list uses.
+- **Remembered choices.** Picking an entry from "Search all passwords" files it against that site or
+  app, together with what you typed to find it: the entry is offered first next time, ahead of every
+  guess, and the picker opens with the same search. A new settings screen lists everything this has
+  happened for and clears any of it.
+- **A Chrome walkthrough.** Chrome 121 and later ignore a third party autofill service until the user
+  turns it on in Chrome's own settings, silently. Settings now says so, with the steps, and stops
+  offering the walkthrough once Chrome has actually asked.
+
+### Changed
+
+- Suggestion rows identify themselves by username rather than by naming their action, so two accounts
+  on one site can be told apart. What each row does moved to its badge and to the text a screen
+  reader announces.
+- The picker no longer decodes every stored favicon when it opens; it decodes the rows it shows, off
+  the main thread.
+- A dialog's body now starts where its title starts.
+
+### Fixed
+
+- Passwords shared with you were listed as shared by you.
+- The share list was cut off in the password detail sheet.
+- The single field rows appeared on one field and were silently missing from every other one.
+- Deprecated status and navigation bar colour calls that Android 15 warns about.
+
 ## 1.0.0
 
 The first version under semantic versioning. It follows the "Preview 10" series, and carries a large
