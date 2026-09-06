@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    The four steps that let Chrome hand a fill request to this app. The screenshots are English
+    whatever the app's language: they show where to tap, and the caption under each one carries the
+    meaning, so a reader who cannot read the picture still knows what to do.
+-->
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingStart="4dp"
+        android:paddingEnd="4dp"
+        android:paddingBottom="8dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:text="@string/chrome_autofill_intro"
+            android:textColor="?attr/colorOnSurfaceVariant"
+            android:textSize="14sp" />
+
+        <TextView
+            style="@style/ChromeAutofillStepCaption"
+            android:text="@string/chrome_autofill_step_1" />
+
+        <ImageView
+            style="@style/ChromeAutofillStepImage"
+            android:contentDescription="@string/chrome_autofill_step_1"
+            android:src="@drawable/chrome_autofill_step_1" />
+
+        <TextView
+            style="@style/ChromeAutofillStepCaption"
+            android:text="@string/chrome_autofill_step_2" />
+
+        <ImageView
+            style="@style/ChromeAutofillStepImage"
+            android:contentDescription="@string/chrome_autofill_step_2"
+            android:src="@drawable/chrome_autofill_step_2" />
+
+        <TextView
+            style="@style/ChromeAutofillStepCaption"
+            android:text="@string/chrome_autofill_step_3" />
+
+        <ImageView
+            style="@style/ChromeAutofillStepImage"
+            android:contentDescription="@string/chrome_autofill_step_3"
+            android:src="@drawable/chrome_autofill_step_3" />
+
+        <TextView
+            style="@style/ChromeAutofillStepCaption"
+            android:text="@string/chrome_autofill_step_4" />
+
+        <ImageView
+            style="@style/ChromeAutofillStepImage"
+            android:contentDescription="@string/chrome_autofill_step_4"
+            android:src="@drawable/chrome_autofill_step_4" />
+    </LinearLayout>
+</ScrollView>

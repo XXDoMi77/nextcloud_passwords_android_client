@@ -40,4 +40,5 @@
     <color name="destructive_container">#FFFFDAD6</color>
     <color name="on_destructive_container">#FF410002</color>
 
+    <color name="chrome_autofill_step_frame">#14000000</color>
 </resources>

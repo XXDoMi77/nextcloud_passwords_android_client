@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Only the folder the inspector writes a shared capture into; nothing else is reachable. -->
+<paths>
+    <cache-path
+        name="shared-captures"
+        path="shared-captures/" />
+</paths>

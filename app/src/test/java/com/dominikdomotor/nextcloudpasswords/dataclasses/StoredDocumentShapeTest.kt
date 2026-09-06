@@ -75,6 +75,7 @@ class StoredDocumentShapeTest {
               autofillBlockedApps: kotlin.collections.List<kotlin.String>
               autofillManualFallback: kotlin.Boolean
               autofillPasswordWords: kotlin.collections.List<kotlin.String>
+              autofillSeenChrome: kotlin.Boolean
               autofillUsernameWords: kotlin.collections.List<kotlin.String>
               basicAuth: kotlin.String
               clearClipboard: kotlin.Boolean

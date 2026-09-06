@@ -53,6 +53,14 @@
     <string name="set_autofill_service">Automatisches Ausfüllen einstellen</string>
     <string name="clear_offline_storage">Offline Speicher entleeren</string>
     <string name="open_autofill_options_in_phone_settings">Öffne die Einstellungen für Automatisches Ausfüllen</string>
+    <string name="chrome_autofill_setup">Autofill in Chrome</string>
+    <string name="chrome_autofill_setup_description">Chrome braucht eine zusätzliche Einstellung, bevor es deine Passwörter anbietet</string>
+    <string name="chrome_autofill_setup_action_needed">Chrome hat diese App noch nie nach einem Passwort gefragt. Zum Aktivieren tippen.</string>
+    <string name="chrome_autofill_intro">Chrome verwendet keinen anderen Autofill-Dienst, bis du es erlaubst. Das betrifft nur Chrome — andere Apps funktionieren bereits.</string>
+    <string name="chrome_autofill_step_1">Öffne Chrome, tippe auf die Menüschaltfläche und wähle „Einstellungen“.</string>
+    <string name="chrome_autofill_step_2">Tippe unter „Passwörter und Autofill“ auf „Autofill-Services“.</string>
+    <string name="chrome_autofill_step_3">Wähle „Autofill mit einem anderen Dienst“.</string>
+    <string name="chrome_autofill_step_4">Tippe auf „Chrome neu starten“. Die Änderung greift erst nach dem Neustart.</string>
     <string name="clear_offline_password_storage">Leere den Offline-Passwortspeicher</string>
     <string name="expand_bottom_sheet">Bottom Sheet erweitern</string>
     <string name="expand_bottom_sheet_description">Das Passwort-Details-Bottom-Sheet automatisch im Vollbildmodus öffnen</string>
@@ -195,4 +203,13 @@
     <string name="clear_clipboard_description">Ein kopiertes Passwort nach einer Weile wieder aus der Zwischenablage entfernen</string>
     <string name="clipboard_delay">Leeren nach</string>
     <string name="clipboard_delay_description">Sekunden, die ein kopiertes Passwort in der Zwischenablage bleibt (Standard: 30)</string>
+    <string name="autofill_inspector">Autofill-Inspektor</string>
+    <string name="autofill_inspector_description">Zeigt, was der Autofill-Dienst gesehen hat – zur Fehlersuche bei der Felderkennung</string>
+    <string name="autofill_inspector_empty">Noch keine Anfragen aufgezeichnet. Tippe in einer anderen App in ein Anmeldefeld und komm zurück.</string>
+    <string name="autofill_inspector_field">Feld</string>
+    <string name="autofill_inspector_field_count">%1$d Felder</string>
+    <string name="autofill_inspector_no_properties">Dieser Knoten hat keine nennenswerten Eigenschaften.</string>
+    <string name="autofill_inspector_share">Aufzeichnung teilen</string>
+    <string name="autofill_inspector_clear">Aufzeichnungen löschen</string>
+    <string name="autofill_inspector_clear_confirm">Alle aufgezeichneten Anfragen löschen?</string>
 </resources>

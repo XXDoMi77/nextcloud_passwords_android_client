@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Debug-only additions.
+
+    The autofill inspector and the provider that shares a capture exist for diagnosing why a field is
+    not recognised. Declaring them here rather than in the main manifest keeps them out of the
+    shipped app entirely: a release build has no such activity and no such provider, and R8 drops the
+    classes because the only code that reaches them sits behind `BuildConfig.DEBUG`.
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <application>
+        <activity
+            android:name=".activities.AutofillInspectorActivity"
+            android:exported="false"
+            android:label="@string/autofill_inspector"
+            android:theme="@style/Theme.NextcloudPasswords" />
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+    </application>
+</manifest>

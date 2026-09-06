@@ -20,6 +20,15 @@ data class Settings(
     @SerializedName("expandBottomSheet") var expandBottomSheet: Boolean = true,
     @SerializedName("animateSearchResults") var animateSearchResults: Boolean = true,
     @SerializedName("inlineAutofillSuggestions") var inlineAutofillSuggestions: Boolean = false,
+    /**
+     * Whether Chrome has ever asked this app to fill something.
+     *
+     * Chrome does not use a third-party autofill service until the user opts in, in Chrome's own settings, and until
+     * they do it simply never asks - there is no error and nothing to see. Recording the first real request is the
+     * only way to tell "not set up" apart from "set up and working", so the walkthrough can be offered to the people
+     * who need it and stay out of the way for everyone else.
+     */
+    @SerializedName("autofillSeenChrome") var autofillSeenChrome: Boolean = false,
     @SerializedName("autofillManualFallback") var autofillManualFallback: Boolean = false,
     @SerializedName("autofillBlockedApps") var autofillBlockedApps: List<String> = emptyList(),
     @SerializedName("autofillUsernameWords") var autofillUsernameWords: List<String> = HintWords.DEFAULT_USERNAME_WORDS,

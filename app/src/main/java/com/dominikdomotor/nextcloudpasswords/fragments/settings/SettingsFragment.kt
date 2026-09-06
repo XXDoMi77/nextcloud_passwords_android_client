@@ -24,6 +24,8 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.dominikdomotor.nextcloudpasswords.R
+import com.dominikdomotor.nextcloudpasswords.activities.AutofillInspectorActivity
+import com.dominikdomotor.nextcloudpasswords.autofill.debug.AutofillCaptureStore
 import com.dominikdomotor.nextcloudpasswords.activities.EnterServerURLActivity
 import com.dominikdomotor.nextcloudpasswords.data.AccentColor
 import com.dominikdomotor.nextcloudpasswords.dataclasses.Settings
@@ -146,6 +148,44 @@ class SettingsFragment : Fragment() {
             showBlockedAppsDialog()
         }
         view.findViewById<ConstraintLayout>(R.id.autofillHintWordsSetting).setOnClickListener { showHintWordsDialog() }
+        setUpChromeAutofillRow(view)
+
+        // Debug builds only. `enabled` is a compile time constant, so the row, the activity it opens and the capture
+        // machinery behind it are all removed from the shipped app.
+        if (AutofillCaptureStore.enabled) {
+            view.findViewById<ConstraintLayout>(R.id.autofillInspectorSetting).apply {
+                visibility = View.VISIBLE
+                setOnClickListener { startActivity(Intent(requireContext(), AutofillInspectorActivity::class.java)) }
+            }
+        }
+    }
+
+    /**
+     * The Chrome walkthrough, shown only to the people it applies to.
+     *
+     * Hidden when Chrome is not installed, and once Chrome has actually sent a fill request - at that point the opt-in
+     * has been made and repeating the instructions would be noise. Until then the row carries a warning line, because
+     * the failure it describes is completely silent: Chrome simply never asks, and nothing in the app can notice.
+     */
+    private fun setUpChromeAutofillRow(view: View) {
+        val row = view.findViewById<ConstraintLayout>(R.id.chromeAutofillSetting)
+        if (!ChromeAutofillDialog.chromeIsInstalled(requireContext())) {
+            row.visibility = View.GONE
+            return
+        }
+        row.setOnClickListener { ChromeAutofillDialog.show(requireActivity()) }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.settings.collect { settings ->
+                    val description = view.findViewById<TextView>(R.id.chromeAutofillSettingDescription)
+                    description.setText(
+                        if (settings.autofillSeenChrome) R.string.chrome_autofill_setup_description
+                        else R.string.chrome_autofill_setup_action_needed
+                    )
+                }
+            }
+        }
     }
 
     private fun showHintWordsDialog() {

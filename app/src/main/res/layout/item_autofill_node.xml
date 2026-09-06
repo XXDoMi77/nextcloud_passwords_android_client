@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    One node of the assist structure. Depth is expressed as start padding set in code, because the
+    tree is arbitrarily deep and a layout cannot know how far in a row sits.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/nodeRow"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?android:attr/selectableItemBackground"
+    android:gravity="center_vertical"
+    android:minHeight="44dp"
+    android:orientation="horizontal"
+    android:paddingEnd="12dp">
+
+    <TextView
+        android:id="@+id/nodeCaret"
+        android:layout_width="24dp"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textColor="?attr/colorOnSurfaceVariant"
+        android:textSize="12sp" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:paddingTop="6dp"
+        android:paddingBottom="6dp">
+
+        <TextView
+            android:id="@+id/nodeLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="?attr/colorOnSurface"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/nodeSubtitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="?attr/colorOnSurfaceVariant"
+            android:textSize="12sp"
+            android:visibility="gone" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/nodeVerdict"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:textSize="11sp"
+        android:textStyle="bold"
+        android:visibility="gone" />
+</LinearLayout>

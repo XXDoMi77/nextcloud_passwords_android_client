@@ -53,6 +53,14 @@
     <string name="set_autofill_service">Set autofill service</string>
     <string name="clear_offline_storage">Clear offline storage</string>
     <string name="open_autofill_options_in_phone_settings">Open autofill options in phone settings</string>
+    <string name="chrome_autofill_setup">Autofill in Chrome</string>
+    <string name="chrome_autofill_setup_description">Chrome needs one more setting before it offers your passwords</string>
+    <string name="chrome_autofill_setup_action_needed">Chrome has not asked this app for a password yet. Tap to see how to turn it on.</string>
+    <string name="chrome_autofill_intro">Chrome will not use another autofill service until you allow it. This affects Chrome only — other apps already work.</string>
+    <string name="chrome_autofill_step_1">Open Chrome, tap the menu button and choose Settings.</string>
+    <string name="chrome_autofill_step_2">Under “Passwords and Autofill”, tap “Autofill services”.</string>
+    <string name="chrome_autofill_step_3">Choose “Autofill using another service”.</string>
+    <string name="chrome_autofill_step_4">Tap “Restart Chrome”. The change only takes effect once Chrome has restarted.</string>
     <string name="clear_offline_password_storage">Clear offline password storage</string>
     <string name="expand_bottom_sheet">Expand bottom sheet</string>
     <string name="expand_bottom_sheet_description">Automatically expand the password details bottom sheet to full screen</string>
@@ -197,4 +205,13 @@
     <string name="clear_clipboard_description">Remove a copied password from the clipboard again after a while</string>
     <string name="clipboard_delay">Clear after</string>
     <string name="clipboard_delay_description">Seconds a copied password stays on the clipboard (default: 30)</string>
+    <string name="autofill_inspector">Autofill inspector</string>
+    <string name="autofill_inspector_description">See what the autofill service saw, for diagnosing field detection</string>
+    <string name="autofill_inspector_empty">No fill requests captured yet. Focus a login field in another app, then come back.</string>
+    <string name="autofill_inspector_field">Field</string>
+    <string name="autofill_inspector_field_count">%1$d fields</string>
+    <string name="autofill_inspector_no_properties">This node has no properties worth showing.</string>
+    <string name="autofill_inspector_share">Share capture</string>
+    <string name="autofill_inspector_clear">Delete captures</string>
+    <string name="autofill_inspector_clear_confirm">Delete all captured fill requests?</string>
 </resources>

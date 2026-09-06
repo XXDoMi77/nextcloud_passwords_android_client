@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/colorSurface"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/inspectorHeader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="16dp"
+        android:paddingEnd="8dp"
+        android:paddingTop="12dp"
+        android:paddingBottom="12dp">
+
+        <TextView
+            android:id="@+id/inspectorTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textColor="?attr/colorOnSurface"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <ImageButton
+            android:id="@+id/inspectorShare"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="?android:selectableItemBackgroundBorderless"
+            android:contentDescription="@string/autofill_inspector_share"
+            android:padding="12dp"
+            android:src="@drawable/icon_share_outline_24"
+            android:visibility="gone"
+            app:tint="?attr/colorOnSurface"
+            xmlns:app="http://schemas.android.com/apk/res-auto" />
+
+        <ImageButton
+            android:id="@+id/inspectorClear"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="?android:selectableItemBackgroundBorderless"
+            android:contentDescription="@string/autofill_inspector_clear"
+            android:padding="12dp"
+            android:src="@drawable/icon_delete_24"
+            app:tint="?attr/colorOnSurface"
+            xmlns:app="http://schemas.android.com/apk/res-auto" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/inspectorEmpty"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:text="@string/autofill_inspector_empty"
+        android:textColor="?attr/colorOnSurfaceVariant"
+        android:textSize="14sp"
+        android:visibility="gone" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/inspectorList"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:clipToPadding="false" />
+</LinearLayout>

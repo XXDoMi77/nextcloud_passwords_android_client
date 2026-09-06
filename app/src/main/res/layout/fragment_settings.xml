@@ -111,6 +111,143 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/chromeAutofillSetting"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true">
+
+                <ImageView
+                    android:id="@+id/chromeAutofillSettingIcon"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginStart="16dp"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/icon_vpn_key_24"
+                    app:layout_constraintBottom_toBottomOf="@+id/chromeAutofillSettingDescription"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/chromeAutofillSettingLabel"
+                    app:tint="?attr/colorOnSurface" />
+
+                <TextView
+                    android:id="@+id/chromeAutofillSettingLabel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:text="@string/chrome_autofill_setup"
+                    android:textColor="?attr/colorOnSurface"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toStartOf="@+id/chromeAutofillSettingActionIcon"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toEndOf="@+id/chromeAutofillSettingIcon"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/chromeAutofillSettingDescription"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:autoSizeTextType="none"
+                    android:breakStrategy="high_quality"
+                    android:text="@string/chrome_autofill_setup_description"
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    android:textSize="14sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/chromeAutofillSettingActionIcon"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="@+id/chromeAutofillSettingLabel"
+                    app:layout_constraintTop_toBottomOf="@+id/chromeAutofillSettingLabel"
+                    app:layout_constraintVertical_bias="0.0" />
+
+                <ImageView
+                    android:id="@+id/chromeAutofillSettingActionIcon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/icon_open_in_new_24"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:tint="?attr/colorOnSurface" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/autofillInspectorSetting"
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true">
+
+                <ImageView
+                    android:id="@+id/autofillInspectorSettingIcon"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginStart="16dp"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/icon_vpn_key_24"
+                    app:layout_constraintBottom_toBottomOf="@+id/autofillInspectorSettingDescription"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/autofillInspectorSettingLabel"
+                    app:tint="?attr/colorOnSurface" />
+
+                <TextView
+                    android:id="@+id/autofillInspectorSettingLabel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:text="@string/autofill_inspector"
+                    android:textColor="?attr/colorOnSurface"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toStartOf="@+id/autofillInspectorSettingActionIcon"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toEndOf="@+id/autofillInspectorSettingIcon"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/autofillInspectorSettingDescription"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:autoSizeTextType="none"
+                    android:breakStrategy="high_quality"
+                    android:text="@string/autofill_inspector_description"
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    android:textSize="14sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/autofillInspectorSettingActionIcon"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="@+id/autofillInspectorSettingLabel"
+                    app:layout_constraintTop_toBottomOf="@+id/autofillInspectorSettingLabel"
+                    app:layout_constraintVertical_bias="0.0" />
+
+                <ImageView
+                    android:id="@+id/autofillInspectorSettingActionIcon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/icon_open_in_new_24"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:tint="?attr/colorOnSurface" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/inlineAutofillSuggestionsSetting"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

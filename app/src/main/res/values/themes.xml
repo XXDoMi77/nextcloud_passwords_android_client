@@ -86,15 +86,14 @@
         <item name="elevationOverlayEnabled">false</item>
 
         <!--
-            Both system bars are transparent, so their colour is whatever the app paints behind them.
-            android:statusBarColor has been ignored since API 35 and the app targets 36; setting both here
-            makes every version from 29 up behave the same way rather than only the newest. The two
-            contrast flags switch off the scrim the platform would otherwise draw over a transparent bar,
-            which would show up as a grey band that follows neither the palette nor the layout.
+            Both system bars are transparent, so their colour is whatever the app paints behind them. That is
+            `WindowCompat.enableEdgeToEdge`'s doing, in BaseActivity, on every version this app supports -
+            android:statusBarColor and android:navigationBarColor used to be set here as well, which only
+            repeated it through the setters Android 15 deprecated and which Play's pre-launch report flags.
+            The two contrast flags stay: they switch off the scrim the platform would otherwise draw over a
+            transparent bar, which showed up as a grey band following neither the palette nor the layout.
             SystemBars.kt then picks dark or light icons from the luminance underneath.
         -->
-        <item name="android:statusBarColor">@android:color/transparent</item>
-        <item name="android:navigationBarColor">@android:color/transparent</item>
         <item name="android:enforceStatusBarContrast">false</item>
         <item name="android:enforceNavigationBarContrast">false</item>
 
@@ -186,4 +185,24 @@
         <item name="hintTextColor">?attr/colorOnSurface</item>
     </style>
 
+    <!-- The Chrome autofill walkthrough: a caption, then the screenshot it describes. -->
+    <style name="ChromeAutofillStepCaption">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">8dp</item>
+        <item name="android:layout_marginBottom">6dp</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="ChromeAutofillStepImage">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginBottom">12dp</item>
+        <item name="android:adjustViewBounds">true</item>
+        <!-- The screenshots are wider than tall; fitStart keeps them from stretching on a wide screen. -->
+        <item name="android:scaleType">fitCenter</item>
+        <item name="android:background">@color/chrome_autofill_step_frame</item>
+    </style>
 </resources>

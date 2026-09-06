@@ -25,6 +25,8 @@ import androidx.autofill.inline.v1.InlineSuggestionUi
 import com.dominikdomotor.nextcloudpasswords.GF
 import com.dominikdomotor.nextcloudpasswords.R as AppR
 import com.dominikdomotor.nextcloudpasswords.activities.OverviewActivity
+import com.dominikdomotor.nextcloudpasswords.autofill.debug.AutofillCapture
+import com.dominikdomotor.nextcloudpasswords.autofill.debug.AutofillCaptureStore
 import com.dominikdomotor.nextcloudpasswords.managers.FaviconStore
 import com.dominikdomotor.nextcloudpasswords.managers.StorageManager
 import dagger.hilt.android.AndroidEntryPoint
@@ -51,6 +53,12 @@ class MyAutofillService : AutofillService() {
 
             val settings = storageManager.settings.value
             val requestingPackage = structure.activityComponent.packageName
+
+            // Recorded before anything can reject the request: what matters is that Chrome asked at all, which is
+            // what tells the settings screen the opt-in has been made and the walkthrough is no longer needed.
+            if (requestingPackage in CHROME_PACKAGES && !settings.autofillSeenChrome) {
+                storageManager.updateSettings { it.autofillSeenChrome = true }
+            }
             if (requestingPackage in settings.autofillBlockedApps) {
                 GF.println("Autofill: $requestingPackage is blocked by the user")
                 callback.onSuccess(null)
@@ -67,6 +75,18 @@ class MyAutofillService : AutofillService() {
             val fallbackId =
                 fillContext.focusedId?.takeIf { settings.autofillManualFallback && it in fields.unknownIds }
             val fillableIds = (fields.usernameIds + fields.passwordIds + listOfNotNull(fallbackId)).toList()
+
+            // Debug builds keep the structure so the inspector can show why a field was or was not recognised.
+            // `enabled` is a compile time constant, so this and everything it reaches is gone from a release build.
+            if (AutofillCaptureStore.enabled) {
+                val words = AutofillHintWords(settings.autofillUsernameWords, settings.autofillPasswordWords)
+                AutofillCaptureStore.write(
+                    this,
+                    AutofillCapture.from(structure, requestingPackage, fields.webDomain) { node ->
+                        AutofillFieldAnalyzer.classify(node, words).name
+                    },
+                )
+            }
             GF.println(
                 "Autofill: $requestingPackage domain=${fields.webDomain} " +
                     "username=${fields.usernameIds.size} password=${fields.passwordIds.size} " +
@@ -268,5 +288,8 @@ class MyAutofillService : AutofillService() {
 
     private companion object {
         const val MAX_CREDENTIAL_DATASETS = 10
+
+        /** Chrome's release channels. Other browsers delegate without an extra opt-in and need no walkthrough. */
+        val CHROME_PACKAGES = setOf("com.android.chrome", "com.chrome.beta", "com.chrome.dev", "com.chrome.canary")
     }
 }

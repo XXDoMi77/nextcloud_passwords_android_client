@@ -25,3 +25,18 @@ fun View.padBottomForSystemBars() {
     }
     ViewCompat.requestApplyInsets(this)
 }
+
+/**
+ * Keeps a header clear of the status bar.
+ *
+ * The counterpart of [padBottomForSystemBars] for a screen that draws its own top bar rather than using one the
+ * framework insets for it.
+ */
+fun View.padTopForStatusBar() {
+    val declared = paddingTop
+    ViewCompat.setOnApplyWindowInsetsListener(this) { view, insets ->
+        view.updatePadding(top = declared + insets.getInsets(WindowInsetsCompat.Type.systemBars()).top)
+        insets
+    }
+    ViewCompat.requestApplyInsets(this)
+}
