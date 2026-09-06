@@ -35,6 +35,9 @@ out.
   offline copy has been cleared.
 - Editable word lists for autofill field detection, and a custom look-alike character list for the
   password generator, both resettable.
+- Clipboard clearing is now configurable: how long a copied password stays, and whether it is
+  taken back at all. Clearing is safer, but it also removes something the user asked for, so the
+  trade is theirs.
 
 ### Changed
 
@@ -57,3 +60,6 @@ out.
 - The fast scrollbar ignored the chosen colour.
 - The server's colour is applied on the first sync after login instead of on the next start.
 - The server-URL screen reports problems as toasts rather than through an unreadable popup.
+- A request that cannot reach the server now says so, instead of "something went wrong". Every
+  failing action shares one reporting path, so this covers creating, editing, sharing, folders and
+  syncing alike.

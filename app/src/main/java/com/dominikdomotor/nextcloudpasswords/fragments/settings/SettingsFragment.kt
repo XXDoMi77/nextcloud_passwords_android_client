@@ -89,8 +89,10 @@ class SettingsFragment : Fragment() {
             settings.excludeSimilarCharacters
         view.findViewById<SwitchCompat>(R.id.allowScreenshotsSettingSwitch).isChecked = settings.allowScreenshots
         view.findViewById<SwitchCompat>(R.id.tintedTextSettingSwitch).isChecked = settings.tintedText
+        view.findViewById<SwitchCompat>(R.id.clearClipboardSettingSwitch).isChecked = settings.clearClipboard
 
         view.setTextIfChanged(R.id.passwordLengthSettingNumber, settings.passwordLength.toString())
+        view.setTextIfChanged(R.id.clipboardSecondsSettingNumber, settings.clipboardClearSeconds.toString())
         view.setTextIfChanged(R.id.includeSymbolsSettingNumber, settings.includedSymbolsQuantity.toString())
         view.setTextIfChanged(R.id.includedSymbolCharacters, settings.includedSymbols)
         view.setTextIfChanged(R.id.similarCharacters, settings.similarCharacters)
@@ -210,6 +212,16 @@ class SettingsFragment : Fragment() {
                 if (enabled) clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
                 else addFlags(WindowManager.LayoutParams.FLAG_SECURE)
             }
+        }
+
+        view.bindSwitch(R.id.clearClipboardSettingSwitch) { s, on -> s.clearClipboard = on }
+        bindNumberSelector(
+            number = view.findViewById(R.id.clipboardSecondsSettingNumber),
+            remove = view.findViewById(R.id.clipboardSecondsSettingRemove),
+            add = view.findViewById(R.id.clipboardSecondsSettingAdd),
+            min = MIN_CLIPBOARD_SECONDS,
+        ) { value ->
+            viewModel.update { it.clipboardClearSeconds = value }
         }
 
         view.findViewById<ConstraintLayout>(R.id.storedE2ePassphraseSetting).setOnClickListener {
@@ -383,6 +395,9 @@ class SettingsFragment : Fragment() {
 
     private companion object {
         const val MIN_PASSWORD_LENGTH = 6
+
+        /** Long enough to actually paste something before it goes. */
+        const val MIN_CLIPBOARD_SECONDS = 5
         const val MAX_NUMERIC_SETTING = 255
         const val DISABLED_ALPHA = 0.4f
     }

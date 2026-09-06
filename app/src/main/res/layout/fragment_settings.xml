@@ -1071,6 +1071,161 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
+<androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/clearClipboardSetting"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true">
+
+                <ImageView
+                    android:id="@+id/clearClipboardSettingIcon"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginStart="16dp"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/icon_copy_24"
+                    app:layout_constraintBottom_toBottomOf="@id/clearClipboardSettingDescription"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/clearClipboardSettingLabel"
+                    app:tint="?attr/colorOnSurface" />
+
+                <TextView
+                    android:id="@+id/clearClipboardSettingLabel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:text="@string/clear_clipboard"
+                    android:textColor="?attr/colorOnSurface"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toStartOf="@id/clearClipboardSettingSwitch"
+                    app:layout_constraintStart_toEndOf="@id/clearClipboardSettingIcon"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/clearClipboardSettingDescription"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:text="@string/clear_clipboard_description"
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    android:textSize="14sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/clearClipboardSettingSwitch"
+                    app:layout_constraintStart_toStartOf="@id/clearClipboardSettingLabel"
+                    app:layout_constraintTop_toBottomOf="@id/clearClipboardSettingLabel" />
+
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/clearClipboardSettingSwitch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:padding="6dp"
+                    app:layout_constraintBottom_toBottomOf="@id/clearClipboardSettingDescription"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/clearClipboardSettingLabel"
+                    app:thumbTint="@color/switch_thumb_color"
+                    app:trackTint="@color/switch_track_color" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+<androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/clipboardSecondsSetting"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clickable="false">
+
+                <ImageView
+                    android:id="@+id/clipboardSecondsSettingIcon"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginStart="16dp"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/icon_autorenew_24"
+                    app:layout_constraintBottom_toBottomOf="@+id/clipboardSecondsSettingDescription"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/clipboardSecondsSettingLabel"
+                    app:tint="?attr/colorOnSurface" />
+
+                <TextView
+                    android:id="@+id/clipboardSecondsSettingLabel"
+                    android:labelFor="@+id/clipboardSecondsSettingNumber"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:text="@string/clipboard_delay"
+                    android:textColor="?attr/colorOnSurface"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toStartOf="@+id/clipboardSecondsSettingRemove"
+                    app:layout_constraintStart_toEndOf="@+id/clipboardSecondsSettingIcon"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/clipboardSecondsSettingDescription"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:text="@string/clipboard_delay_description"
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    android:textSize="14sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/clipboardSecondsSettingRemove"
+                    app:layout_constraintStart_toStartOf="@+id/clipboardSecondsSettingLabel"
+                    app:layout_constraintTop_toBottomOf="@+id/clipboardSecondsSettingLabel"
+                    app:layout_constraintVertical_bias="0.0" />
+
+                <ImageButton
+                    android:id="@+id/clipboardSecondsSettingRemove"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:background="?android:attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/decrease_symbol_count"
+                    android:src="@drawable/icon_remove_24"
+                    app:layout_constraintBottom_toBottomOf="@+id/clipboardSecondsSettingNumber"
+                    app:layout_constraintEnd_toStartOf="@+id/clipboardSecondsSettingNumber"
+                    app:layout_constraintTop_toTopOf="@+id/clipboardSecondsSettingNumber"
+                    app:tint="?attr/colorOnSurface" />
+
+                <EditText
+                    android:id="@+id/clipboardSecondsSettingNumber"
+                    android:importantForAutofill="no"
+                    android:layout_width="48dp"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/transparent"
+                    android:ems="10"
+                    android:inputType="number"
+                    android:maxLength="3"
+                    android:selectAllOnFocus="true"
+                    android:singleLine="true"
+                    android:textAlignment="center"
+                    app:layout_constraintBottom_toBottomOf="@+id/clipboardSecondsSettingDescription"
+                    app:layout_constraintEnd_toStartOf="@+id/clipboardSecondsSettingAdd"
+                    app:layout_constraintTop_toTopOf="@+id/clipboardSecondsSettingLabel" />
+
+                <ImageButton
+                    android:id="@+id/clipboardSecondsSettingAdd"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_marginEnd="16dp"
+                    android:background="?android:attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/increase_symbol_count"
+                    android:src="@drawable/icon_add_24"
+                    app:layout_constraintBottom_toBottomOf="@+id/clipboardSecondsSettingNumber"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/clipboardSecondsSettingNumber"
+                    app:tint="?attr/colorOnSurface" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/storedE2ePassphraseSetting"
                 android:layout_width="match_parent"

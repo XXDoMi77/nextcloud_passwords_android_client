@@ -23,13 +23,13 @@ welcome — see [CHANGELOG.md](CHANGELOG.md) for what has changed.
 ## Screenshots
 
 <p float="left">
-  <img alt="Password list" src="https://github.com/user-attachments/assets/708b88f2-34ce-42ab-adb3-fede4f2a0c81" width="150" />
-  <img alt="Dark mode" src="https://github.com/user-attachments/assets/c2f82626-18fe-4e6b-a493-1aaa43956b36" width="150" />
-  <img alt="Password generation settings" src="https://github.com/user-attachments/assets/e05e392e-4805-4053-9df1-a257c621f537" width="150" />
-  <img alt="Autofill in another app" src="https://github.com/user-attachments/assets/b113cd5c-21b3-4e40-991f-c344b3458608" width="150" />
-  <img alt="Search" src="https://github.com/user-attachments/assets/c0908273-0925-4b5f-8112-b7467bf08254" width="150" />
-  <img alt="Password details" src="https://github.com/user-attachments/assets/45f7f1cc-9009-428b-ab2e-7a30e99d91a1" width="150" />
-  <img alt="Creating a password" src="https://github.com/user-attachments/assets/018984a7-95c3-4340-94d3-0152b49dd909" width="150" />
+  <img alt="Password list" src="docs/screenshots/01.png" width="150" />
+  <img alt="Search" src="docs/screenshots/03.png" width="150" />
+  <img alt="Creating a password" src="docs/screenshots/04.png" width="150" />
+  <img alt="Password generation settings" src="docs/screenshots/05.png" width="150" />
+  <img alt="Password details" src="docs/screenshots/06.png" width="150" />
+  <img alt="Folders" src="docs/screenshots/07.png" width="150" />
+  <img alt="Light and dark" src="docs/screenshots/08.png" width="150" />
 </p>
 
 ---

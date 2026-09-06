@@ -25,6 +25,10 @@ data class Settings(
     @SerializedName("autofillUsernameWords") var autofillUsernameWords: List<String> = HintWords.DEFAULT_USERNAME_WORDS,
     @SerializedName("autofillPasswordWords") var autofillPasswordWords: List<String> = HintWords.DEFAULT_PASSWORD_WORDS,
     @SerializedName("allowScreenshots") var allowScreenshots: Boolean = true,
+    /** Whether a copied password is taken back out of the clipboard again. */
+    @SerializedName("clearClipboard") var clearClipboard: Boolean = true,
+    /** How long a copied password stays on the clipboard, in seconds. */
+    @SerializedName("clipboardClearSeconds") var clipboardClearSeconds: Int = 30,
     /** The colour the Nextcloud admin set in the Theming app, refreshed on every sync. */
     @SerializedName("serverThemeColor") var serverThemeColor: String = "",
     /** Set only when the user picked a colour by hand; empty means "follow the server". */

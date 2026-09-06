@@ -189,4 +189,12 @@
     <string name="sign_in_again">Sign in again</string>
     <string name="sign_in_again_explanation">This update changed how passwords are stored on this device, so the old copy was cleared. Nothing was deleted from your Nextcloud - sign in again and everything syncs back.</string>
     <string name="got_it">Got it</string>
+
+    <string name="could_not_reach_server">Could not reach your Nextcloud. Check your internet connection and try again.</string>
+
+    <!-- Clipboard -->
+    <string name="clear_clipboard">Clear the clipboard</string>
+    <string name="clear_clipboard_description">Remove a copied password from the clipboard again after a while</string>
+    <string name="clipboard_delay">Clear after</string>
+    <string name="clipboard_delay_description">Seconds a copied password stays on the clipboard (default: 30)</string>
 </resources>

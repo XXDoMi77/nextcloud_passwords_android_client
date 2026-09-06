@@ -5,7 +5,13 @@ import com.dominikdomotor.nextcloudpasswords.R
 
 /** Why a request could not be completed. Each value maps to exactly one user-facing message. */
 enum class FailureReason {
-    /** The request never reached the server, or the connection dropped. */
+    /**
+     * The request never reached the server, or the connection dropped.
+     *
+     * Deliberately not phrased as "no internet": the same failure covers a device that is offline, a server that
+     * is down, and a URL that no longer resolves. Naming only the first would be wrong two times out of three,
+     * and the action - check the connection, try again - is the same for all of them.
+     */
     NETWORK,
 
     /** The Passwords API session expired; the E2E challenge has to be solved again. */
@@ -34,7 +40,7 @@ enum class FailureReason {
 val FailureReason.messageResId: Int
     get() =
         when (this) {
-            FailureReason.NETWORK -> R.string.something_went_wrong_try_again
+            FailureReason.NETWORK -> R.string.could_not_reach_server
             FailureReason.SESSION_EXPIRED -> R.string.e2e_session_expired
             FailureReason.UNAUTHORIZED -> R.string.your_token_is_no_longer_valid_please_login_again
             FailureReason.SERVER -> R.string.something_went_wrong_try_again

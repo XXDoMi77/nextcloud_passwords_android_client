@@ -187,4 +187,12 @@
     <string name="sign_in_again">Erneut anmelden</string>
     <string name="sign_in_again_explanation">Dieses Update hat geändert, wie Passwörter auf diesem Gerät gespeichert werden. Die alte Kopie wurde daher entfernt. Auf deiner Nextcloud wurde nichts gelöscht - melde dich erneut an, dann wird alles wieder synchronisiert.</string>
     <string name="got_it">Verstanden</string>
+
+    <string name="could_not_reach_server">Deine Nextcloud ist nicht erreichbar. Prüfe deine Internetverbindung und versuche es erneut.</string>
+
+    <!-- Zwischenablage -->
+    <string name="clear_clipboard">Zwischenablage leeren</string>
+    <string name="clear_clipboard_description">Ein kopiertes Passwort nach einer Weile wieder aus der Zwischenablage entfernen</string>
+    <string name="clipboard_delay">Leeren nach</string>
+    <string name="clipboard_delay_description">Sekunden, die ein kopiertes Passwort in der Zwischenablage bleibt (Standard: 30)</string>
 </resources>

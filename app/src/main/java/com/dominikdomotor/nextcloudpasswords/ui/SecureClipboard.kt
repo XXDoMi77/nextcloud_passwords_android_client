@@ -9,6 +9,7 @@ import android.os.Looper
 import android.os.PersistableBundle
 import androidx.core.content.getSystemService
 import com.dominikdomotor.nextcloudpasswords.R
+import com.dominikdomotor.nextcloudpasswords.managers.StorageManager
 import com.dominikdomotor.nextcloudpasswords.managers.UiMessageManager
 import dagger.hilt.android.qualifiers.ApplicationContext
 import jakarta.inject.Inject
@@ -16,14 +17,22 @@ import jakarta.inject.Singleton
 
 /**
  * Copies secrets to the clipboard, marks them sensitive so the system does not show a preview, and clears them again
- * after [CLEAR_DELAY_MILLIS] if nothing else has taken the clipboard since.
+ * after a configurable delay if nothing else has taken the clipboard since.
+ *
+ * Both the delay and whether it happens at all are settings. Clearing the clipboard is the safer default, but it also
+ * takes something away that the user asked for - a paste into an app that reads the clipboard late, or a password
+ * being kept while filling a form by hand, both lose. That trade is theirs to make rather than the app's.
  *
  * Previously duplicated verbatim in `FoldersFragment` and `PasswordListAdapter`.
  */
 @Singleton
 class SecureClipboard
 @Inject
-constructor(@param:ApplicationContext private val context: Context, private val uiMessageManager: UiMessageManager) {
+constructor(
+    @param:ApplicationContext private val context: Context,
+    private val uiMessageManager: UiMessageManager,
+    private val storageManager: StorageManager,
+) {
     private val handler = Handler(Looper.getMainLooper())
 
     /**
@@ -44,7 +53,12 @@ constructor(@param:ApplicationContext private val context: Context, private val 
             uiMessageManager.show("$name ${context.getString(R.string.copied_to_clipboard)}")
         }
 
-        handler.postDelayed({ clearIfUnchanged(clipboard, text) }, CLEAR_DELAY_MILLIS)
+        val settings = storageManager.settings.value
+        if (!settings.clearClipboard) return
+        // Guarded rather than trusted: the value comes from a text field the user can type into, and a
+        // delay of zero would clear the clipboard before they could paste anything.
+        val seconds = settings.clipboardClearSeconds.coerceAtLeast(MINIMUM_CLEAR_SECONDS)
+        handler.postDelayed({ clearIfUnchanged(clipboard, text) }, seconds * 1000L)
     }
 
     private fun clearIfUnchanged(clipboard: ClipboardManager, expected: String) {
@@ -56,6 +70,6 @@ constructor(@param:ApplicationContext private val context: Context, private val 
 
     private companion object {
         const val EXTRA_IS_SENSITIVE = "android.content.extra.IS_SENSITIVE"
-        const val CLEAR_DELAY_MILLIS = 30_000L
+        const val MINIMUM_CLEAR_SECONDS = 5
     }
 }
