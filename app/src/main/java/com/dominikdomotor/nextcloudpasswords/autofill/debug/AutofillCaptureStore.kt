@@ -20,13 +20,27 @@ object AutofillCaptureStore {
     val enabled: Boolean
         get() = BuildConfig.DEBUG
 
-    /** Records one request, then drops all but the newest [KEEP]. */
+    /**
+     * Records one request, then drops all but the newest [KEEP].
+     *
+     * Written to a temporary name and renamed into place. `writeText` truncates before it writes, so a failure
+     * part-way through - the service process being killed mid-request is the usual one - leaves a zero byte file that
+     * the reader can only report as broken. A rename is atomic, so a capture either exists in full or not at all.
+     */
     fun write(context: Context, capture: AutofillCapture) {
         if (!enabled) return
         runCatching {
                 val dir = directory(context).apply { mkdirs() }
-                File(dir, "${capture.takenAt}-${capture.id}.json").writeText(capture.toJson().toString(2))
+                val target = File(dir, "${capture.takenAt}-${capture.id}.json")
+                val temp = File(dir, "${target.name}.tmp")
+                temp.writeText(capture.toJson().toString(2))
+                if (!temp.renameTo(target)) {
+                    temp.delete()
+                    GF.println("Autofill capture not saved: could not rename into place")
+                    return
+                }
                 dir.listFiles()
+                    ?.filterNot { it.name.endsWith(".tmp") }
                     ?.sortedByDescending { it.name }
                     ?.drop(KEEP)
                     ?.forEach { it.delete() }
@@ -37,10 +51,17 @@ object AutofillCaptureStore {
     /** Newest first, which is the order the inspector lists them in. */
     fun readAll(context: Context): List<AutofillCapture> {
         if (!enabled) return emptyList()
-        val files = directory(context).listFiles()?.sortedByDescending { it.name } ?: return emptyList()
+        val files =
+            directory(context).listFiles()?.filterNot { it.name.endsWith(".tmp") }?.sortedByDescending { it.name }
+                ?: return emptyList()
         return files.mapNotNull { file ->
             runCatching { AutofillCapture.fromJson(JSONObject(file.readText())) }
-                .onFailure { GF.println("Autofill capture ${file.name} unreadable: $it") }
+                .onFailure {
+                    // Left over from a version that wrote in place, or a rename that never happened. It will never
+                    // become readable, so it goes rather than reappearing at every open.
+                    GF.println("Autofill capture ${file.name} unreadable, discarding: $it")
+                    file.delete()
+                }
                 .getOrNull()
         }
     }

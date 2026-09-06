@@ -41,4 +41,8 @@
     <color name="on_destructive_container">#FF410002</color>
 
     <color name="chrome_autofill_step_frame">#14000000</color>
+    <!-- Inspector verdict badges. The status colours are tuned to be recognisable as signals on a chip,
+         not readable as small bold text, so these are their legible counterparts. -->
+    <color name="autofill_verdict_recognised">#1B6E2F</color>
+    <color name="autofill_verdict_unknown">#8A5A00</color>
 </resources>

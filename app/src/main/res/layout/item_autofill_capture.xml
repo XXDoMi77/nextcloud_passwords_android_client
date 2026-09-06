@@ -1,28 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- One captured fill request in the history list. Newest first, so the last thing tapped is on top. -->
+<!--
+    One captured fill request in the history list, newest first. The icon is the app the request came
+    from: a web capture is titled by its domain, and without the icon there is nothing to say which
+    browser it was.
+-->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="?android:attr/selectableItemBackground"
-    android:orientation="vertical"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
     android:paddingStart="16dp"
     android:paddingEnd="16dp"
     android:paddingTop="12dp"
     android:paddingBottom="12dp">
 
-    <TextView
-        android:id="@+id/captureTitle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="?attr/colorOnSurface"
-        android:textSize="15sp"
-        android:textStyle="bold" />
+    <ImageView
+        android:id="@+id/captureIcon"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginEnd="16dp"
+        android:importantForAccessibility="no" />
 
-    <TextView
-        android:id="@+id/captureSubtitle"
-        android:layout_width="match_parent"
+    <LinearLayout
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="2dp"
-        android:textColor="?attr/colorOnSurfaceVariant"
-        android:textSize="13sp" />
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/captureTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="?attr/colorOnSurface"
+            android:textSize="15sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/captureApp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="?attr/colorOnSurfaceVariant"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/captureSubtitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:textColor="?attr/colorOnSurfaceVariant"
+            android:textSize="12sp" />
+    </LinearLayout>
 </LinearLayout>

@@ -1,47 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-    One node of the assist structure. Depth is expressed as start padding set in code, because the
-    tree is arbitrarily deep and a layout cannot know how far in a row sits.
+    One node of the assist structure.
+
+    Everything is wrap_content and nothing wraps to a second line: the list sits in a
+    HorizontalScrollView, so a deeply indented row extends to the right and is scrolled to rather
+    than squeezed into a column a few characters wide. Depth is start padding, set in code, because
+    the tree is arbitrarily deep and a layout cannot know how far in a row sits.
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/nodeRow"
-    android:layout_width="match_parent"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:background="?android:attr/selectableItemBackground"
     android:gravity="center_vertical"
-    android:minHeight="44dp"
+    android:minHeight="32dp"
     android:orientation="horizontal"
-    android:paddingEnd="12dp">
+    android:paddingEnd="16dp">
 
     <TextView
         android:id="@+id/nodeCaret"
-        android:layout_width="24dp"
+        android:layout_width="20dp"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:textColor="?attr/colorOnSurfaceVariant"
-        android:textSize="12sp" />
+        android:textSize="11sp" />
 
     <LinearLayout
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
         android:orientation="vertical"
-        android:paddingTop="6dp"
-        android:paddingBottom="6dp">
+        android:paddingTop="3dp"
+        android:paddingBottom="3dp">
 
         <TextView
             android:id="@+id/nodeLabel"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:maxLines="1"
             android:textColor="?attr/colorOnSurface"
-            android:textSize="14sp" />
+            android:textSize="13sp" />
 
         <TextView
             android:id="@+id/nodeSubtitle"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:maxLines="1"
             android:textColor="?attr/colorOnSurfaceVariant"
-            android:textSize="12sp"
+            android:textSize="11sp"
             android:visibility="gone" />
     </LinearLayout>
 
@@ -49,10 +54,9 @@
         android:id="@+id/nodeVerdict"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:paddingStart="8dp"
-        android:paddingEnd="8dp"
-        android:textSize="11sp"
+        android:layout_marginStart="10dp"
+        android:maxLines="1"
+        android:textSize="10sp"
         android:textStyle="bold"
         android:visibility="gone" />
 </LinearLayout>

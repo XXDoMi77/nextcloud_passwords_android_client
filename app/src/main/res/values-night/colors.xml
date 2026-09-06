@@ -40,4 +40,6 @@
     <color name="destructive_container">#FF93000A</color>
     <color name="on_destructive_container">#FFFFDAD6</color>
 
+    <color name="autofill_verdict_recognised">#7FD68C</color>
+    <color name="autofill_verdict_unknown">#E0B341</color>
 </resources>

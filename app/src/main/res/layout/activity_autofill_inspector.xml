@@ -59,10 +59,23 @@
         android:textSize="14sp"
         android:visibility="gone" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/inspectorList"
+    <!--
+        The tree is wider than the screen once it is a few levels deep, so it scrolls sideways rather
+        than compressing rows into a sliver. fillViewport keeps the list full width when the content
+        is narrow - the capture list uses the same view and must not end up half a screen wide.
+    -->
+    <HorizontalScrollView
+        android:id="@+id/inspectorScroll"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:clipToPadding="false" />
+        android:fillViewport="true"
+        android:scrollbars="horizontal">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/inspectorList"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:clipToPadding="false" />
+    </HorizontalScrollView>
 </LinearLayout>

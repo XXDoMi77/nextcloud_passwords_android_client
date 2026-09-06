@@ -1,13 +1,18 @@
 package com.dominikdomotor.nextcloudpasswords.activities
 
 import android.content.Intent
+import android.content.Context
 import android.os.Bundle
+import android.text.TextPaint
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
+import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -15,9 +20,12 @@ import com.dominikdomotor.nextcloudpasswords.R
 import com.dominikdomotor.nextcloudpasswords.autofill.debug.AutofillCapture
 import com.dominikdomotor.nextcloudpasswords.autofill.debug.AutofillCaptureStore
 import com.dominikdomotor.nextcloudpasswords.autofill.debug.CapturedNode
+import com.dominikdomotor.nextcloudpasswords.autofill.debug.InstalledApp
 import com.dominikdomotor.nextcloudpasswords.ui.AppDialog
 import com.dominikdomotor.nextcloudpasswords.ui.padBottomForSystemBars
+import com.dominikdomotor.nextcloudpasswords.ui.theme.themeColor
 import com.dominikdomotor.nextcloudpasswords.ui.padTopForStatusBar
+import com.google.android.material.R as MaterialR
 import dagger.hilt.android.AndroidEntryPoint
 import java.io.File
 import java.text.DateFormat
@@ -91,14 +99,22 @@ class AutofillInspectorActivity : BaseActivity() {
         share.visibility = View.GONE
         empty.visibility = if (captures.isEmpty()) View.VISIBLE else View.GONE
         list.adapter = CaptureAdapter(captures) { showTree(it) }
+        findViewById<View>(R.id.inspectorScroll).scrollX = 0
     }
 
     private fun showTree(capture: AutofillCapture) {
         opened = capture
-        title.text = capture.webDomain ?: capture.packageName
+        val app = InstalledApp.of(this, capture.packageName)
+        title.text = capture.webDomain?.let { "$it  ·  ${app.label}" } ?: app.label
         share.visibility = View.VISIBLE
         empty.visibility = View.GONE
-        list.adapter = NodeAdapter(capture.root) { showProperties(it) }
+        val adapter = NodeAdapter(capture.root) { showProperties(it) }
+        list.adapter = adapter
+        // A RecyclerView asked for wrap_content only measures the rows currently attached, so a wide row further down
+        // would be clipped rather than scrolled to. The whole tree is in memory, so the width it needs is measured
+        // once here and set as a floor.
+        list.minimumWidth = adapter.widestRow(this)
+        findViewById<View>(R.id.inspectorScroll).scrollX = 0
     }
 
     /** Every property, as text, because the interesting one differs every time. */
@@ -167,7 +183,9 @@ class AutofillInspectorActivity : BaseActivity() {
         private val onClick: (AutofillCapture) -> Unit,
     ) : RecyclerView.Adapter<CaptureAdapter.Holder>() {
         class Holder(view: View) : RecyclerView.ViewHolder(view) {
+            val icon: ImageView = view.findViewById(R.id.captureIcon)
             val title: TextView = view.findViewById(R.id.captureTitle)
+            val app: TextView = view.findViewById(R.id.captureApp)
             val subtitle: TextView = view.findViewById(R.id.captureSubtitle)
         }
 
@@ -178,13 +196,20 @@ class AutofillInspectorActivity : BaseActivity() {
 
         override fun onBindViewHolder(holder: Holder, position: Int) {
             val capture = items[position]
+            val context = holder.itemView.context
             val fields = capture.fields
-            holder.title.text = capture.webDomain ?: capture.packageName
+            val app = InstalledApp.of(context, capture.packageName)
+
+            holder.icon.setImageDrawable(app.icon)
+            // A web capture is named by its domain and the app line says which browser; a native one is named by the
+            // app itself, so repeating it underneath would be noise.
+            holder.title.text = capture.webDomain ?: app.label
+            holder.app.text = if (capture.webDomain == null) capture.packageName else app.label
             holder.subtitle.text =
                 buildString {
                     append(DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM).format(Date(capture.takenAt)))
                     append("  ·  ")
-                    append(holder.itemView.context.getString(R.string.autofill_inspector_field_count, fields.size))
+                    append(context.getString(R.string.autofill_inspector_field_count, fields.size))
                     val recognised = fields.count { it.verdict == "USERNAME" || it.verdict == "PASSWORD" }
                     if (recognised > 0) append("  ·  $recognised recognised")
                 }
@@ -250,29 +275,21 @@ class AutofillInspectorActivity : BaseActivity() {
             holder.caret.text = if (node.children.isEmpty()) "" else if (node in expanded) "▾" else "▸"
             holder.label.text = node.label
 
-            val summary =
-                listOfNotNull(
-                        node.autofillHints.takeIf { it.isNotEmpty() }?.joinToString(","),
-                        node.inputType.takeIf { it.isNotEmpty() }?.joinToString(","),
-                        node.htmlAttributes["autocomplete"]?.let { "autocomplete=$it" },
-                        node.htmlAttributes["type"]?.let { "type=$it" },
-                    )
-                    .joinToString("  ")
+            val summary = subtitleOf(node)
             holder.subtitle.text = summary
             holder.subtitle.visibility = if (summary.isBlank()) View.GONE else View.VISIBLE
 
             holder.verdict.text = node.verdict.orEmpty()
             holder.verdict.visibility = if (node.verdict == null) View.GONE else View.VISIBLE
+            // Not the status colours: those are tuned to read as signals on a chip and are far too light to be
+            // legible as small bold text on a pale surface.
             holder.verdict.setTextColor(
-                androidx.core.content.ContextCompat.getColor(
-                    context,
-                    when (node.verdict) {
-                        "USERNAME",
-                        "PASSWORD" -> R.color.password_status_secure
-                        "UNKNOWN" -> R.color.password_status_warning
-                        else -> R.color.password_status_insecure
-                    },
-                )
+                when (node.verdict) {
+                    "USERNAME",
+                    "PASSWORD" -> ContextCompat.getColor(context, R.color.autofill_verdict_recognised)
+                    "UNKNOWN" -> ContextCompat.getColor(context, R.color.autofill_verdict_unknown)
+                    else -> context.themeColor(MaterialR.attr.colorOnSurfaceVariant)
+                }
             )
 
             holder.itemView.setOnClickListener {
@@ -290,8 +307,45 @@ class AutofillInspectorActivity : BaseActivity() {
             }
         }
 
+        /**
+         * How wide the widest row would be if nothing wrapped.
+         *
+         * Measured across every node rather than the expanded ones: expanding can only reveal more, and remeasuring on
+         * each toggle would make the content jump sideways under the reader.
+         */
+        fun widestRow(context: Context): Int {
+            val density = context.resources.displayMetrics
+            fun sp(value: Float) = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, value, density)
+            fun dp(value: Float) = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, value, density)
+
+            val label = TextPaint().apply { textSize = sp(13f) }
+            val small = TextPaint().apply { textSize = sp(11f) }
+            val badge = TextPaint().apply { textSize = sp(10f); isFakeBoldText = true }
+            val fixed = dp(20f) + dp(10f) + dp(16f) // caret, badge margin, trailing padding
+
+            var widest = 0
+            fun walk(node: CapturedNode, depth: Int) {
+                val text = maxOf(label.measureText(node.label), small.measureText(subtitleOf(node)))
+                val verdict = node.verdict?.let { badge.measureText(it) } ?: 0f
+                widest = maxOf(widest, (depth * dp(INDENT_DP.toFloat()) + fixed + text + verdict).toInt())
+                node.children.forEach { walk(it, depth + 1) }
+            }
+            walk(root, 0)
+            return widest
+        }
+
         private companion object {
             const val INDENT_DP = 14
+
+            /** The second line of a row: whichever hints the node carries, or nothing. */
+            fun subtitleOf(node: CapturedNode): String =
+                listOfNotNull(
+                        node.autofillHints.takeIf { it.isNotEmpty() }?.joinToString(","),
+                        node.inputType.takeIf { it.isNotEmpty() }?.joinToString(","),
+                        node.htmlAttributes["autocomplete"]?.let { "autocomplete=$it" },
+                        node.htmlAttributes["type"]?.let { "type=$it" },
+                    )
+                    .joinToString("  ")
         }
     }
 }
