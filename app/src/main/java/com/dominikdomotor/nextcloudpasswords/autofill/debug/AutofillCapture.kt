@@ -53,18 +53,25 @@ data class AutofillCapture(
          * Walks the structure into a tree of plain data.
          *
          * Every window is folded under one synthetic root, because a request can carry several and a reader wants one
-         * tree rather than a list of them. [classify] is handed in so the capture records the verdict the real
-         * analyser reached, rather than a second implementation of it drifting out of step.
+         * tree rather than a list of them.
+         *
+         * [verdictAt] is looked up by traversal index rather than recomputed per node: the real decision is made over
+         * the whole form, so a node cannot be re-judged on its own without giving a different answer to the one the
+         * service actually used - which would make the inspector lie in exactly the situation it exists for. This walk
+         * must therefore count nodes in the same order the service does, which is pre-order over the same windows.
          */
         fun from(
             structure: AssistStructure,
             packageName: String,
             webDomain: String?,
-            classify: (ViewNode) -> String,
+            verdictAt: (Int) -> String?,
         ): AutofillCapture {
+            var next = 0
             val windows =
                 (0 until structure.windowNodeCount).mapNotNull { index ->
-                    structure.getWindowNodeAt(index).rootViewNode?.let { CapturedNode.from(it, classify) }
+                    structure.getWindowNodeAt(index).rootViewNode?.let {
+                        CapturedNode.from(it, verdictAt) { next++ }
+                    }
                 }
             val root =
                 if (windows.size == 1) windows.first()
@@ -156,8 +163,9 @@ data class CapturedNode(
                 children = json.optJSONArray("children").toObjectList().map { fromJson(it) },
             )
 
-        fun from(node: ViewNode, classify: (ViewNode) -> String): CapturedNode {
+        fun from(node: ViewNode, verdictAt: (Int) -> String?, nextIndex: () -> Int): CapturedNode {
             val html = node.htmlInfo
+            val index = nextIndex()
             return CapturedNode(
                 className = node.className,
                 autofillId = node.autofillId?.toString(),
@@ -178,8 +186,11 @@ data class CapturedNode(
                     listOf(it.left, it.top, it.right, it.bottom)
                 },
                 focused = node.isFocused,
-                verdict = node.autofillId?.let { classify(node) },
-                children = (0 until node.childCount).mapNotNull { node.getChildAt(it)?.let { c -> from(c, classify) } },
+                verdict = node.autofillId?.let { verdictAt(index) },
+                children =
+                    (0 until node.childCount).mapNotNull { child ->
+                        node.getChildAt(child)?.let { from(it, verdictAt, nextIndex) }
+                    },
             )
         }
 

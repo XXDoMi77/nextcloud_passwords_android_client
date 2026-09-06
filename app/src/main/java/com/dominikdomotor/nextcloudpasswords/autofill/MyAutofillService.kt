@@ -79,11 +79,10 @@ class MyAutofillService : AutofillService() {
             // Debug builds keep the structure so the inspector can show why a field was or was not recognised.
             // `enabled` is a compile time constant, so this and everything it reaches is gone from a release build.
             if (AutofillCaptureStore.enabled) {
-                val words = AutofillHintWords(settings.autofillUsernameWords, settings.autofillPasswordWords)
                 AutofillCaptureStore.write(
                     this,
-                    AutofillCapture.from(structure, requestingPackage, fields.webDomain) { node ->
-                        AutofillFieldAnalyzer.classify(node, words).name
+                    AutofillCapture.from(structure, requestingPackage, fields.webDomain) { index ->
+                        fields.verdicts[index]?.name
                     },
                 )
             }
@@ -162,30 +161,54 @@ class MyAutofillService : AutofillService() {
         val passwordIds: Set<AutofillId>,
         val unknownIds: Set<AutofillId>,
         val webDomain: String?,
+        /** Kept so the inspector can show the verdict the service actually reached, rather than a second guess at it. */
+        val verdicts: Map<Int, AutofillFieldType> = emptyMap(),
+        val autofillIds: Map<Int, AutofillId> = emptyMap(),
     ) {
         companion object {
+            /**
+             * Collects every candidate, then lets [AutofillFormAnalyzer] decide.
+             *
+             * Two passes rather than one: which field is the username depends on where the password is, so nothing can
+             * be decided until the whole tree has been seen. `ViewNode.getLeft` is relative to the parent, so the walk
+             * carries the running offset and each candidate ends up with an absolute rectangle - without that, two
+             * fields under different parents cannot be compared, which is every field inside a browser.
+             */
             fun from(structure: AssistStructure, words: AutofillHintWords): ParsedFields {
+                val candidates = mutableListOf<AutofillFormAnalyzer.Candidate>()
+                val idsByCandidate = mutableMapOf<Int, AutofillId>()
+                var webDomain: String? = null
+                var next = 0
+
+                fun traverse(node: ViewNode?, originX: Int, originY: Int) {
+                    if (node == null) return
+                    val id = next++
+                    AutofillFieldAnalyzer.candidate(node, id, words, originX, originY)?.let { candidate ->
+                        candidates += candidate
+                        node.autofillId?.let { idsByCandidate[id] = it }
+                    }
+                    node.webDomain?.takeIf(String::isNotBlank)?.let { webDomain = it }
+                    val childX = originX + node.left
+                    val childY = originY + node.top
+                    repeat(node.childCount) { traverse(node.getChildAt(it), childX, childY) }
+                }
+
+                repeat(structure.windowNodeCount) { traverse(structure.getWindowNodeAt(it).rootViewNode, 0, 0) }
+
+                val verdicts = AutofillFormAnalyzer.resolve(candidates)
                 val usernameIds = linkedSetOf<AutofillId>()
                 val passwordIds = linkedSetOf<AutofillId>()
                 val unknownIds = linkedSetOf<AutofillId>()
-                var webDomain: String? = null
-
-                fun traverse(node: ViewNode?) {
-                    if (node == null) return
-                    node.autofillId?.let { id ->
-                        when (AutofillFieldAnalyzer.classify(node, words)) {
-                            AutofillFieldType.USERNAME -> usernameIds += id
-                            AutofillFieldType.PASSWORD -> passwordIds += id
-                            AutofillFieldType.UNKNOWN -> unknownIds += id
-                            AutofillFieldType.IGNORE -> Unit
-                        }
+                candidates.forEach { candidate ->
+                    val autofillId = idsByCandidate[candidate.id] ?: return@forEach
+                    when (verdicts[candidate.id]) {
+                        AutofillFieldType.USERNAME -> usernameIds += autofillId
+                        AutofillFieldType.PASSWORD -> passwordIds += autofillId
+                        AutofillFieldType.UNKNOWN -> unknownIds += autofillId
+                        else -> Unit
                     }
-                    node.webDomain?.takeIf(String::isNotBlank)?.let { webDomain = it }
-                    repeat(node.childCount) { traverse(node.getChildAt(it)) }
                 }
-
-                repeat(structure.windowNodeCount) { traverse(structure.getWindowNodeAt(it).rootViewNode) }
-                return ParsedFields(usernameIds, passwordIds, unknownIds, webDomain)
+                return ParsedFields(usernameIds, passwordIds, unknownIds, webDomain, verdicts, idsByCandidate)
             }
         }
     }

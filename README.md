@@ -156,6 +156,20 @@ the two cannot update over one another — install from one source or the other,
 
 ---
 
+## Acknowledgements
+
+Autofill field detection follows several approaches taken by
+[Keepass2Android](https://github.com/PhilippC/keepass2android) (GPLv3, © Philipp Crocoll): trusting a form's own
+autofill hints exclusively when it provides any, pairing an unlabelled field with the password next to it rather than
+judging it alone, refusing to classify a single field unless the user has focused it, and excluding anything that
+describes itself as a search box. Reading that project made the difference between guessing at these rules and knowing
+which ones matter.
+
+The implementation here is our own rather than a port — no Keepass2Android code is included, and this project remains
+under the AGPLv3 — but the credit is due all the same.
+
+---
+
 ## Disclaimer
 
 This application is provided "as is" and without warranty of any kind. The author is not liable for any damages resulting from the use of this software. Please use it at your own risk.
