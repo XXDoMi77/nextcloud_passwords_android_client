@@ -8,7 +8,7 @@
 <TextView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingTop="20dp"
+    android:paddingTop="@dimen/spacing_dialog_body_alone"
     android:paddingBottom="12dp"
     android:textColor="?attr/colorOnSurface"
     android:textSize="16sp" />

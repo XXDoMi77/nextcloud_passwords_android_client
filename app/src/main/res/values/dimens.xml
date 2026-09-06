@@ -19,6 +19,16 @@
         radius_item so the block still reads as one object.
     -->
     <dimen name="radius_dialog">28dp</dimen>
+
+    <!--
+        The gap above a dialog's body, in its two cases.
+
+        Under a title the body is the second half of a sentence the title started, and Material puts 16dp between
+        them; the title carries 4dp of that below itself, so the body adds the rest. With no title above it the body
+        is the first thing in the dialog and needs a full inset from the rounded edge instead.
+    -->
+    <dimen name="spacing_dialog_body_under_title">12dp</dimen>
+    <dimen name="spacing_dialog_body_alone">20dp</dimen>
     <dimen name="radius_group">20dp</dimen>
     <dimen name="radius_item">4dp</dimen>
 

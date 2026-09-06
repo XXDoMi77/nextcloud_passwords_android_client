@@ -34,6 +34,9 @@ class AppDialog(private val activity: Activity) {
     private val contentHost: ViewGroup = root.findViewById(R.id.app_dialog_content)
     private val buttonRow: LinearLayout = root.findViewById(R.id.app_dialog_buttons)
 
+    /** Kept so [show] can close the gap under a title; see [R.dimen.spacing_dialog_body_under_title]. */
+    private var messageView: TextView? = null
+
     /** Inflate content with this so it picks up the dialog's own colours rather than the activity's. */
     val context = dialog.context
 
@@ -43,7 +46,10 @@ class AppDialog(private val activity: Activity) {
     }
 
     fun message(text: CharSequence) = apply {
-        content(inflater.inflate(R.layout.app_dialog_message, contentHost, false).also { (it as TextView).text = text })
+        val view = inflater.inflate(R.layout.app_dialog_message, contentHost, false) as TextView
+        view.text = text
+        messageView = view
+        content(view)
     }
 
     fun message(@StringRes text: Int) = message(activity.getString(text))
@@ -143,6 +149,13 @@ class AppDialog(private val activity: Activity) {
                 }
             root.layoutParams =
                 ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+        }
+        // Done here rather than in either setter, because a caller may add the title after the message and the
+        // spacing depends on both.
+        messageView?.let { body ->
+            if (titleView.visibility != View.VISIBLE) return@let
+            val top = body.resources.getDimensionPixelSize(R.dimen.spacing_dialog_body_under_title)
+            body.setPadding(body.paddingLeft, top, body.paddingRight, body.paddingBottom)
         }
         dialog.setContentView(root)
         dialog.window?.apply {
