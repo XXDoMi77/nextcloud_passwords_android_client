@@ -94,7 +94,10 @@ class MyAutofillService : AutofillService() {
                 "Autofill: $requestingPackage domain=${fields.webDomain} " +
                     "username=${fields.usernameIds.size} password=${fields.passwordIds.size} " +
                     "unknown=${fields.unknownIds.size} fallback=${fallbackId != null} " +
-                    "manualFallback=${settings.autofillManualFallback}"
+                    "manualFallback=${settings.autofillManualFallback} " +
+                    // The single-field rows target the focused field, so a request that arrives without one
+                    // silently falls back to whatever was detected - which is the case worth spotting.
+                    "focused=${fillContext.focusedId != null}"
             )
             if (fillableIds.isEmpty() || cancellationSignal.isCanceled) {
                 GF.println("Autofill: nothing fillable found, returning no datasets")
