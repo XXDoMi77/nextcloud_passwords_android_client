@@ -56,7 +56,7 @@ jobs:
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: |
           if [ -z "$KEYSTORE_BASE64" ]; then
-            echo "::error::KEYSTORE_BASE64 is not set. A release has to be signed; see docs/RELEASING-CI.md."
+            echo "::error::KEYSTORE_BASE64 is not set. A release has to be signed; set the four signing secrets under Settings -> Secrets and variables -> Actions."
             exit 1
           fi
           mkdir -p "$RUNNER_TEMP/signing"
