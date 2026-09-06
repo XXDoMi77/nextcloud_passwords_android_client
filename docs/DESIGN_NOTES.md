@@ -175,8 +175,22 @@ That blanket keep is gone too. Obfuscation buys an open-source app nothing, but 
 A `mapping.txt` now exists at `app/build/outputs/mapping/release/`. Upload it with each Play release,
 or crash reports arrive obfuscated.
 
-**No native debug symbols are produced.** `debugSymbolLevel` only extracts symbols from native code
-this project builds; libsodium and libjnidispatch arrive pre-stripped from their AARs.
+**Native debug symbols need an NDK, and fail silently without one.** `debugSymbolLevel = "FULL"`
+separates the symbols out of libsodium and libjnidispatch, but the strip tool that does it ships with
+the NDK. Where no NDK is installed, `stripReleaseDebugSymbols` runs, reports success and produces
+nothing: the build logs `Unable to strip library ... due to missing strip tool`, packages the
+libraries unstripped, and `extractReleaseNativeDebugMetadata` has nothing to extract. The bundle then
+carries no symbols and Play asks for them separately.
+
+The CI image has an NDK, so bundles built there do carry `.dbg` files for all four ABIs under
+`BUNDLE-METADATA/com.android.tools.build.debugsymbols/`. Measured across two versions with R8 both off
+and on, that is the only variable - it is not R8, and the libraries are not pre-stripped in their AARs
+as an earlier version of this note claimed. It is a reason to ship the artifact the release workflow
+produced rather than one built by hand.
+
+**R8's map rides inside the bundle** at `BUNDLE-METADATA/com.android.tools.build.obfuscation/proguard.map`,
+so Play deobfuscates crash reports with no separate upload. The `mapping-<version>.txt.gz` attached to
+each GitHub release is for reading crashes from a sideloaded APK, where nothing else has the map.
 
 **Signing material lives outside the repository.** The build reads the keystore path from the
 `NPAC_KEYSTORE_PROPERTIES` environment variable or the `releaseKeystoreProperties` Gradle property,

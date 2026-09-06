@@ -37,7 +37,7 @@ jobs:
         run: ./gradlew :app:assembleDebug --no-daemon
 
       # The release variant is unsigned here; CI has no access to the keystore, which lives
-      # outside the repository. Signed builds are produced locally by Build-Release.ps1.
+      # outside the repository. Signed builds come from the release workflow.
       - name: Lint
         run: ./gradlew :app:lintDebug --no-daemon
 

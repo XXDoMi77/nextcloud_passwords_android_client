@@ -51,7 +51,7 @@ jobs:
           fi
 
       # Written from secrets and never checked in. The build finds it through
-      # NPAC_KEYSTORE_PROPERTIES, the same way the local release script does.
+      # NPAC_KEYSTORE_PROPERTIES, the same variable a local signed build reads.
       - name: Restore the signing key
         env:
           KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}

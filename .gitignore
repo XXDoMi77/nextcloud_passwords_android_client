@@ -56,7 +56,7 @@ Thumbs.db
 !.idea/vcs.xml
 !.idea/runConfigurations/
 
-# Screenshot captures land beside the release scripts, outside the repo. Anchored to the root:
+# Screenshot captures are kept outside the repository. Anchored to the root:
 # unanchored, "screenshots/" matches a directory of that name at any depth, which silently
 # swallowed docs/screenshots and left the README pointing at files that were never committed.
 /screenshots/

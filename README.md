@@ -14,8 +14,8 @@ An open-source Android client for the [Nextcloud Passwords](https://apps.nextclo
 
 This project aims to be a fully-featured, secure, and user-friendly password manager for Android that syncs with your self-hosted Nextcloud instance. It leverages the Android Autofill framework for seamless integration with other apps and browsers.
 
-#### Current Status: **1.0.0-beta01**
-Functional for daily use and in beta while the 1.0 line settles. Feedback and contributions are always
+#### Current Status: **1.0.0**
+The first stable release, following the "Preview 10" series. Feedback and contributions are always
 welcome — see [CHANGELOG.md](CHANGELOG.md) for what has changed.
 
 ---
@@ -139,15 +139,20 @@ and falls back to an unsigned release build when neither is set.
 
 ## Versioning
 
-`versionName` is semantic, with a pre-release tag while a line is still settling —
-`1.0.0-beta01`, then `1.0.0` once it is stable.
+`versionName` is semantic, and carries a pre-release tag while a line is still settling —
+`1.0.0-beta01`, then `1.0.0` once it is stable. A name with a pre-release tag belongs on a testing
+track rather than production, and the release workflow marks such a tag as a GitHub pre-release so it
+does not take over the "latest release" slot.
 
-`versionCode` is a plain counter. Play only requires that it be larger than the last upload, and
-deriving it from the version number invites a collision the first time a beta and a patch release
-want the same slot. Bump it on **every** upload, including a re-upload of the same `versionName`.
+`versionCode` is a plain counter, deliberately not derived from the version name: Play only requires
+that it be larger than the last upload, and a derived code invites a collision the first time a
+pre-release and a patch want the same slot. It is also spent the moment Play sees it — deleting a
+release does not hand it back — so bump it on **every** upload, including a re-upload of the same
+`versionName`.
 
-A `versionName` carrying a pre-release tag belongs on a testing track, not production; the release
-script prints a warning to that effect and records it in `BUILD_INFO.txt`.
+Pushing a `v*` tag builds and publishes the signed release. The APK attached there is signed with a
+different key than the copy Google distributes, because Play re-signs with its own app signing key, so
+the two cannot update over one another — install from one source or the other, not both.
 
 ---
 

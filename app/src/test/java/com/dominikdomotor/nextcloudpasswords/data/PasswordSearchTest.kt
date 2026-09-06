@@ -40,22 +40,22 @@ class PasswordSearchTest {
     /** What the user typed is usually the entry's name, so a label hit beats a username hit. */
     @Test
     fun labelMatchOutranksUsernameMatch() {
-        val byLabel = password(label = "Dominikscloud", username = "admin", url = "")
-        val byUsername = password(label = "Some Server", username = "domi77full", url = "")
+        val byLabel = password(label = "Cloudstore", username = "admin", url = "")
+        val byUsername = password(label = "Some Server", username = "cloudadmin", url = "")
 
-        val results = PasswordSearch.filter(listOf(byUsername, byLabel), "domi")
+        val results = PasswordSearch.filter(listOf(byUsername, byLabel), "cloud")
 
-        assertEquals(listOf("Dominikscloud", "Some Server"), results.map { it.label })
+        assertEquals(listOf("Cloudstore", "Some Server"), results.map { it.label })
     }
 
     @Test
     fun labelMatchOutranksUsernameEvenInTheMiddleOfTheLabel() {
-        val byLabel = password(label = "My Dominikscloud", username = "admin", url = "")
-        val byUsername = password(label = "Some Server", username = "domi77full", url = "")
+        val byLabel = password(label = "My Cloudstore", username = "admin", url = "")
+        val byUsername = password(label = "Some Server", username = "cloudadmin", url = "")
 
-        val results = PasswordSearch.filter(listOf(byUsername, byLabel), "domi")
+        val results = PasswordSearch.filter(listOf(byUsername, byLabel), "cloud")
 
-        assertEquals(listOf("My Dominikscloud", "Some Server"), results.map { it.label })
+        assertEquals(listOf("My Cloudstore", "Some Server"), results.map { it.label })
     }
 
     @Test

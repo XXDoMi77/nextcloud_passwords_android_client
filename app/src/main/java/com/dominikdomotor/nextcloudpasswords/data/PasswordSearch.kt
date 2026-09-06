@@ -10,7 +10,7 @@ object PasswordSearch {
      * Matching passwords, best match first.
      *
      * What the user typed is almost always the name of the entry they want, so the label outranks the username and the
-     * URL. Searching "domi" puts an entry named "Dominikscloud" above one merely owned by "domi77@…", and an exact
+     * URL. Searching "cloud" puts an entry named "Cloudstore" above one merely owned by "cloudadmin@…", and an exact
      * prefix outranks a match in the middle of the text.
      *
      * Ties keep their incoming order, which is the alphabetical order the store already applies.
