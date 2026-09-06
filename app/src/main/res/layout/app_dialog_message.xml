@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- The body of a question-and-two-answers dialog. -->
+<!--
+    The body of a question-and-two-answers dialog.
+
+    No horizontal padding of its own: the dialog already insets everything it hosts by the same amount the title is
+    inset by, so adding it again here started the body a second inset in from the title above it.
+-->
 <TextView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingStart="@dimen/spacing_horizontal"
     android:paddingTop="20dp"
-    android:paddingEnd="@dimen/spacing_horizontal"
     android:paddingBottom="12dp"
     android:textColor="?attr/colorOnSurface"
     android:textSize="16sp" />
