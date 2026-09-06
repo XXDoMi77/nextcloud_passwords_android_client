@@ -9,6 +9,7 @@ import android.content.pm.PackageManager
 import android.graphics.drawable.Icon
 import android.os.Build
 import android.os.CancellationSignal
+import android.os.SystemClock
 import android.service.autofill.AutofillService
 import android.service.autofill.FillCallback
 import android.service.autofill.FillRequest
@@ -46,7 +47,9 @@ class MyAutofillService : AutofillService() {
         try {
             // This service runs in its own process, so it needs an explicit read of what the main
             // process has written.
+            val startedAt = SystemClock.elapsedRealtime()
             storageManager.reloadFromStorage()
+            val loadedAt = SystemClock.elapsedRealtime()
 
             val fillContext = request.fillContexts.lastOrNull()
             val structure = fillContext?.structure
@@ -77,7 +80,9 @@ class MyAutofillService : AutofillService() {
                     AutofillHintWords(settings.autofillUsernameWords, settings.autofillPasswordWords),
                 )
             val fallbackId =
-                fillContext.focusedId?.takeIf { settings.autofillManualFallback && it in fields.unknownIds }
+                (fillContext.focusedId ?: fields.focusedId)?.takeIf {
+                    settings.autofillManualFallback && it in fields.unknownIds
+                }
             val fillableIds = (fields.usernameIds + fields.passwordIds + listOfNotNull(fallbackId)).toList()
 
             // Debug builds keep the structure so the inspector can show why a field was or was not recognised.
@@ -97,7 +102,7 @@ class MyAutofillService : AutofillService() {
                     "manualFallback=${settings.autofillManualFallback} " +
                     // The single-field rows target the focused field, so a request that arrives without one
                     // silently falls back to whatever was detected - which is the case worth spotting.
-                    "focused=${fillContext.focusedId != null}"
+                    "focused=${fillContext.focusedId != null}/${fields.focusedId != null}"
             )
             if (fillableIds.isEmpty() || cancellationSignal.isCanceled) {
                 GF.println("Autofill: nothing fillable found, returning no datasets")
@@ -131,7 +136,10 @@ class MyAutofillService : AutofillService() {
             // a single tap - and the single-field rows are what rescues a field this service classified wrongly.
             // The platform only shows a dataset that can fill the focused field, so targeting it is also what makes
             // both rows appear together instead of one row per field.
-            val focusedTarget = fillContext.focusedId
+            // The request's own answer where it gives one, the structure's where it does not. Without the second
+            // half, a browser that names no focused field falls back to the detected fields - and then the row for
+            // the *other* kind of field cannot be shown at all, which is the whole point of having it.
+            val focusedTarget = fillContext.focusedId ?: fields.focusedId
             var inlineIndex = 0
             matches.forEach { password ->
                 val key = password.id.ifBlank { password.label.hashCode().toString() }
@@ -195,7 +203,15 @@ class MyAutofillService : AutofillService() {
                     )
                 )
             }
-            GF.println("Autofill: offering ${matches.size} credential(s) + search on ${fillableIds.size} field(s)")
+            // A cold fill request has to start this process, build the graph and decrypt the whole stored document
+            // before it can answer, and the popup does not appear until it does. Broken down so a slow one can be
+            // blamed on the right part rather than guessed at.
+            val builtAt = SystemClock.elapsedRealtime()
+            GF.println(
+                "Autofill: offering ${matches.size} credential(s) + search on ${fillableIds.size} field(s) " +
+                    "in ${builtAt - startedAt}ms (decrypt ${loadedAt - startedAt}ms, " +
+                    "parse+match+present ${builtAt - loadedAt}ms, favicons ${faviconStore.decodeCount})"
+            )
             callback.onSuccess(response.build())
         } catch (e: Exception) {
             GF.println("Autofill: failed - ${e.javaClass.simpleName}: ${e.message}")
@@ -216,6 +232,8 @@ class MyAutofillService : AutofillService() {
         /** Kept so the inspector can show the verdict the service actually reached, rather than a second guess at it. */
         val verdicts: Map<Int, AutofillFieldType> = emptyMap(),
         val autofillIds: Map<Int, AutofillId> = emptyMap(),
+        /** The field reporting focus in the structure, which is not always the one the request names. */
+        val focusedId: AutofillId? = null,
     ) {
         companion object {
             /**
@@ -260,7 +278,11 @@ class MyAutofillService : AutofillService() {
                         else -> Unit
                     }
                 }
-                return ParsedFields(usernameIds, passwordIds, unknownIds, webDomain, verdicts, idsByCandidate)
+                // Which field the user is standing in, taken from the structure rather than from the request.
+                // FillContext.getFocusedId is null often enough to matter - Edge is one - and when it is, a row that
+                // targets the focused field has nothing to target and the platform silently drops it.
+                val focusedId = candidates.firstOrNull { it.focused }?.let { idsByCandidate[it.id] }
+                return ParsedFields(usernameIds, passwordIds, unknownIds, webDomain, verdicts, idsByCandidate, focusedId)
             }
         }
     }

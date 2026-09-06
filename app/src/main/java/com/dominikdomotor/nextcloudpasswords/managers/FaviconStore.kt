@@ -65,6 +65,15 @@ class FaviconStore @Inject constructor(private val encryptedFileManager: Encrypt
     fun peek(passwordId: String): Bitmap? = cache.get(passwordId) ?: decodeAndCache(passwordId)
 
     /**
+     * How many favicons this process has decoded from disk.
+     *
+     * Only interesting in the autofill process, where the cache starts empty every time and the suspicion was that a
+     * fill request decodes far more than the handful it shows. It counts rather than guesses.
+     */
+    @Volatile var decodeCount: Int = 0
+        private set
+
+    /**
      * Decodes every id in [orderedIds] that is not cached yet, one at a time, publishing each as it lands so its row
      * updates immediately.
      *
@@ -138,6 +147,7 @@ class FaviconStore @Inject constructor(private val encryptedFileManager: Encrypt
         }
 
     private fun decodeAndCache(passwordId: String): Bitmap? {
+        decodeCount++
         val bytes = encryptedFileManager.readBytes(path(passwordId))
         val bitmap = bytes?.let { BitmapFactory.decodeByteArray(it, 0, it.size) }
         if (bitmap == null) {

@@ -19,6 +19,7 @@ import android.widget.TextView
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.widget.doAfterTextChanged
+import androidx.lifecycle.lifecycleScope
 import com.dominikdomotor.nextcloudpasswords.R
 import com.dominikdomotor.nextcloudpasswords.activities.BaseActivity
 import com.dominikdomotor.nextcloudpasswords.dataclasses.passwords.Password
@@ -27,6 +28,8 @@ import com.dominikdomotor.nextcloudpasswords.ui.PasswordStatus
 import com.google.android.material.appbar.MaterialToolbar
 import dagger.hilt.android.AndroidEntryPoint
 import jakarta.inject.Inject
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class AutofillPickerActivity : BaseActivity() {
@@ -70,6 +73,7 @@ class AutofillPickerActivity : BaseActivity() {
                         it.url.contains(query, ignoreCase = true)
                 }
             list.adapter = PickerAdapter(matches)
+            warmFavicons(matches.map { it.id })
         }
 
         search.doAfterTextChanged { render(it?.toString().orEmpty()) }
@@ -77,6 +81,27 @@ class AutofillPickerActivity : BaseActivity() {
         search.setText(initialQuery)
         search.setSelection(initialQuery.length)
         if (initialQuery.isEmpty()) render("")
+    }
+
+    /**
+     * Decodes the favicons for what is on screen, off the main thread, nearest rows first.
+     *
+     * The list draws immediately with placeholders and each icon appears as it lands. Restarted whenever the filtered
+     * set changes, so typing a query does not leave the previous list's work running.
+     */
+    private fun warmFavicons(ids: List<String>) {
+        warmUp?.cancel()
+        if (ids.isEmpty()) return
+        warmUp =
+            lifecycleScope.launch {
+                launch {
+                    faviconStore.updates.collect { id ->
+                        if (id in ids) (findViewById<ListView>(R.id.autofill_picker_list).adapter as? BaseAdapter)
+                            ?.notifyDataSetChanged()
+                    }
+                }
+                faviconStore.warmUp(ids)
+            }
     }
 
     private fun returnCredential(password: Password) {
@@ -141,6 +166,8 @@ class AutofillPickerActivity : BaseActivity() {
             @Suppress("DEPRECATION") getParcelableExtra(key)
         }
 
+    private var warmUp: Job? = null
+
     private inner class PickerAdapter(private val items: List<Password>) : BaseAdapter() {
         override fun getCount(): Int = items.size
 
@@ -157,7 +184,10 @@ class AutofillPickerActivity : BaseActivity() {
             view.findViewById<TextView>(R.id.textview_password_label).text = password.label
             view.findViewById<TextView>(R.id.textview_username).text = password.username
             val iconView = view.findViewById<ImageView>(R.id.imageview_password_listview_item)
-            faviconStore.peek(password.id)?.let(iconView::setImageBitmap)
+            // Whatever is decoded already, never a decode here: this runs on the main thread for every row that
+            // binds, and in this process the cache always starts empty, so a miss meant reading and decrypting a file
+            // while the list was trying to draw. warmFavicons fills them in behind this.
+            faviconStore.cached(password.id)?.let(iconView::setImageBitmap)
                 ?: iconView.setImageResource(R.drawable.icon_foreground_24)
             view.findViewById<ImageButton>(R.id.imagebutton_copy_username).apply {
                 isEnabled = focusedId != null
