@@ -52,7 +52,7 @@
             style="@style/TextInputLayout"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:hint="@string/example_url"
+            android:hint="@string/url"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/enter_URL_button"
             app:layout_constraintStart_toStartOf="parent">
