@@ -42,4 +42,5 @@
 
     <color name="autofill_verdict_recognised">#7FD68C</color>
     <color name="autofill_verdict_unknown">#E0B341</color>
+    <color name="autofill_presentation_badge_backdrop">#FF000000</color>
 </resources>

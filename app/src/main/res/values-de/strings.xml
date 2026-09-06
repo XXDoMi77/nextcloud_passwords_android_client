@@ -212,4 +212,6 @@
     <string name="autofill_inspector_share">Aufzeichnung teilen</string>
     <string name="autofill_inspector_clear">Aufzeichnungen löschen</string>
     <string name="autofill_inspector_clear_confirm">Alle aufgezeichneten Anfragen löschen?</string>
+    <string name="autofill_fill_username">Benutzernamen einfügen</string>
+    <string name="autofill_fill_password">Passwort einfügen</string>
 </resources>

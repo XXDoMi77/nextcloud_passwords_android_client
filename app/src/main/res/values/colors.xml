@@ -45,4 +45,6 @@
          not readable as small bold text, so these are their legible counterparts. -->
     <color name="autofill_verdict_recognised">#1B6E2F</color>
     <color name="autofill_verdict_unknown">#8A5A00</color>
+    <!-- Sits under the corner badge on a suggestion icon: the popup background, so the glyph reads against it. -->
+    <color name="autofill_presentation_badge_backdrop">#FFFFFFFF</color>
 </resources>

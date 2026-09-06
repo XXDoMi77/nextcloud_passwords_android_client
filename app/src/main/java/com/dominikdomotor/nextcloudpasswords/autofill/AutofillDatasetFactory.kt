@@ -10,6 +10,13 @@ import android.view.autofill.AutofillValue
 import android.widget.RemoteViews
 
 internal object AutofillDatasetFactory {
+    /**
+     * One suggestion, filling whichever fields it is given.
+     *
+     * A dataset with only the username ids, or only the password ids, is how "fill just this one" is offered: the
+     * platform gives a suggestion row a single click target, so a row per choice is the only way to make each choice
+     * one tap. Both maps being empty would build a dataset that fills nothing, so callers check first.
+     */
     fun credentialDataset(
         username: String,
         password: String,

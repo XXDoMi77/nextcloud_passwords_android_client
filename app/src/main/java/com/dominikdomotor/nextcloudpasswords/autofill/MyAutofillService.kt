@@ -20,15 +20,19 @@ import android.service.autofill.SaveRequest
 import android.view.autofill.AutofillId
 import android.view.inputmethod.InlineSuggestionsRequest
 import android.widget.RemoteViews
+import androidx.annotation.DrawableRes
 import androidx.autofill.inline.UiVersions
+import androidx.core.content.ContextCompat
 import androidx.autofill.inline.v1.InlineSuggestionUi
 import com.dominikdomotor.nextcloudpasswords.GF
 import com.dominikdomotor.nextcloudpasswords.R as AppR
 import com.dominikdomotor.nextcloudpasswords.activities.OverviewActivity
 import com.dominikdomotor.nextcloudpasswords.autofill.debug.AutofillCapture
 import com.dominikdomotor.nextcloudpasswords.autofill.debug.AutofillCaptureStore
+import com.dominikdomotor.nextcloudpasswords.dataclasses.passwords.Password
 import com.dominikdomotor.nextcloudpasswords.managers.FaviconStore
 import com.dominikdomotor.nextcloudpasswords.managers.StorageManager
+import com.dominikdomotor.nextcloudpasswords.ui.PasswordStatus
 import dagger.hilt.android.AndroidEntryPoint
 import jakarta.inject.Inject
 
@@ -119,18 +123,63 @@ class MyAutofillService : AutofillService() {
                     SaveInfo.Builder(SaveInfo.SAVE_DATA_TYPE_GENERIC, fillableIds.toTypedArray()).build()
                 )
             }
-            matches.forEachIndexed { index, password ->
-                response.addDataset(
-                    AutofillDatasetFactory.credentialDataset(
-                        password.username,
-                        password.password,
-                        fields.usernameIds,
-                        fields.passwordIds,
-                        createPresentation(password.label, password.username, password.id),
-                        createInlinePresentation(password.label, password.username, inlineRequest, index),
-                        "credential-${password.id.ifBlank { password.label.hashCode().toString() }}",
+            // Three rows per entry where the form allows it: fill both, fill only the username, fill only the
+            // password. A suggestion row has one click target, so a row per choice is the only way each choice can be
+            // a single tap - and the single-field rows are what rescues a field this service classified wrongly.
+            // The platform only shows a dataset that can fill the focused field, so targeting it is also what makes
+            // both rows appear together instead of one row per field.
+            val focusedTarget = fillContext.focusedId
+            var inlineIndex = 0
+            matches.forEach { password ->
+                val key = password.id.ifBlank { password.label.hashCode().toString() }
+                // Both single-field rows fill the field the user is standing in, whatever this service decided that
+                // field was. That is the entire point of them: the case they exist for is a username box read as a
+                // password, and a row that obeys the wrong verdict cannot correct it. Only when there is no focused
+                // field do they fall back to what was detected.
+                val usernameTargets = focusedTarget?.let(::listOf) ?: fields.usernameIds.toList()
+                val passwordTargets = focusedTarget?.let(::listOf) ?: fields.passwordIds.toList()
+
+                if (fields.usernameIds.isNotEmpty() && fields.passwordIds.isNotEmpty()) {
+                    response.addDataset(
+                        AutofillDatasetFactory.credentialDataset(
+                            password.username,
+                            password.password,
+                            fields.usernameIds,
+                            fields.passwordIds,
+                            createPresentation(password.label, password.username, password),
+                            createInlinePresentation(password.label, password.username, inlineRequest, inlineIndex++),
+                            "credential-" + key,
+                        )
                     )
-                )
+                }
+                if (usernameTargets.isNotEmpty()) {
+                    val fill = getString(AppR.string.autofill_fill_username)
+                    response.addDataset(
+                        AutofillDatasetFactory.credentialDataset(
+                            password.username,
+                            password.password,
+                            usernameTargets,
+                            emptyList(),
+                            createPresentation(password.label, fill, password, Badge.USERNAME),
+                            createInlinePresentation(password.label, fill, inlineRequest, inlineIndex++),
+                            "username-" + key,
+                        )
+                    )
+                }
+                if (passwordTargets.isNotEmpty()) {
+                    val fill = getString(AppR.string.autofill_fill_password)
+                    response.addDataset(
+                        AutofillDatasetFactory.credentialDataset(
+                            password.username,
+                            password.password,
+                            emptyList(),
+                            passwordTargets,
+                            createPresentation(password.label, fill, password, Badge.PASSWORD),
+                            createInlinePresentation(password.label, fill, inlineRequest, inlineIndex++),
+                            "password-" + key,
+                        )
+                    )
+                }
             }
             fillableIds.forEach { id ->
                 response.addDataset(
@@ -224,14 +273,47 @@ class MyAutofillService : AutofillService() {
             }
             .getOrDefault(structure.activityComponent.packageName)
 
-    private fun createPresentation(title: String, subtitle: String, passwordId: String? = null): RemoteViews =
+    /** Which corner badge a row wears, and so which of the three choices it is. */
+    private enum class Badge(val drawable: Int) {
+        USERNAME(AppR.drawable.autofill_presentation_person_24),
+        PASSWORD(AppR.drawable.autofill_presentation_key_24),
+    }
+
+    private fun createPresentation(
+        title: String,
+        subtitle: String,
+        password: Password? = null,
+        badge: Badge? = null,
+        @DrawableRes icon: Int? = null,
+    ): RemoteViews =
         RemoteViews(packageName, AppR.layout.autofill_dataset_presentation).apply {
             setTextViewText(AppR.id.autofill_presentation_title, title)
             setTextViewText(AppR.id.autofill_presentation_subtitle, subtitle)
-            // The ImageView is untinted and the placeholder drawable tints itself, so the bitmap
-            // simply replaces it. Clearing a tint here would need RemoteViews#setColorStateList,
-            // which is API 31.
-            passwordId?.let(faviconStore::peek)?.let { setImageViewBitmap(AppR.id.autofill_presentation_icon, it) }
+
+            val favicon = password?.id?.let(faviconStore::peek)
+            // The key badge carries the entry's security rating, in the colours the password list already uses, so the
+            // meaning carries over. The person badge has no rating to show and takes the row's own text colour.
+            val badgeColor =
+                if (badge == Badge.PASSWORD) {
+                    ContextCompat.getColor(
+                        this@MyAutofillService,
+                        PasswordStatus.from(password?.status ?: -1).colorResId,
+                    )
+                } else {
+                    ContextCompat.getColor(this@MyAutofillService, AppR.color.autofill_presentation_text)
+                }
+
+            // The ImageView is untinted and the placeholder drawable tints itself, so a bitmap simply replaces it.
+            // Clearing a tint here would need RemoteViews#setColorStateList, which is API 31.
+            val composed =
+                badge?.let { AutofillPresentationIcon.badged(this@MyAutofillService, favicon, it.drawable, badgeColor) }
+            when {
+                composed != null -> setImageViewBitmap(AppR.id.autofill_presentation_icon, composed)
+                // No favicon to badge: a full size person or key says more than a blank square wearing a small one.
+                badge != null -> setImageViewResource(AppR.id.autofill_presentation_icon, badge.drawable)
+                favicon != null -> setImageViewBitmap(AppR.id.autofill_presentation_icon, favicon)
+                icon != null -> setImageViewResource(AppR.id.autofill_presentation_icon, icon)
+            }
         }
 
     private fun createSearchDataset(
@@ -243,7 +325,11 @@ class MyAutofillService : AutofillService() {
     ) =
         AutofillDatasetFactory.authenticationDataset(
             listOf(targetId),
-            createPresentation(getString(AppR.string.search_all_passwords), getString(AppR.string.app_name)),
+            createPresentation(
+                getString(AppR.string.search_all_passwords),
+                getString(AppR.string.app_name),
+                icon = AppR.drawable.autofill_presentation_search_24,
+            ),
             createInlinePresentation(
                 getString(AppR.string.search_all_passwords),
                 getString(AppR.string.app_name),
@@ -310,7 +396,11 @@ class MyAutofillService : AutofillService() {
     }
 
     private companion object {
-        const val MAX_CREDENTIAL_DATASETS = 10
+        /**
+         * Entries offered, not rows: each one now produces up to three, so ten entries would be thirty rows in a
+         * dropdown over someone's keyboard. Anyone with more matches than this wants the search row anyway.
+         */
+        const val MAX_CREDENTIAL_DATASETS = 5
 
         /** Chrome's release channels. Other browsers delegate without an extra opt-in and need no walkthrough. */
         val CHROME_PACKAGES = setOf("com.android.chrome", "com.chrome.beta", "com.chrome.dev", "com.chrome.canary")

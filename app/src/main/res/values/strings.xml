@@ -214,4 +214,6 @@
     <string name="autofill_inspector_share">Share capture</string>
     <string name="autofill_inspector_clear">Delete captures</string>
     <string name="autofill_inspector_clear_confirm">Delete all captured fill requests?</string>
+    <string name="autofill_fill_username">Fill username</string>
+    <string name="autofill_fill_password">Fill password</string>
 </resources>
