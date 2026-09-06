@@ -56,9 +56,10 @@ Thumbs.db
 !.idea/vcs.xml
 !.idea/runConfigurations/
 
-# Screenshot captures. They belong beside the release scripts, outside the repo - the README links
-# to uploaded copies rather than carrying binaries.
-screenshots/
+# Screenshot captures land beside the release scripts, outside the repo. Anchored to the root:
+# unanchored, "screenshots/" matches a directory of that name at any depth, which silently
+# swallowed docs/screenshots and left the README pointing at files that were never committed.
+/screenshots/
 
 # Scratch files at the repo root
 test.kt
