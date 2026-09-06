@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    The accent colour picker: a preview, a hex field, and one slider per HSV component.
+
+    Sliders rather than a colour wheel because a wheel needs custom touch handling to be usable, while three seek bars
+    are accessible, work with a screen reader, and let someone land on an exact value.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingVertical="4dp">
+
+    <View
+        android:id="@+id/accent_preview"
+        android:layout_width="match_parent"
+        android:layout_height="72dp"
+        android:layout_marginBottom="@dimen/spacing_vertical"
+        android:importantForAccessibility="no" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/accent_hex_layout"
+        style="@style/TextInputLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/accent_colour_hex">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/accent_hex"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:imeOptions="actionDone"
+            android:inputType="textCapCharacters|textNoSuggestions"
+            android:maxLength="7"
+            android:maxLines="1" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_vertical"
+        android:labelFor="@+id/accent_hue"
+        android:text="@string/accent_colour_hue"
+        android:textColor="?attr/colorOnSurfaceVariant"
+        android:textSize="14sp" />
+
+    <SeekBar
+        android:id="@+id/accent_hue"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:max="360" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:labelFor="@+id/accent_saturation"
+        android:text="@string/accent_colour_saturation"
+        android:textColor="?attr/colorOnSurfaceVariant"
+        android:textSize="14sp" />
+
+    <SeekBar
+        android:id="@+id/accent_saturation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:max="100" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:labelFor="@+id/accent_brightness"
+        android:text="@string/accent_colour_brightness"
+        android:textColor="?attr/colorOnSurfaceVariant"
+        android:textSize="14sp" />
+
+    <SeekBar
+        android:id="@+id/accent_brightness"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:max="100" />
+</LinearLayout>

@@ -1,19 +1,64 @@
-*.iml
-.gradle
-/local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
-.DS_Store
-/build
+# ---------------------------------------------------------------------------
+# Secrets - never commit. Signing material lives outside the repository entirely;
+# the build finds it through the NPAC_KEYSTORE_PROPERTIES environment variable.
+# ---------------------------------------------------------------------------
+*.jks
+*.keystore
+*.p12
+*.pfx
+*.pem
+*.der
+*.key
+*_rsa
+*_dsa
+*_ed25519
+*_ecdsa
+keystore.properties
+signing.properties
+*secret*.properties
+*credential*.properties
+google-services.json
+play-service-account*.json
+*.env
+.env.*
+
+# ---------------------------------------------------------------------------
+# Build output
+# ---------------------------------------------------------------------------
+.gradle/
+build/
 /captures
 .externalNativeBuild
 .cxx
-local.properties
+.kotlin/
+*.apk
+*.aab
+*.aar
+mapping.txt
+/app/release/
+/app/debug/
+/release/
 
-# Keystore files
-*.jks
-*.keystore
+# ---------------------------------------------------------------------------
+# Local machine configuration
+# ---------------------------------------------------------------------------
+local.properties
+*.iml
+.DS_Store
+Thumbs.db
+
+# ---------------------------------------------------------------------------
+# IDE — share only project-level conventions, ignore machine-local state
+# ---------------------------------------------------------------------------
+.idea/*
+!.idea/codeStyles/
+!.idea/ktfmt.xml
+!.idea/vcs.xml
+!.idea/runConfigurations/
+
+# Screenshot captures. They belong beside the release scripts, outside the repo - the README links
+# to uploaded copies rather than carrying binaries.
+screenshots/
+
+# Scratch files at the repo root
+test.kt

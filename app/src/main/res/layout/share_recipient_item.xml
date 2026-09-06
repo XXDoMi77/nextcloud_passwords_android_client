@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    A share suggestion. The filled container and its per-position corners are set in code by
+    ListGroupBackground, so a run of rows reads as one block.
+-->
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/share_recipient_name"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:minHeight="56dp"
+    android:paddingHorizontal="@dimen/spacing_horizontal"
+    android:paddingVertical="8dp"
+    android:textColor="?attr/colorOnSecondaryContainer"
+    android:textSize="16sp" />

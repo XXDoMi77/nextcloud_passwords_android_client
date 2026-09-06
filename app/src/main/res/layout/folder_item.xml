@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/constraint_layout_folder_item"
+    android:layout_width="match_parent"
+    android:layout_height="60dp"
+    android:background="?android:attr/selectableItemBackground">
+
+    <ImageView
+        android:id="@+id/imageview_folder_icon"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:importantForAccessibility="no"
+        android:src="@drawable/icon_folder_24"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="?attr/colorOnSurface" />
+
+    <TextView
+        android:id="@+id/folder_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="16dp"
+        android:fontFamily="sans-serif-black"
+        android:singleLine="true"
+        android:textColor="?attr/colorOnSurface"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="@+id/imageview_folder_icon"
+        app:layout_constraintEnd_toStartOf="@+id/edit_folder"
+        app:layout_constraintStart_toEndOf="@+id/imageview_folder_icon"
+        app:layout_constraintTop_toTopOf="@+id/imageview_folder_icon"
+        app:layout_constraintVertical_bias="0.5"
+        tools:text="Folder Name" />
+
+    <TextView
+        android:id="@+id/folder_password_count"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:singleLine="true"
+        android:textColor="?attr/colorOnSurface"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toStartOf="@+id/edit_folder"
+        app:layout_constraintStart_toStartOf="@+id/imageview_folder_icon"
+        app:layout_constraintTop_toBottomOf="@+id/imageview_folder_icon"
+        tools:text="5 passwords" />
+
+    <ImageButton
+        android:id="@+id/delete_folder"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginEnd="8dp"
+        android:background="?android:attr/selectableItemBackgroundBorderless"
+        android:contentDescription="@string/delete_folder"
+        android:src="@drawable/icon_delete_24"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="?attr/colorOnSurface" />
+
+    <ImageButton
+        android:id="@+id/edit_folder"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:background="?android:attr/selectableItemBackgroundBorderless"
+        android:contentDescription="@string/edit_folder"
+        android:src="@drawable/icon_edit_24"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/delete_folder"
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="?attr/colorOnSurface" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

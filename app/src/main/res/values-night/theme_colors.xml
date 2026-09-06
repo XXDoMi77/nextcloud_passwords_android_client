@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    The palette slots, and their static defaults.
+
+    Every value here is generated from the app's own #0082C9 by PaletteGenerator, and replaced at
+    runtime by ThemeApplier once a seed is known. They are what the app paints with on Android 10,
+    where there is no ResourcesLoader, and on the first frame of every start before the seed has
+    been read.
+
+    Do not hand-edit: regenerate with PaletteXmlDumpTest.
+-->
+
+<resources>
+    <color name="npac_primary">#FF96CCFF</color>
+    <color name="npac_on_primary">#FF003353</color>
+    <color name="npac_primary_container">#FF3297DF</color>
+    <color name="npac_on_primary_container">#FF001D32</color>
+    <color name="npac_inverse_primary">#FF00639A</color>
+    <color name="npac_secondary">#FFABCAEA</color>
+    <color name="npac_on_secondary">#FF11334D</color>
+    <color name="npac_secondary_container">#FF2B4964</color>
+    <color name="npac_on_secondary_container">#FFF7F9FF</color>
+    <color name="npac_tertiary">#FFEAB3FF</color>
+    <color name="npac_on_tertiary">#FF4E0F6A</color>
+    <color name="npac_tertiary_container">#FFB778D3</color>
+    <color name="npac_on_tertiary_container">#FF310048</color>
+    <color name="npac_background">#FF101418</color>
+    <color name="npac_on_background">#FFE2E2E2</color>
+    <color name="npac_surface">#FF101418</color>
+    <color name="npac_on_surface">#FFE2E2E2</color>
+    <color name="npac_surface_variant">#FF404851</color>
+    <color name="npac_on_surface_variant">#FFC6C6C6</color>
+    <color name="npac_surface_dim">#FF101418</color>
+    <color name="npac_surface_bright">#FF363A3E</color>
+    <color name="npac_surface_container_lowest">#FF0A0F13</color>
+    <color name="npac_surface_container_low">#FF181C20</color>
+    <color name="npac_surface_container">#FF1C2025</color>
+    <color name="npac_surface_container_high">#FF262A2F</color>
+    <color name="npac_surface_container_highest">#FF31353A</color>
+    <color name="npac_inverse_surface">#FFE0E2E9</color>
+    <color name="npac_inverse_on_surface">#FF313131</color>
+    <color name="npac_outline">#FF89919C</color>
+    <color name="npac_outline_variant">#FF404851</color>
+    <color name="npac_error">#FFFFB4AB</color>
+    <color name="npac_on_error">#FF690005</color>
+    <color name="npac_error_container">#FF93000A</color>
+    <color name="npac_on_error_container">#FFFFF8F7</color>
+    <color name="npac_ripple">#1FE2E2E2</color>
+</resources>

@@ -1,0 +1,4 @@
+<resources>
+    <!-- Long enough for the eased curve to be legible, short enough not to delay a tab change. -->
+    <integer name="tab_transition_millis">280</integer>
+</resources>

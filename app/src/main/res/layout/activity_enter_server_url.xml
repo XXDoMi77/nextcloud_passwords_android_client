@@ -2,11 +2,9 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:theme="@style/Theme.AppCompat.Light.DarkActionBar"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_color"
-    android:backgroundTint="@color/background_color"
+    android:backgroundTint="?attr/colorSurface"
     tools:context=".activities.EnterServerURLActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -28,7 +26,8 @@
             android:id="@+id/imageView"
             android:layout_width="120dp"
             android:layout_height="120dp"
-            android:src="@mipmap/icon"
+            android:importantForAccessibility="no"
+            android:src="@mipmap/launcher_icon"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -42,40 +41,41 @@
             android:fontFamily="sans-serif"
             android:text="@string/app_name"
             android:textAlignment="center"
-            android:textColor="@color/normal_text_color"
+            android:textColor="?attr/colorOnSurface"
             android:textSize="34sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/imageView" />
 
-        <EditText
-            android:id="@+id/URL_input"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/URL_input_layout"
+            style="@style/TextInputLayout"
             android:layout_width="0dp"
-            android:layout_height="48dp"
-            android:autofillHints=""
-            android:backgroundTint="@color/normal_text_color"
-            android:ems="10"
-            android:hint="@string/example_url"
-            android:importantForAutofill="no"
-            android:inputType="textUri|textPersonName"
-            android:textColor="@color/normal_text_color"
-            android:textColorHint="@color/shaded_text_color"
-            android:textCursorDrawable="@null"
+            android:layout_height="wrap_content"
+            android:hint="@string/url"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/enter_URL_button"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/URL_input"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:importantForAutofill="no"
+                android:inputType="textUri|textPersonName" />
+        </com.google.android.material.textfield.TextInputLayout>
 
         <ImageButton
             android:id="@+id/enter_URL_button"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:background="@color/transparent"
-            app:layout_constraintBottom_toBottomOf="@+id/URL_input"
+            android:contentDescription="@string/connect_to_server"
+            app:layout_constraintBottom_toBottomOf="@+id/URL_input_layout"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/URL_input"
-            app:layout_constraintVertical_bias="0.0"
-            app:srcCompat="@drawable/baseline_check_36"
-            app:tint="@color/normal_text_color" />
+            app:layout_constraintTop_toTopOf="@+id/URL_input_layout"
+            app:srcCompat="@drawable/icon_check_24"
+            app:tint="?attr/colorOnSurface" />
 
         <TextView
             android:id="@+id/textView3"
@@ -83,9 +83,9 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="3dp"
             android:text="@string/please_enter_your_server_url"
-            android:textColor="@color/normal_text_color"
-            app:layout_constraintBottom_toTopOf="@+id/URL_input"
-            app:layout_constraintStart_toStartOf="@+id/URL_input" />
+            android:textColor="?attr/colorOnSurface"
+            app:layout_constraintBottom_toTopOf="@+id/URL_input_layout"
+            app:layout_constraintStart_toStartOf="@+id/URL_input_layout" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

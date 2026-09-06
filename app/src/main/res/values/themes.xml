@@ -1,87 +1,189 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Base application theme -->
-    <style name="Theme.App" parent="@android:style/Theme.DeviceDefault"/>
-
     <style name="Theme.App.Starting" parent="Theme.SplashScreen">
-        <item name="windowSplashScreenBackground">@color/background_color</item>
-        <item name="windowSplashScreenAnimatedIcon">@mipmap/icon</item>
+        <!--
+            Static, and unavoidably so: the system reads this before our process starts, so no palette
+            can reach it. Chosen to sit near the default seed's surface tone to keep the handover quiet.
+        -->
+        <item name="windowSplashScreenBackground">@color/splash_background</item>
+        <item name="windowSplashScreenAnimatedIcon">@mipmap/launcher_icon</item>
         <item name="postSplashScreenTheme">@style/Theme.NextcloudPasswords</item>
     </style>
 
-    <style name="Theme.NextcloudPasswords" parent="Theme.MaterialComponents.DayNight">
-        <!-- Primary brand color -->
-        <item name="colorPrimary">@color/background_color</item>
-        <item name="colorPrimaryVariant">@color/background_color</item>
-        <item name="colorOnPrimary">@color/background_color</item>
+    <!--
+        The app theme, and the single place the generated palette reaches the widget layer.
 
-        <!-- Secondary brand color -->
-        <item name="colorSecondary">@color/navigation_menu_background</item>
-        <item name="colorSecondaryVariant">@color/normal_text_color</item>
-        <item name="colorOnSecondary">@color/normal_text_color</item>
+        Every Material 3 role is mapped, not only the ones a screen names today: a role left unmapped
+        falls back to Material's baseline purple from inside some widget's own style, and it surfaces as
+        one stray lilac chip long after the change that caused it. The AppCompat bridge attributes below
+        matter for the same reason - the vector drawables tint themselves with colorControlNormal, and
+        every ripple in the app comes from colorControlHighlight.
 
-        <!-- Status bar handling -->
-        <item name="android:statusBarColor">@color/background_color</item>
-        <item name="android:windowLightStatusBar">true</item>
-        <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item>
-        <item name="android:fitsSystemWindows">false</item> <!-- Important change -->
+        The @color/npac_* values are static defaults; ColorResourceOverride replaces them at runtime.
+    -->
+    <style name="Theme.NextcloudPasswords" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Every screen used to repaint this over the window, filling the display twice per frame. -->
+        <item name="android:windowBackground">@color/npac_surface</item>
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
-        <item name="android:windowBackground">@color/background_color</item>
 
-        <!-- Edge-to-edge support -->
+        <item name="colorPrimary">@color/npac_primary</item>
+        <item name="colorOnPrimary">@color/npac_on_primary</item>
+        <item name="colorPrimaryContainer">@color/npac_primary_container</item>
+        <item name="colorOnPrimaryContainer">@color/npac_on_primary_container</item>
+        <item name="colorPrimaryInverse">@color/npac_inverse_primary</item>
+        <item name="colorSecondary">@color/npac_secondary</item>
+        <item name="colorOnSecondary">@color/npac_on_secondary</item>
+        <item name="colorSecondaryContainer">@color/npac_secondary_container</item>
+        <item name="colorOnSecondaryContainer">@color/npac_on_secondary_container</item>
+        <item name="colorTertiary">@color/npac_tertiary</item>
+        <item name="colorOnTertiary">@color/npac_on_tertiary</item>
+        <item name="colorTertiaryContainer">@color/npac_tertiary_container</item>
+        <item name="colorOnTertiaryContainer">@color/npac_on_tertiary_container</item>
+
+        <item name="android:colorBackground">@color/npac_background</item>
+        <item name="colorOnBackground">@color/npac_on_background</item>
+        <item name="colorSurface">@color/npac_surface</item>
+        <item name="colorOnSurface">@color/npac_on_surface</item>
+        <item name="colorSurfaceVariant">@color/npac_surface_variant</item>
+        <item name="colorOnSurfaceVariant">@color/npac_on_surface_variant</item>
+        <item name="colorSurfaceInverse">@color/npac_inverse_surface</item>
+        <item name="colorOnSurfaceInverse">@color/npac_inverse_on_surface</item>
+        <item name="colorSurfaceDim">@color/npac_surface_dim</item>
+        <item name="colorSurfaceBright">@color/npac_surface_bright</item>
+        <item name="colorSurfaceContainerLowest">@color/npac_surface_container_lowest</item>
+        <item name="colorSurfaceContainerLow">@color/npac_surface_container_low</item>
+        <item name="colorSurfaceContainer">@color/npac_surface_container</item>
+        <item name="colorSurfaceContainerHigh">@color/npac_surface_container_high</item>
+        <item name="colorSurfaceContainerHighest">@color/npac_surface_container_highest</item>
+
+        <item name="colorOutline">@color/npac_outline</item>
+        <item name="colorOutlineVariant">@color/npac_outline_variant</item>
+        <item name="colorError">@color/npac_error</item>
+        <item name="colorOnError">@color/npac_on_error</item>
+        <item name="colorErrorContainer">@color/npac_error_container</item>
+        <item name="colorOnErrorContainer">@color/npac_on_error_container</item>
+        <item name="android:colorControlNormal">@color/npac_on_surface_variant</item>
+        <item name="colorControlNormal">@color/npac_on_surface_variant</item>
+        <item name="colorControlActivated">@color/npac_primary</item>
+        <item name="android:colorControlActivated">@color/npac_primary</item>
+        <item name="colorControlHighlight">@color/npac_ripple</item>
+        <item name="android:colorControlHighlight">@color/npac_ripple</item>
+        <item name="android:textColorPrimary">@color/npac_on_surface</item>
+        <item name="android:textColorSecondary">@color/npac_on_surface_variant</item>
+        <item name="android:textColorTertiary">@color/npac_on_surface_variant</item>
+        <item name="android:textColorHint">@color/npac_on_surface_variant</item>
+        <item name="android:textColorLink">@color/npac_primary</item>
+        <!--
+            Elevation overlays off. They composite colorPrimary over a surface to fake a raised tone, which
+            is the pre-M3 way of separating a card from its background - and with a saturated seed the
+            result is a visible wash: the toolbar came out noticeably redder than the window behind it,
+            which read as a seam under the status bar. Material 3 separates surfaces with the
+            surfaceContainer ramp instead, and this app now maps that whole ramp, so the overlay has
+            nothing left to do.
+        -->
+        <item name="elevationOverlayEnabled">false</item>
+
+        <!--
+            Both system bars are transparent, so their colour is whatever the app paints behind them.
+            android:statusBarColor has been ignored since API 35 and the app targets 36; setting both here
+            makes every version from 29 up behave the same way rather than only the newest. The two
+            contrast flags switch off the scrim the platform would otherwise draw over a transparent bar,
+            which would show up as a grey band that follows neither the palette nor the layout.
+            SystemBars.kt then picks dark or light icons from the luminance underneath.
+        -->
+        <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:navigationBarColor">@android:color/transparent</item>
-        <item name="android:enforceNavigationBarContrast">false</item>
         <item name="android:enforceStatusBarContrast">false</item>
+        <item name="android:enforceNavigationBarContrast">false</item>
 
-        <!-- Bottom sheet -->
-        <item name="bottomSheetDialogTheme">@style/AppBottomSheetDialogTheme</item>
+        <item name="materialAlertDialogTheme">@style/AlertDialogStyle</item>
     </style>
 
-    <style name="AppBottomSheetDialogTheme" parent="Theme.Design.Light.BottomSheetDialog">
-        <item name="bottomSheetStyle">@style/AppModalStyle</item>
+    <!--
+        Dialogs.
+
+        The parent has to be a ThemeOverlay, not a full dialog theme. A full theme re-declares its own
+        colour set - pointing at Material's private m3_sys_color_* resources, which the palette loader
+        cannot reach - so under Theme.Material3.DayNight.Dialog.Alert every dialog reverted to baseline
+        purple while the rest of the app was seeded. An overlay inherits the activity's colours and adds
+        only what it names, which is what makes the five hardcoded colour items this style used to carry
+        unnecessary.
+
+        No android:minHeight or android:minWidth here. A view resolves any attribute it does not set
+        itself from the theme, and both are part of TextView's styleable, so a theme-level 46dp
+        minHeight silently became the minimum height of every TextView inflated with this theme. That
+        is what made the blocked-app rows 108dp tall: the name and the package were each forced to
+        46dp regardless of their text. Window size belongs to the dialog, not to a theme attribute
+        every widget also reads.
+    -->
+    <style name="AlertDialogStyle" parent="ThemeOverlay.Material3.Dialog.Alert">
+        <item name="dialogCornerRadius">@dimen/radius_dialog</item>
+        <!-- Every dialog gets the same buttons, including the neutral one. -->
+        <item name="buttonBarPositiveButtonStyle">@style/AppDialogButton</item>
+        <item name="buttonBarNegativeButtonStyle">@style/AppDialogButton.Destructive</item>
+        <item name="buttonBarNeutralButtonStyle">@style/AppDialogButton</item>
+        <item name="buttonBarStyle">@style/AppDialogButtonBar</item>
     </style>
 
-    <style name="AppModalStyle" parent="Widget.Design.BottomSheet.Modal">
-        <item name="android:background">@drawable/rounded_dialog</item>
+
+    <!--
+        Breathing room above the button row.
+
+        A dialog button's own layout_margin is ignored here - the alert layout sets the buttons' layout
+        params itself - so the space has to come from the panel. Without it the buttons sat flush against
+        the content: in the blocked-app list the rows ended on exactly the pixel the buttons began, which
+        read as the buttons being clipped at the top.
+    -->
+    <style name="AppDialogButtonBar" parent="Widget.AppCompat.ButtonBar">
+        <item name="android:paddingTop">12dp</item>
+        <item name="android:paddingBottom">8dp</item>
+        <item name="android:paddingStart">8dp</item>
+        <item name="android:paddingEnd">8dp</item>
     </style>
 
-    <style name="ToolbarColoredBackArrow" parent="Theme.NextcloudPasswords">
-        <item name="android:textColorSecondary">@color/normal_text_color</item>
-        <item name="android:drawableTint">@color/normal_text_color</item>
+    <!--
+        The shared dialog button: Material 3's filled tonal button.
+
+        Material's default dialog buttons are borderless text, so the tappable area is invisible and easy
+        to miss. The tonal button is the standard Material You control that has a container, so it shows
+        where the touch area ends without inventing a bespoke look. Kept at 48dp, the platform's minimum
+        touch target and comfortably above the 24dp that was asked for.
+    -->
+    <style name="AppDialogButton" parent="Widget.Material3.Button.TonalButton">
+        <item name="android:minHeight">48dp</item>
+        <item name="android:minWidth">76dp</item>
+        <item name="android:layout_margin">6dp</item>
     </style>
 
-    <style name="AlertDialogStyle" parent="Theme.AppCompat.DayNight.Dialog">
-        <item name="android:minHeight">46dp</item>
-        <item name="android:minWidth">80dp</item>
-        <item name="dialogCornerRadius">16dp</item>
-        <item name="android:background">@color/material_dynamic_neutral20</item>
-        <item name="android:textColorPrimary">#FFFFFF</item>
+    <!--
+        For a button that discards or cancels.
+
+        Literal rather than ?attr/colorErrorContainer: "this one destroys something" is a signal, and a
+        signal that re-tints with the seed stops being one. A blue-seeded palette hands the error roles a
+        blue-leaning container, which is exactly the moment this button needs to still read as red.
+    -->
+    <style name="AppDialogButton.Destructive">
+        <item name="backgroundTint">@color/destructive_container</item>
+        <item name="android:textColor">@color/on_destructive_container</item>
+    </style>
+
+    <!--
+        The reset button. Square, icon only, and no wider in one language than another.
+    -->
+    <style name="AppDialogButton.Reset">
+        <item name="android:minWidth">48dp</item>
+        <item name="android:insetLeft">0dp</item>
+        <item name="android:insetRight">0dp</item>
+        <item name="iconGravity">textStart</item>
+        <item name="iconPadding">0dp</item>
+        <item name="iconTint">?attr/colorOnSecondaryContainer</item>
     </style>
 
     <style name="TextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-        <item name="boxStrokeColor">@color/text_input_field_box_color</item>
-        <item name="hintTextColor">@color/text_input_field_box_color</item>
-        <item name="cursorColor">@color/normal_text_color</item>
-        <item name="startIconTint">@color/normal_text_color</item>
+        <item name="boxStrokeColor">@color/text_input_box_stroke</item>
+        <item name="hintTextColor">?attr/colorOnSurface</item>
     </style>
 
-    <style name="BottomSheetDialogCreatePasswordEditText">
-        <item name="colorPrimary">@color/text_handle_color</item>
-        <item name="colorAccent">@color/selected_text_background</item>
-    </style>
-
-    <style name="PopupAnimation" parent="android:Animation">
-        <item name="android:windowEnterAnimation">@anim/popup_show</item>
-        <item name="android:windowExitAnimation">@anim/popup_hide</item>
-    </style>
-
-    <style name="BottomSheetDialogEditPasswordEditText">
-        <item name="colorAccent">@color/selected_text_background</item>
-        <item name="colorControlActivated">@color/text_handle_color</item>
-    </style>
-
-    <style name="FastScrollBar">
-        <item name="colorSecondary">@color/fast_scroll_bar_button</item>
-    </style>
 </resources>

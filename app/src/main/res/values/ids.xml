@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Marks which password a favicon ImageView is currently showing, so a slow decode that
+         finishes after the row was recycled does not paint the wrong icon. -->
+    <item name="favicon_password_id" type="id" />
+</resources>

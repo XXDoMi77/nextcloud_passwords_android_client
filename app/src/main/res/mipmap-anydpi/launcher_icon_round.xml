@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+    <background android:drawable="@drawable/launcher_icon_background" />
+    <foreground android:drawable="@drawable/launcher_icon_foreground" />
+    <!-- Themed icons take the silhouette from here and colour it themselves, so the foreground's own
+         white fill is irrelevant; without this layer the launcher falls back to a shrunken full-colour icon. -->
+    <monochrome android:drawable="@drawable/launcher_icon_foreground" />
+</adaptive-icon>

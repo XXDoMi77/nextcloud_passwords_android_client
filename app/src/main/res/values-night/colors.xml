@@ -1,36 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="teal_200">#FF03DAC5</color>
-    <color name="teal_700">#FF018786</color>
 
-    <color name="toolbar_color">#0082C9</color>
-    <color name="accent_color">#2695D1</color>
-    <color name="ripple_color">#99000000</color>
-    <color name="add_password_floating_action_button">#FFFFFF</color>
     <color name="transparent">#00000000</color>
-    <color name="background_color">#FF000000</color>
-
-    <color name="normal_text_color">#FFFFFFFF</color>
-    <color name="shaded_text_color">#5FFFFFFF</color>
-    <color name="selected_text_background">#919191</color>
-    <color name="text_handle_color">#FFFFFF</color>
-    <color name="cursor_color">#00FF00</color> <!-- Not yet implemented -->
-
-    <color name="password_edit_bottom_sheet_background">#222222</color>
-
-    <color name="password_create_bottom_sheet_background">#222222</color>
-
-    <color name="navigation_menu_background">#000000</color>
-    <color name="navigation_menu_icon_selected">#FFFFFF</color>
-    <color name="navigation_menu_icon_not_selected">#7E7E7E</color>
-
-    <color name="floating_action_button_background">#FFFFFF</color>
-    <color name="floating_action_button_icon">#000000</color>
-    <color name="floating_action_button_ripple">#B3B3B3</color>
-
-    <color name="fast_scroll_bar_button">#FFFFFF</color>
 
     <color name="red">#FFFF0000</color>
 
-    <color name="status_bar_color">#000000</color>
+    <!-- Password security status. Deliberately vivid in both themes. -->
+    <color name="password_status_secure">#00FF00</color>
+    <color name="password_status_warning">#FFFF00</color>
+    <color name="password_status_insecure">#FF0000</color>
+    <color name="favorite_star">#ECA700</color>
+
+    <!--
+        The autofill dropdown's own text colours.
+
+        These have to be literals. The suggestion rows are a RemoteViews tree, inflated inside the app
+        that asked for the fill - a browser, a banking app - where our theme does not exist, so a
+        ?attr/ reference would resolve against a stranger's theme or not at all. Kept as their own pair
+        rather than reusing the palette slots, so nobody later "tidies" them into theme attributes.
+    -->
+    <color name="autofill_presentation_text">#FFFFFFFF</color>
+    <color name="autofill_presentation_shaded">#99FFFFFF</color>
+
+    <!--
+        The system splash background.
+
+        Read by the system before the process starts, so it can never follow a generated palette. Sits
+        near the default seed's surface tone to keep the handover to the first frame quiet.
+    -->
+    <color name="splash_background">#FF111418</color>
+
+    <!--
+        The discard button.
+
+        Literal, not a palette slot. "This one loses your work" is a signal, and a signal that
+        re-tints with the seed stops being one: a blue seed produces a blue-leaning error
+        container, which is the exact moment the button needs to still read as red.
+    -->
+    <color name="destructive_container">#FF93000A</color>
+    <color name="on_destructive_container">#FFFFDAD6</color>
+
 </resources>

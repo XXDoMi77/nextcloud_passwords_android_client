@@ -5,52 +5,40 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_weight="1"
-    android:background="@color/background_color"
     android:focusable="true"
     app:layout_constraintBottom_toBottomOf="parent"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintTop_toTopOf="parent"
-    tools:context=".fragments.settings.SettingsFragment">
-
-    <ImageView
-        android:id="@+id/imageView2"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:layout_marginTop="48dp"
-        android:src="@drawable/icon_foreground_36"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:tint="@color/normal_text_color" />
+    tools:context=".fragments.settings.SettingsFragment"
+    tools:ignore="TooManyViews">
 
     <ScrollView
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="24dp"
         android:scrollbars="none"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView2">
+        app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:divider="@color/shaded_text_color"
+            android:divider="?attr/colorOnSurfaceVariant"
             android:orientation="vertical"
             android:showDividers="none">
 
             <TextView
-                android:id="@+id/generalTitle"
+                android:id="@+id/autofillTitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingStart="8dp"
                 android:paddingTop="24dp"
                 android:paddingEnd="8dp"
                 android:paddingBottom="8dp"
-                android:text="@string/general"
-                android:textColor="@color/normal_text_color"
+                android:text="@string/autofill_section"
+                android:textColor="?attr/colorOnSurface"
                 android:textSize="20sp"
                 android:textStyle="bold" />
 
@@ -67,11 +55,12 @@
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:layout_marginStart="16dp"
-                    android:src="@drawable/icon_settings_outline_24"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/icon_outline_article_shortcut_24"
                     app:layout_constraintBottom_toBottomOf="@+id/openAutofillOptionsSettingDescription"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="@+id/openAutofillOptionsSettingLabel"
-                    app:tint="@color/normal_text_color" />
+                    app:tint="?attr/colorOnSurface" />
 
                 <TextView
                     android:id="@+id/openAutofillOptionsSettingLabel"
@@ -81,7 +70,7 @@
                     android:layout_marginTop="16dp"
                     android:layout_marginEnd="16dp"
                     android:text="@string/set_autofill_service"
-                    android:textColor="@color/normal_text_color"
+                    android:textColor="?attr/colorOnSurface"
                     android:textSize="16sp"
                     android:textStyle="bold"
                     app:layout_constraintEnd_toStartOf="@+id/openAutofillOptionsSettingActionIcon"
@@ -98,7 +87,7 @@
                     android:autoSizeTextType="none"
                     android:breakStrategy="high_quality"
                     android:text="@string/open_autofill_options_in_phone_settings"
-                    android:textColor="@color/shaded_text_color"
+                    android:textColor="?attr/colorOnSurfaceVariant"
                     android:textSize="14sp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/openAutofillOptionsSettingActionIcon"
@@ -112,16 +101,17 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="16dp"
+                    android:importantForAccessibility="no"
                     android:src="@drawable/icon_open_in_new_24"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:tint="@color/normal_text_color" />
+                    app:tint="?attr/colorOnSurface" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/clearOfflinePasswordCacheSetting"
+                android:id="@+id/inlineAutofillSuggestionsSetting"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="?android:attr/selectableItemBackground"
@@ -129,46 +119,246 @@
                 android:focusable="true">
 
                 <ImageView
-                    android:id="@+id/clearPasswordCacheSettingIcon"
+                    android:id="@+id/inlineAutofillSuggestionsSettingIcon"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:layout_marginStart="16dp"
-                    android:src="@drawable/icon_delete_outline_24"
-                    app:layout_constraintBottom_toBottomOf="@+id/clearPasswordCacheSettingDescription"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/icon_outline_keyboard_alt_24"
+                    app:layout_constraintBottom_toBottomOf="@id/inlineAutofillSuggestionsSettingDescription"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/clearPasswordCacheSettingLabel"
-                    app:tint="@color/normal_text_color" />
+                    app:layout_constraintTop_toTopOf="@id/inlineAutofillSuggestionsSettingLabel"
+                    app:tint="?attr/colorOnSurface" />
 
                 <TextView
-                    android:id="@+id/clearPasswordCacheSettingLabel"
+                    android:id="@+id/inlineAutofillSuggestionsSettingLabel"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="16dp"
                     android:layout_marginEnd="16dp"
-                    android:text="@string/clear_offline_storage"
-                    android:textColor="@color/normal_text_color"
+                    android:text="@string/inline_autofill_suggestions"
+                    android:textColor="?attr/colorOnSurface"
                     android:textSize="16sp"
                     android:textStyle="bold"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintStart_toEndOf="@+id/clearPasswordCacheSettingIcon"
+                    app:layout_constraintEnd_toStartOf="@id/inlineAutofillSuggestionsSettingSwitch"
+                    app:layout_constraintStart_toEndOf="@id/inlineAutofillSuggestionsSettingIcon"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
-                    android:id="@+id/clearPasswordCacheSettingDescription"
+                    android:id="@+id/inlineAutofillSuggestionsSettingDescription"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="16dp"
                     android:layout_marginBottom="16dp"
-                    android:text="@string/clear_offline_password_storage"
-                    android:textColor="@color/shaded_text_color"
+                    android:text="@string/inline_autofill_suggestions_description"
+                    android:textColor="?attr/colorOnSurfaceVariant"
                     android:textSize="14sp"
                     app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/inlineAutofillSuggestionsSettingSwitch"
+                    app:layout_constraintStart_toStartOf="@id/inlineAutofillSuggestionsSettingLabel"
+                    app:layout_constraintTop_toBottomOf="@id/inlineAutofillSuggestionsSettingLabel" />
+
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/inlineAutofillSuggestionsSettingSwitch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:padding="6dp"
+                    app:layout_constraintBottom_toBottomOf="@id/inlineAutofillSuggestionsSettingDescription"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintStart_toStartOf="@+id/clearPasswordCacheSettingLabel"
-                    app:layout_constraintTop_toBottomOf="@+id/clearPasswordCacheSettingLabel" />
+                    app:layout_constraintTop_toTopOf="@id/inlineAutofillSuggestionsSettingLabel"
+                    app:thumbTint="@color/switch_thumb_color"
+                    app:trackTint="@color/switch_track_color" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/manualAutofillFallbackSetting"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true">
+
+                <ImageView
+                    android:id="@+id/manualAutofillFallbackSettingIcon"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginStart="16dp"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/icon_outline_touch_app_24"
+                    app:layout_constraintBottom_toBottomOf="@id/manualAutofillFallbackSettingDescription"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/manualAutofillFallbackSettingLabel"
+                    app:tint="?attr/colorOnSurface" />
+
+                <TextView
+                    android:id="@+id/manualAutofillFallbackSettingLabel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:text="@string/manual_autofill_fallback"
+                    android:textColor="?attr/colorOnSurface"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toStartOf="@id/manualAutofillFallbackSettingSwitch"
+                    app:layout_constraintStart_toEndOf="@id/manualAutofillFallbackSettingIcon"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/manualAutofillFallbackSettingDescription"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:text="@string/manual_autofill_fallback_description"
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    android:textSize="14sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/manualAutofillFallbackSettingSwitch"
+                    app:layout_constraintStart_toStartOf="@id/manualAutofillFallbackSettingLabel"
+                    app:layout_constraintTop_toBottomOf="@id/manualAutofillFallbackSettingLabel" />
+
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/manualAutofillFallbackSettingSwitch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:padding="6dp"
+                    app:layout_constraintBottom_toBottomOf="@id/manualAutofillFallbackSettingDescription"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/manualAutofillFallbackSettingLabel"
+                    app:thumbTint="@color/switch_thumb_color"
+                    app:trackTint="@color/switch_track_color" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/autofillBlockedAppsSetting"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true">
+
+                <ImageView
+                    android:id="@+id/autofillBlockedAppsSettingIcon"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginStart="16dp"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/icon_outline_block_24"
+                    app:layout_constraintBottom_toBottomOf="@id/autofillBlockedAppsSettingDescription"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/autofillBlockedAppsSettingLabel"
+                    app:tint="?attr/colorOnSurface" />
+
+                <TextView
+                    android:id="@+id/autofillBlockedAppsSettingLabel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:text="@string/autofill_blocked_apps"
+                    android:textColor="?attr/colorOnSurface"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toStartOf="@id/autofillBlockedAppsSettingActionIcon"
+                    app:layout_constraintStart_toEndOf="@id/autofillBlockedAppsSettingIcon"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/autofillBlockedAppsSettingDescription"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:text="@string/autofill_blocked_apps_description"
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    android:textSize="14sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/autofillBlockedAppsSettingActionIcon"
+                    app:layout_constraintStart_toStartOf="@id/autofillBlockedAppsSettingLabel"
+                    app:layout_constraintTop_toBottomOf="@id/autofillBlockedAppsSettingLabel" />
+
+                <ImageView
+                    android:id="@+id/autofillBlockedAppsSettingActionIcon"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginEnd="16dp"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/icon_open_in_new_24"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:tint="?attr/colorOnSurface" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/autofillHintWordsSetting"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true">
+
+                <ImageView
+                    android:id="@+id/autofillHintWordsSettingIcon"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginStart="16dp"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/icon_search_24"
+                    app:layout_constraintBottom_toBottomOf="@id/autofillHintWordsSettingDescription"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/autofillHintWordsSettingLabel"
+                    app:tint="?attr/colorOnSurface" />
+
+                <TextView
+                    android:id="@+id/autofillHintWordsSettingLabel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:text="@string/autofill_hint_words"
+                    android:textColor="?attr/colorOnSurface"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toStartOf="@id/autofillHintWordsSettingActionIcon"
+                    app:layout_constraintStart_toEndOf="@id/autofillHintWordsSettingIcon"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/autofillHintWordsSettingDescription"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:text="@string/autofill_hint_words_description"
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    android:textSize="14sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/autofillHintWordsSettingActionIcon"
+                    app:layout_constraintStart_toStartOf="@id/autofillHintWordsSettingLabel"
+                    app:layout_constraintTop_toBottomOf="@id/autofillHintWordsSettingLabel" />
+
+                <ImageView
+                    android:id="@+id/autofillHintWordsSettingActionIcon"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginEnd="16dp"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/icon_edit_24"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:tint="?attr/colorOnSurface" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -181,7 +371,7 @@
                 android:paddingEnd="8dp"
                 android:paddingBottom="8dp"
                 android:text="@string/password_generation"
-                android:textColor="@color/normal_text_color"
+                android:textColor="?attr/colorOnSurface"
                 android:textSize="20sp"
                 android:textStyle="bold" />
 
@@ -196,21 +386,23 @@
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:layout_marginStart="16dp"
+                    android:importantForAccessibility="no"
                     android:src="@drawable/icon_straighten_24"
                     app:layout_constraintBottom_toBottomOf="@+id/passwordLengthSettingDescription"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="@+id/passwordLengthSettingLabel"
-                    app:tint="@color/normal_text_color" />
+                    app:tint="?attr/colorOnSurface" />
 
                 <TextView
                     android:id="@+id/passwordLengthSettingLabel"
+                    android:labelFor="@+id/passwordLengthSettingNumber"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="16dp"
                     android:layout_marginEnd="16dp"
                     android:text="@string/password_length"
-                    android:textColor="@color/normal_text_color"
+                    android:textColor="?attr/colorOnSurface"
                     android:textSize="16sp"
                     android:textStyle="bold"
                     app:layout_constraintEnd_toStartOf="@+id/passwordLengthSettingRemove"
@@ -224,7 +416,7 @@
                     android:layout_marginEnd="16dp"
                     android:layout_marginBottom="16dp"
                     android:text="@string/number_of_character_for_password"
-                    android:textColor="@color/shaded_text_color"
+                    android:textColor="?attr/colorOnSurfaceVariant"
                     android:textSize="14sp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/passwordLengthSettingRemove"
@@ -237,14 +429,16 @@
                     android:layout_width="36dp"
                     android:layout_height="36dp"
                     android:background="?android:attr/selectableItemBackgroundBorderless"
-                    android:src="@drawable/icon_remove_36"
+                    android:contentDescription="@string/decrease_password_length"
+                    android:src="@drawable/icon_remove_24"
                     app:layout_constraintBottom_toBottomOf="@+id/passwordLengthSettingNumber"
                     app:layout_constraintEnd_toStartOf="@+id/passwordLengthSettingNumber"
                     app:layout_constraintTop_toTopOf="@+id/passwordLengthSettingNumber"
-                    app:tint="@color/normal_text_color" />
+                    app:tint="?attr/colorOnSurface" />
 
                 <EditText
                     android:id="@+id/passwordLengthSettingNumber"
+                    android:importantForAutofill="no"
                     android:layout_width="48dp"
                     android:layout_height="wrap_content"
                     android:background="@android:color/transparent"
@@ -264,21 +458,12 @@
                     android:layout_height="36dp"
                     android:layout_marginEnd="16dp"
                     android:background="?android:attr/selectableItemBackgroundBorderless"
-                    android:src="@drawable/icon_add_36"
+                    android:contentDescription="@string/increase_password_length"
+                    android:src="@drawable/icon_add_24"
                     app:layout_constraintBottom_toBottomOf="@+id/passwordLengthSettingNumber"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@+id/passwordLengthSettingNumber"
-                    app:tint="@color/normal_text_color" />
-
-                <!--                    android:layout_marginEnd="16dp"-->
-                <!--                    android:ems="10"-->
-                <!--                    android:inputType="number"-->
-                <!--                    android:maxLength="3"-->
-                <!--                    android:numeric="integer"-->
-                <!--                    android:phoneNumber="false"-->
-                <!--                    android:selectAllOnFocus="true"-->
-                <!--                    android:singleLine="true"-->
-                <!--                    android:textAlignment="center"-->
+                    app:tint="?attr/colorOnSurface" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -293,21 +478,23 @@
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:layout_marginStart="16dp"
-                    android:src="@drawable/icon_numbers_24"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/icon_outline_emoji_symbols_24"
                     app:layout_constraintBottom_toBottomOf="@+id/includeSymbolsSettingDescription"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="@+id/includeSymbolsSettingLabel"
-                    app:tint="@color/normal_text_color" />
+                    app:tint="?attr/colorOnSurface" />
 
                 <TextView
                     android:id="@+id/includeSymbolsSettingLabel"
+                    android:labelFor="@+id/includeSymbolsSettingNumber"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="16dp"
                     android:layout_marginEnd="16dp"
                     android:text="@string/include_symbols"
-                    android:textColor="@color/normal_text_color"
+                    android:textColor="?attr/colorOnSurface"
                     android:textSize="16sp"
                     android:textStyle="bold"
                     app:layout_constraintEnd_toStartOf="@+id/includeSymbolsSettingRemove"
@@ -321,7 +508,7 @@
                     android:layout_marginEnd="16dp"
                     android:layout_marginBottom="16dp"
                     android:text="@string/increase_password_security_by_including_symbols_such_as"
-                    android:textColor="@color/shaded_text_color"
+                    android:textColor="?attr/colorOnSurfaceVariant"
                     android:textSize="14sp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/includeSymbolsSettingRemove"
@@ -334,14 +521,16 @@
                     android:layout_width="36dp"
                     android:layout_height="36dp"
                     android:background="?android:attr/selectableItemBackgroundBorderless"
-                    android:src="@drawable/icon_remove_36"
+                    android:contentDescription="@string/decrease_symbol_count"
+                    android:src="@drawable/icon_remove_24"
                     app:layout_constraintBottom_toBottomOf="@+id/includeSymbolsSettingNumber"
                     app:layout_constraintEnd_toStartOf="@+id/includeSymbolsSettingNumber"
                     app:layout_constraintTop_toTopOf="@+id/includeSymbolsSettingNumber"
-                    app:tint="@color/normal_text_color" />
+                    app:tint="?attr/colorOnSurface" />
 
                 <EditText
                     android:id="@+id/includeSymbolsSettingNumber"
+                    android:importantForAutofill="no"
                     android:layout_width="48dp"
                     android:layout_height="wrap_content"
                     android:background="@android:color/transparent"
@@ -361,40 +550,55 @@
                     android:layout_height="36dp"
                     android:layout_marginEnd="16dp"
                     android:background="?android:attr/selectableItemBackgroundBorderless"
-                    android:src="@drawable/icon_add_36"
+                    android:contentDescription="@string/increase_symbol_count"
+                    android:src="@drawable/icon_add_24"
                     app:layout_constraintBottom_toBottomOf="@+id/includeSymbolsSettingNumber"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@+id/includeSymbolsSettingNumber"
-                    app:tint="@color/normal_text_color" />
-
-                <!--                    android:layout_marginEnd="16dp"-->
-                <!--                    android:ems="10"-->
-                <!--                    android:inputType="number"-->
-                <!--                    android:maxLength="3"-->
-                <!--                    android:numeric="integer"-->
-                <!--                    android:phoneNumber="false"-->
-                <!--                    android:selectAllOnFocus="true"-->
-                <!--                    android:singleLine="true"-->
-                <!--                    android:textAlignment="center"-->
+                    app:tint="?attr/colorOnSurface" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/includedSymbolCharactersLayout"
+                style="@style/TextInputLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginVertical="8dp"
+                android:hint="@string/included_symbol_characters"
+                app:endIconContentDescription="@string/reset_symbols_to_default"
+                app:endIconDrawable="@drawable/icon_autorenew_24"
+                app:endIconMode="custom"
+                app:endIconTint="?attr/colorOnSurface">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/includedSymbolCharacters"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textVisiblePassword"
+                    android:maxLines="1" />
+            </com.google.android.material.textfield.TextInputLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/excludeSimilarCharactersSetting"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:clickable="false">
+                android:background="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true">
 
                 <ImageView
                     android:id="@+id/excludeSimilarCharactersSettingIcon"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:layout_marginStart="16dp"
-                    android:src="@drawable/icon_visibility_24"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/icon_outline_grid_3x3_off_24"
                     app:layout_constraintBottom_toBottomOf="@+id/excludeSimilarCharactersSettingDescription"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="@+id/excludeSimilarCharactersSettingLabel"
-                    app:tint="@color/normal_text_color" />
+                    app:tint="?attr/colorOnSurface" />
 
                 <TextView
                     android:id="@+id/excludeSimilarCharactersSettingLabel"
@@ -404,7 +608,7 @@
                     android:layout_marginTop="16dp"
                     android:layout_marginEnd="16dp"
                     android:text="@string/exclude_similar_characters"
-                    android:textColor="@color/normal_text_color"
+                    android:textColor="?attr/colorOnSurface"
                     android:textSize="16sp"
                     android:textStyle="bold"
                     app:layout_constraintEnd_toStartOf="@+id/excludeSimilarCharactersSettingSwitch"
@@ -418,7 +622,7 @@
                     android:layout_marginEnd="16dp"
                     android:layout_marginBottom="16dp"
                     android:text="@string/dont_use_characters_like"
-                    android:textColor="@color/shaded_text_color"
+                    android:textColor="?attr/colorOnSurfaceVariant"
                     android:textSize="14sp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/excludeSimilarCharactersSettingSwitch"
@@ -443,6 +647,354 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/similarCharactersLayout"
+                style="@style/TextInputLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginVertical="8dp"
+                android:hint="@string/similar_characters"
+                app:endIconContentDescription="@string/reset_similar_characters_to_default"
+                app:endIconDrawable="@drawable/icon_autorenew_24"
+                app:endIconMode="custom"
+                app:endIconTint="?attr/colorOnSurface">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/similarCharacters"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textVisiblePassword"
+                    android:maxLines="1" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <TextView
+                android:id="@+id/appearanceTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="8dp"
+                android:paddingTop="24dp"
+                android:paddingEnd="8dp"
+                android:paddingBottom="8dp"
+                android:text="@string/appearance"
+                android:textColor="?attr/colorOnSurface"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/expandBottomSheetSetting"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true">
+
+                <ImageView
+                    android:id="@+id/expandBottomSheetSettingIcon"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginStart="16dp"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/icon_outline_arrow_warm_up_24"
+                    app:layout_constraintBottom_toBottomOf="@+id/expandBottomSheetSettingDescription"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/expandBottomSheetSettingLabel"
+                    app:tint="?attr/colorOnSurface" />
+
+                <TextView
+                    android:id="@+id/expandBottomSheetSettingLabel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:text="@string/expand_bottom_sheet"
+                    android:textColor="?attr/colorOnSurface"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toStartOf="@+id/expandBottomSheetSettingSwitch"
+                    app:layout_constraintStart_toEndOf="@+id/expandBottomSheetSettingIcon"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/expandBottomSheetSettingDescription"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:text="@string/expand_bottom_sheet_description"
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    android:textSize="14sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/expandBottomSheetSettingSwitch"
+                    app:layout_constraintStart_toStartOf="@+id/expandBottomSheetSettingLabel"
+                    app:layout_constraintTop_toBottomOf="@+id/expandBottomSheetSettingLabel"
+                    app:layout_constraintVertical_bias="0.0" />
+
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/expandBottomSheetSettingSwitch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:paddingLeft="6dp"
+                    android:paddingTop="16dp"
+                    android:paddingRight="6dp"
+                    android:paddingBottom="16dp"
+                    app:layout_constraintBottom_toBottomOf="@+id/expandBottomSheetSettingDescription"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/expandBottomSheetSettingLabel"
+                    app:thumbTint="@color/switch_thumb_color"
+                    app:trackTint="@color/switch_track_color" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/accentColourSetting"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true">
+
+                <ImageView
+                    android:id="@+id/accentColourSettingIcon"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginStart="16dp"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/icon_outline_emoji_symbols_24"
+                    app:layout_constraintBottom_toBottomOf="@id/accentColourSettingDescription"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/accentColourSettingLabel"
+                    app:tint="?attr/colorOnSurface" />
+
+                <TextView
+                    android:id="@+id/accentColourSettingLabel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:text="@string/accent_colour"
+                    android:textColor="?attr/colorOnSurface"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toStartOf="@id/accentColourSwatch"
+                    app:layout_constraintStart_toEndOf="@id/accentColourSettingIcon"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/accentColourSettingDescription"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:text="@string/accent_colour_description"
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    android:textSize="14sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/accentColourSwatch"
+                    app:layout_constraintStart_toStartOf="@id/accentColourSettingLabel"
+                    app:layout_constraintTop_toBottomOf="@id/accentColourSettingLabel" />
+
+                <View
+                    android:id="@+id/accentColourSwatch"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_marginEnd="16dp"
+                    android:importantForAccessibility="no"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/appearanceSetting"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true">
+
+                <ImageView
+                    android:id="@+id/appearanceSettingIcon"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginStart="16dp"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/icon_outline_dark_mode_24"
+                    app:layout_constraintBottom_toBottomOf="@id/appearanceSettingDescription"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/appearanceSettingLabel"
+                    app:tint="?attr/colorOnSurface" />
+
+                <TextView
+                    android:id="@+id/appearanceSettingLabel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:text="@string/theme_setting"
+                    android:textColor="?attr/colorOnSurface"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/appearanceSettingIcon"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/appearanceSettingDescription"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:text="@string/theme_setting_description"
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    android:textSize="14sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="@id/appearanceSettingLabel"
+                    app:layout_constraintTop_toBottomOf="@id/appearanceSettingLabel" />
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/animateSearchResultsSetting"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true">
+
+                <ImageView
+                    android:id="@+id/animateSearchResultsSettingIcon"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginStart="16dp"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/icon_outline_animation_24"
+                    app:layout_constraintBottom_toBottomOf="@+id/animateSearchResultsSettingDescription"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/animateSearchResultsSettingLabel"
+                    app:tint="?attr/colorOnSurface" />
+
+                <TextView
+                    android:id="@+id/animateSearchResultsSettingLabel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:text="@string/animate_search_results"
+                    android:textColor="?attr/colorOnSurface"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toStartOf="@+id/animateSearchResultsSettingSwitch"
+                    app:layout_constraintStart_toEndOf="@+id/animateSearchResultsSettingIcon"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/animateSearchResultsSettingDescription"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:text="@string/animate_search_results_description"
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    android:textSize="14sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/animateSearchResultsSettingSwitch"
+                    app:layout_constraintStart_toStartOf="@+id/animateSearchResultsSettingLabel"
+                    app:layout_constraintTop_toBottomOf="@+id/animateSearchResultsSettingLabel"
+                    app:layout_constraintVertical_bias="0.0" />
+
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/animateSearchResultsSettingSwitch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:paddingLeft="6dp"
+                    android:paddingTop="16dp"
+                    android:paddingRight="6dp"
+                    android:paddingBottom="16dp"
+                    app:layout_constraintBottom_toBottomOf="@+id/animateSearchResultsSettingDescription"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/animateSearchResultsSettingLabel"
+                    app:thumbTint="@color/switch_thumb_color"
+                    app:trackTint="@color/switch_track_color" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/tintedTextSetting"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true">
+
+                <ImageView
+                    android:id="@+id/tintedTextSettingIcon"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginStart="16dp"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/icon_outline_emoji_symbols_24"
+                    app:layout_constraintBottom_toBottomOf="@+id/tintedTextSettingDescription"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/tintedTextSettingLabel"
+                    app:tint="?attr/colorOnSurface" />
+
+                <TextView
+                    android:id="@+id/tintedTextSettingLabel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:text="@string/tinted_text"
+                    android:textColor="?attr/colorOnSurface"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toStartOf="@+id/tintedTextSettingSwitch"
+                    app:layout_constraintStart_toEndOf="@+id/tintedTextSettingIcon"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/tintedTextSettingDescription"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:text="@string/tinted_text_description"
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    android:textSize="14sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/tintedTextSettingSwitch"
+                    app:layout_constraintStart_toStartOf="@+id/tintedTextSettingLabel"
+                    app:layout_constraintTop_toBottomOf="@+id/tintedTextSettingLabel"
+                    app:layout_constraintVertical_bias="0.0" />
+
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/tintedTextSettingSwitch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:paddingLeft="6dp"
+                    android:paddingTop="16dp"
+                    android:paddingRight="6dp"
+                    android:paddingBottom="16dp"
+                    app:layout_constraintBottom_toBottomOf="@+id/tintedTextSettingDescription"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/tintedTextSettingLabel"
+                    app:thumbTint="@color/switch_thumb_color"
+                    app:trackTint="@color/switch_track_color" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
             <TextView
                 android:id="@+id/securityTitle"
                 android:layout_width="match_parent"
@@ -452,9 +1004,340 @@
                 android:paddingEnd="8dp"
                 android:paddingBottom="8dp"
                 android:text="@string/security"
-                android:textColor="@color/normal_text_color"
+                android:textColor="?attr/colorOnSurface"
                 android:textSize="20sp"
                 android:textStyle="bold" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/allowScreenshotsSetting"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true">
+
+                <ImageView
+                    android:id="@+id/allowScreenshotsSettingIcon"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginStart="16dp"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/icon_outline_screenshot_frame_24"
+                    app:layout_constraintBottom_toBottomOf="@id/allowScreenshotsSettingDescription"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/allowScreenshotsSettingLabel"
+                    app:tint="?attr/colorOnSurface" />
+
+                <TextView
+                    android:id="@+id/allowScreenshotsSettingLabel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:text="@string/allow_screenshots"
+                    android:textColor="?attr/colorOnSurface"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toStartOf="@id/allowScreenshotsSettingSwitch"
+                    app:layout_constraintStart_toEndOf="@id/allowScreenshotsSettingIcon"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/allowScreenshotsSettingDescription"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:text="@string/allow_screenshots_description"
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    android:textSize="14sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/allowScreenshotsSettingSwitch"
+                    app:layout_constraintStart_toStartOf="@id/allowScreenshotsSettingLabel"
+                    app:layout_constraintTop_toBottomOf="@id/allowScreenshotsSettingLabel" />
+
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/allowScreenshotsSettingSwitch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:padding="6dp"
+                    app:layout_constraintBottom_toBottomOf="@id/allowScreenshotsSettingDescription"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/allowScreenshotsSettingLabel"
+                    app:thumbTint="@color/switch_thumb_color"
+                    app:trackTint="@color/switch_track_color" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+<androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/clearClipboardSetting"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true">
+
+                <ImageView
+                    android:id="@+id/clearClipboardSettingIcon"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginStart="16dp"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/icon_copy_24"
+                    app:layout_constraintBottom_toBottomOf="@id/clearClipboardSettingDescription"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/clearClipboardSettingLabel"
+                    app:tint="?attr/colorOnSurface" />
+
+                <TextView
+                    android:id="@+id/clearClipboardSettingLabel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:text="@string/clear_clipboard"
+                    android:textColor="?attr/colorOnSurface"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toStartOf="@id/clearClipboardSettingSwitch"
+                    app:layout_constraintStart_toEndOf="@id/clearClipboardSettingIcon"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/clearClipboardSettingDescription"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:text="@string/clear_clipboard_description"
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    android:textSize="14sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/clearClipboardSettingSwitch"
+                    app:layout_constraintStart_toStartOf="@id/clearClipboardSettingLabel"
+                    app:layout_constraintTop_toBottomOf="@id/clearClipboardSettingLabel" />
+
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/clearClipboardSettingSwitch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:padding="6dp"
+                    app:layout_constraintBottom_toBottomOf="@id/clearClipboardSettingDescription"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/clearClipboardSettingLabel"
+                    app:thumbTint="@color/switch_thumb_color"
+                    app:trackTint="@color/switch_track_color" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+<androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/clipboardSecondsSetting"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clickable="false">
+
+                <ImageView
+                    android:id="@+id/clipboardSecondsSettingIcon"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginStart="16dp"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/icon_autorenew_24"
+                    app:layout_constraintBottom_toBottomOf="@+id/clipboardSecondsSettingDescription"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/clipboardSecondsSettingLabel"
+                    app:tint="?attr/colorOnSurface" />
+
+                <TextView
+                    android:id="@+id/clipboardSecondsSettingLabel"
+                    android:labelFor="@+id/clipboardSecondsSettingNumber"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:text="@string/clipboard_delay"
+                    android:textColor="?attr/colorOnSurface"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toStartOf="@+id/clipboardSecondsSettingRemove"
+                    app:layout_constraintStart_toEndOf="@+id/clipboardSecondsSettingIcon"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/clipboardSecondsSettingDescription"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:text="@string/clipboard_delay_description"
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    android:textSize="14sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/clipboardSecondsSettingRemove"
+                    app:layout_constraintStart_toStartOf="@+id/clipboardSecondsSettingLabel"
+                    app:layout_constraintTop_toBottomOf="@+id/clipboardSecondsSettingLabel"
+                    app:layout_constraintVertical_bias="0.0" />
+
+                <ImageButton
+                    android:id="@+id/clipboardSecondsSettingRemove"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:background="?android:attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/decrease_symbol_count"
+                    android:src="@drawable/icon_remove_24"
+                    app:layout_constraintBottom_toBottomOf="@+id/clipboardSecondsSettingNumber"
+                    app:layout_constraintEnd_toStartOf="@+id/clipboardSecondsSettingNumber"
+                    app:layout_constraintTop_toTopOf="@+id/clipboardSecondsSettingNumber"
+                    app:tint="?attr/colorOnSurface" />
+
+                <EditText
+                    android:id="@+id/clipboardSecondsSettingNumber"
+                    android:importantForAutofill="no"
+                    android:layout_width="48dp"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/transparent"
+                    android:ems="10"
+                    android:inputType="number"
+                    android:maxLength="3"
+                    android:selectAllOnFocus="true"
+                    android:singleLine="true"
+                    android:textAlignment="center"
+                    app:layout_constraintBottom_toBottomOf="@+id/clipboardSecondsSettingDescription"
+                    app:layout_constraintEnd_toStartOf="@+id/clipboardSecondsSettingAdd"
+                    app:layout_constraintTop_toTopOf="@+id/clipboardSecondsSettingLabel" />
+
+                <ImageButton
+                    android:id="@+id/clipboardSecondsSettingAdd"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_marginEnd="16dp"
+                    android:background="?android:attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/increase_symbol_count"
+                    android:src="@drawable/icon_add_24"
+                    app:layout_constraintBottom_toBottomOf="@+id/clipboardSecondsSettingNumber"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/clipboardSecondsSettingNumber"
+                    app:tint="?attr/colorOnSurface" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/storedE2ePassphraseSetting"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/storedE2ePassphraseIcon"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginStart="16dp"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/icon_outline_encrypted_off_24"
+                    app:layout_constraintBottom_toBottomOf="@+id/storedE2ePassphraseDescription"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/storedE2ePassphraseLabel"
+                    app:tint="?attr/colorOnSurface" />
+
+                <TextView
+                    android:id="@+id/storedE2ePassphraseLabel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:text="@string/stored_e2e_passphrase"
+                    android:textColor="?attr/colorOnSurface"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/storedE2ePassphraseIcon"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/storedE2ePassphraseDescription"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:text="@string/forget_stored_e2e_passphrase"
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    android:textSize="14sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="@+id/storedE2ePassphraseLabel"
+                    app:layout_constraintStart_toStartOf="@+id/storedE2ePassphraseLabel"
+                    app:layout_constraintTop_toBottomOf="@+id/storedE2ePassphraseLabel" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <TextView
+                android:id="@+id/dataAndAccountTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="8dp"
+                android:paddingTop="24dp"
+                android:paddingEnd="8dp"
+                android:paddingBottom="8dp"
+                android:text="@string/data_and_account"
+                android:textColor="?attr/colorOnSurface"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/clearOfflinePasswordCacheSetting"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true">
+
+                <ImageView
+                    android:id="@+id/clearPasswordCacheSettingIcon"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginStart="16dp"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/icon_delete_24"
+                    app:layout_constraintBottom_toBottomOf="@+id/clearPasswordCacheSettingDescription"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/clearPasswordCacheSettingLabel"
+                    app:tint="?attr/colorOnSurface" />
+
+                <TextView
+                    android:id="@+id/clearPasswordCacheSettingLabel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:text="@string/clear_offline_storage"
+                    android:textColor="?attr/colorOnSurface"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toEndOf="@+id/clearPasswordCacheSettingIcon"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/clearPasswordCacheSettingDescription"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:text="@string/clear_offline_password_storage"
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    android:textSize="14sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="@+id/clearPasswordCacheSettingLabel"
+                    app:layout_constraintTop_toBottomOf="@+id/clearPasswordCacheSettingLabel" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/logoutSetting"
@@ -469,11 +1352,12 @@
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:layout_marginStart="16dp"
-                    android:src="@drawable/icon_logout_24"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/icon_outline_logout_24"
                     app:layout_constraintBottom_toBottomOf="@+id/logoutSettingDescription"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="@+id/logoutSettingLabel"
-                    app:tint="@color/normal_text_color" />
+                    app:tint="?attr/colorOnSurface" />
 
                 <TextView
                     android:id="@+id/logoutSettingLabel"
@@ -482,7 +1366,7 @@
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="16dp"
                     android:text="@string/logout"
-                    android:textColor="@color/normal_text_color"
+                    android:textColor="?attr/colorOnSurface"
                     android:textSize="16sp"
                     android:textStyle="bold"
                     app:layout_constraintStart_toEndOf="@+id/logoutSettingIcon"
@@ -495,7 +1379,7 @@
                     android:layout_marginEnd="16dp"
                     android:layout_marginBottom="16dp"
                     android:text="@string/completely_logout_of_the_application"
-                    android:textColor="@color/shaded_text_color"
+                    android:textColor="?attr/colorOnSurfaceVariant"
                     android:textSize="14sp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"

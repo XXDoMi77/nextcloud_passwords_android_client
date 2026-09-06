@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    A folder row in the picker. A horizontal row with centre-vertical gravity rather than constraints, so
+    the icon and the label sit on the same middle line whatever the row's height works out to be.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/folder_picker_row"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="@dimen/spacing_group_vertical"
+    android:gravity="center_vertical"
+    android:minHeight="56dp"
+    android:orientation="horizontal"
+    android:paddingHorizontal="@dimen/spacing_horizontal"
+    android:paddingVertical="8dp">
+
+    <ImageView
+        android:id="@+id/iv_icon"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:importantForAccessibility="no"
+        app:srcCompat="@drawable/icon_folder_24"
+        app:tint="?attr/colorOnSecondaryContainer" />
+
+    <TextView
+        android:id="@+id/tv_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/spacing_horizontal"
+        android:layout_weight="1"
+        android:gravity="center_vertical"
+        android:textColor="?attr/colorOnSecondaryContainer"
+        android:textSize="16sp"
+        tools:text="Folder Name" />
+</LinearLayout>

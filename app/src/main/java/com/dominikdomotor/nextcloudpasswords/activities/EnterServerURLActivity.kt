@@ -8,88 +8,162 @@ import android.view.WindowManager
 import android.webkit.URLUtil
 import android.widget.EditText
 import android.widget.ImageButton
-import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import com.dominikdomotor.nextcloudpasswords.R
+import com.dominikdomotor.nextcloudpasswords.managers.network.ServerCertificateInfo
+import com.dominikdomotor.nextcloudpasswords.managers.network.createHttpsConnection
+import com.dominikdomotor.nextcloudpasswords.managers.network.inspectServerCertificate
+import com.dominikdomotor.nextcloudpasswords.ui.AppDialog
+import dagger.hilt.android.AndroidEntryPoint
 import java.net.URL
+import java.text.DateFormat
+import java.util.Date
 import javax.net.ssl.HttpsURLConnection
+import javax.net.ssl.SSLHandshakeException
+import org.json.JSONObject
 
-
+@AndroidEntryPoint
 class EnterServerURLActivity : BaseActivity() {
-	override fun onCreate(savedInstanceState: Bundle?) {
-		super.onCreate(savedInstanceState)
-//		window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
-		supportActionBar?.hide()
-		setContentView(R.layout.activity_enter_server_url)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        supportActionBar?.hide()
+        setContentView(R.layout.activity_enter_server_url)
 
-		//just some variables...
-		val urlInput = findViewById<EditText>(R.id.URL_input)
+        // Shown once, when the last load found a document this version cannot read and cleared it.
+        // The user is looking at a sign-in screen they did not ask for, so it owes them a reason.
+        if (storageManager.consumeUpgradeNotice()) {
+            AppDialog(this)
+                .title(R.string.sign_in_again)
+                .message(R.string.sign_in_again_explanation)
+                .button(R.string.got_it)
+                .showCompact()
+        }
 
-		urlInput.requestFocus()
-		window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE)
+        val urlInput = findViewById<EditText>(R.id.URL_input)
 
-		//check url, if ok open next activity otherwise try to guess url
-		fun openLoginActivity() {
-			// trying to guess the url
-			if (!URLUtil.isValidUrl(urlInput.text.toString())) {
-				runOnUiThread{
-					Toast.makeText(this, getString(R.string.not_a_valid_url_alert_message), Toast.LENGTH_LONG).show()
-				}
-				urlInput.setText(
-					URLUtil.guessUrl(urlInput.text.toString().filter { !it.isWhitespace() }).replace("http://www.", "https://", true)
-						.replace("http:", "https:", true)//.dropLastWhile { it == '/' || it.isWhitespace() }
-				)
-				urlInput.setSelection(urlInput.length())//placing cursor at the end of the tex
-				// whitespace at the end of the url results in the authentication process not working, so trying to remove them and letting the user know
-			} else if (urlInput.text.toString().contains(" ")) {
-				runOnUiThread{
-					Toast.makeText(this, getString(R.string.whitespaces_in_url_alert_message), Toast.LENGTH_LONG).show()
-				}
-				urlInput.setText(urlInput.text.toString().filter { !it.isWhitespace() })
-				urlInput.setSelection(urlInput.length())//placing cursor at the end of the text
-				// if everything is ok with the entered url the next activity is opened and the server url is passed
-			} else if (URLUtil.isValidUrl(urlInput.text.toString())) {
-				Thread {
-					try {
+        urlInput.requestFocus()
+        window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE)
 
-						val url = URL(urlInput.text.toString() + "/ocs/v1.php")
-						val httpConnection: HttpsURLConnection = url.openConnection() as HttpsURLConnection
-						httpConnection.requestMethod = "GET"
-						httpConnection.doOutput = false
-						if (httpConnection.responseCode in 200..299) {
-							runOnUiThread {
-								val intent = Intent(this, LoginActivity::class.java)
-								intent.putExtra("server_URL", urlInput.text.toString())
-								finish()
-								startActivity(intent)
-							}
-						} else {
-							runOnUiThread{
-								Toast.makeText(this, getString(R.string.this_URL_doesnt_seem_to_point_to_a_nextcloud_server), Toast.LENGTH_LONG).show()
-							}
-						}
-					} catch (e: Exception) {
-						runOnUiThread {
-							Toast.makeText(this, getString(R.string.this_URL_doesnt_seem_to_point_to_a_nextcloud_server), Toast.LENGTH_LONG).show()
-						}
-					}
-				}.start()
-			}
-		}
+        // check url, if ok open next activity otherwise try to guess url
+        fun openLoginActivity() {
+            // trying to guess the url
+            if (!URLUtil.isValidUrl(urlInput.text.toString())) {
+                showMessage(R.string.not_a_valid_url_alert_message)
+                urlInput.setText(
+                    URLUtil.guessUrl(urlInput.text.toString().filter { !it.isWhitespace() })
+                        .replace("http://www.", "https://", true)
+                        .replace("http:", "https:", true)
+                )
+                urlInput.setSelection(urlInput.length()) // placing cursor at the end of the tex
+                // whitespace at the end of the url results in the authentication process not
+                // working, so
+                // trying to remove them and letting the user know
+            } else if (urlInput.text.toString().contains(" ")) {
+                showMessage(R.string.whitespaces_in_url_alert_message)
+                urlInput.setText(urlInput.text.toString().filter { !it.isWhitespace() })
+                urlInput.setSelection(urlInput.length()) // placing cursor at the end of the text
 
-		//handle keyboard enter press
-		urlInput.setOnKeyListener(View.OnKeyListener { _, keyCode, event ->
-			if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_UP) {
-				openLoginActivity()
-				return@OnKeyListener true
-			} else {
-				false
-			}
-		})
+                // if everything is ok with the entered url the next activity is opened and the server url is passed
+            } else if (URLUtil.isValidUrl(urlInput.text.toString())) {
+                val serverUrl = URL(urlInput.text.toString().trimEnd('/'))
+                if (!serverUrl.protocol.equals("https", ignoreCase = true)) {
+                    showMessage(R.string.https_is_required)
+                } else {
+                    checkNextcloudServer(serverUrl, urlInput, allowCertificatePrompt = true)
+                }
+            }
+        }
 
-		//handle button press
-		findViewById<ImageButton>(R.id.enter_URL_button).setOnClickListener {
-			openLoginActivity()
-		}
-	}
+        // handle keyboard enter press
+        urlInput.setOnKeyListener(
+            View.OnKeyListener { _, keyCode, event ->
+                if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_UP) {
+                    openLoginActivity()
+                    return@OnKeyListener true
+                } else {
+                    false
+                }
+            }
+        )
+
+        // handle button press
+        findViewById<ImageButton>(R.id.enter_URL_button).setOnClickListener { openLoginActivity() }
+    }
+
+    private fun checkNextcloudServer(serverUrl: URL, urlInput: EditText, allowCertificatePrompt: Boolean) {
+        Thread {
+                try {
+                    val statusUrl = URL("${serverUrl.toExternalForm().trimEnd('/')}/status.php")
+                    val connection = createHttpsConnection(statusUrl, storageManager)
+                    val isNextcloud =
+                        try {
+                            connection.requestMethod = "GET"
+                            connection.doOutput = false
+                            connection.connectTimeout = NETWORK_TIMEOUT_MILLIS
+                            connection.readTimeout = NETWORK_TIMEOUT_MILLIS
+                            if (connection.responseCode == HttpsURLConnection.HTTP_OK) {
+                                val status = JSONObject(connection.inputStream.bufferedReader().use { it.readText() })
+                                status.optBoolean("installed") &&
+                                    status.optString("version").isNotBlank() &&
+                                    status.optString("productname").contains("nextcloud", ignoreCase = true)
+                            } else {
+                                false
+                            }
+                        } finally {
+                            connection.disconnect()
+                        }
+
+                    runOnUiThread {
+                        if (isNextcloud) openLogin(serverUrl)
+                        else showMessage(R.string.this_URL_doesnt_seem_to_point_to_a_nextcloud_server)
+                    }
+                } catch (_: SSLHandshakeException) {
+                    if (allowCertificatePrompt) showCertificatePrompt(serverUrl, urlInput) else showServerError()
+                } catch (_: Exception) {
+                    showServerError()
+                }
+            }
+            .start()
+    }
+
+    private fun showCertificatePrompt(serverUrl: URL, urlInput: EditText) {
+        try {
+            val certificate = inspectServerCertificate(serverUrl)
+            runOnUiThread { showCertificateDialog(serverUrl, urlInput, certificate) }
+        } catch (_: Exception) {
+            showServerError()
+        }
+    }
+
+    private fun showCertificateDialog(serverUrl: URL, urlInput: EditText, certificate: ServerCertificateInfo) {
+        val expiry = DateFormat.getDateInstance(DateFormat.MEDIUM).format(Date(certificate.expiresAtMillis))
+        AppDialog(this)
+            .title(R.string.untrusted_certificate)
+            .message(getString(R.string.untrusted_certificate_warning, serverUrl.host, certificate.sha256, expiry))
+            .button(R.string.cancel)
+            .button(R.string.trust_certificate) {
+                storageManager.updateSettings {
+                    it.trustedCertificateHost = serverUrl.host
+                    it.trustedCertificateSha256 = certificate.sha256
+                }
+                checkNextcloudServer(serverUrl, urlInput, allowCertificatePrompt = false)
+            }
+            .showCompact()
+    }
+
+    private fun openLogin(serverUrl: URL) {
+        val intent = Intent(this, LoginActivity::class.java)
+        intent.putExtra("server_URL", serverUrl.toExternalForm())
+        intent.putExtra("force_new_login", true)
+        finish()
+        startActivity(intent)
+    }
+
+    /** The URL looked plausible but nothing Nextcloud-shaped answered. */
+    private fun showServerError() {
+        runOnUiThread { showMessage(R.string.this_URL_doesnt_seem_to_point_to_a_nextcloud_server) }
+    }
+
+    companion object {
+        private const val NETWORK_TIMEOUT_MILLIS = 15_000
+    }
 }

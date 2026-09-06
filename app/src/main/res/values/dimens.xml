@@ -1,3 +1,27 @@
 <resources>
-    <!-- Default screen margins, per the Android Design guidelines. -->
+    <!--
+        The app's spacing scale, in two kinds.
+
+        An *inset* is the space between content and the edge it sits in: a dialog body against the dialog,
+        a row's text against the row. A *group gap* is the space between two members of the same group:
+        one list row and the next, one dialog button and the next. They are separate because they move
+        for different reasons - a list can be tightened without pulling whole sections together.
+    -->
+    <dimen name="spacing_horizontal">18dp</dimen>
+    <dimen name="spacing_vertical">16dp</dimen>
+
+    <dimen name="spacing_group_horizontal">8dp</dimen>
+    <dimen name="spacing_group_vertical">3dp</dimen>
+
+    <!--
+        Corner radii. A group is clipped to radius_group, and the first and last row inside it repeat that
+        radius so they fill the corner rather than being sliced by it; the rows between stay at
+        radius_item so the block still reads as one object.
+    -->
+    <dimen name="radius_dialog">28dp</dimen>
+    <dimen name="radius_group">20dp</dimen>
+    <dimen name="radius_item">4dp</dimen>
+
+    <!-- The platform's minimum comfortable touch target. -->
+    <dimen name="touch_target_minimum">48dp</dimen>
 </resources>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+    The container for the app's larger dialogs.
+
+    Written rather than using AlertDialog because AlertDialog puts its title, content and button bar
+    inside one scrolling arrangement it sizes itself. Forcing a fixed height so every big dialog matched
+    left the button row squeezed off the bottom edge, and no amount of padding fixed it. Here the buttons
+    are a sibling of the content with their own height, so the content takes what is left over and the
+    buttons cannot be clipped or scrolled away.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/app_dialog_background"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/app_dialog_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:paddingStart="@dimen/spacing_horizontal"
+        android:paddingTop="20dp"
+        android:paddingEnd="@dimen/spacing_horizontal"
+        android:paddingBottom="4dp"
+        android:textColor="?attr/colorOnSurface"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <FrameLayout
+        android:id="@+id/app_dialog_content"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginStart="@dimen/spacing_horizontal"
+        android:layout_marginEnd="@dimen/spacing_horizontal"
+        android:layout_weight="1" />
+
+    <LinearLayout
+        android:id="@+id/app_dialog_buttons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="end"
+        android:orientation="horizontal"
+        android:paddingStart="@dimen/spacing_horizontal"
+        android:paddingTop="4dp"
+        android:paddingEnd="@dimen/spacing_horizontal"
+        android:paddingBottom="4dp" />
+</LinearLayout>

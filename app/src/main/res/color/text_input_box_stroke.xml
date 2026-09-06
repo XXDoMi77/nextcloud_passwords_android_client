@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    The outline of a text box, by state.
+
+    The card shows every field disabled until the pencil is tapped, and with a single flat colour there was
+    no way to tell an editable field from a read-only one - everything looked permanently greyed out.
+-->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:alpha="0.28"
+        android:color="?attr/colorOnSurface"
+        android:state_enabled="false" />
+    <item
+        android:color="?attr/colorOnSurface"
+        android:state_focused="true" />
+    <item
+        android:alpha="0.70"
+        android:color="?attr/colorOnSurface" />
+</selector>
