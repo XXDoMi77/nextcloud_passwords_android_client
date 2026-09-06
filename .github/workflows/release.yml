@@ -1,0 +1,118 @@
+name: Release
+
+# Tagging is the trigger: push a tag like v1.0.0-beta01 and this builds the signed
+# artifacts and publishes the GitHub release for it.
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Existing tag to build and publish'
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Build and publish
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.tag || github.ref }}
+          fetch-depth: 0
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      # The tag is the release's name and the app reports versionName, so a mismatch ships a
+      # build that disagrees with its own listing. Cheaper to refuse here than to notice later.
+      - name: Check the tag matches versionName
+        run: |
+          tag="${{ inputs.tag || github.ref_name }}"
+          version=$(grep -oP 'versionName\s*=\s*"\K[^"]+' app/build.gradle.kts)
+          echo "tag=$tag  versionName=$version"
+          if [ "$tag" != "v$version" ]; then
+            echo "::error::Tag $tag does not match versionName $version (expected v$version)."
+            exit 1
+          fi
+
+      # Written from secrets and never checked in. The build finds it through
+      # NPAC_KEYSTORE_PROPERTIES, the same way the local release script does.
+      - name: Restore the signing key
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          if [ -z "$KEYSTORE_BASE64" ]; then
+            echo "::error::KEYSTORE_BASE64 is not set. A release has to be signed; see docs/RELEASING-CI.md."
+            exit 1
+          fi
+          mkdir -p "$RUNNER_TEMP/signing"
+          echo "$KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/signing/keystore.jks"
+          cat > "$RUNNER_TEMP/signing/keystore.properties" <<EOF
+          storeFile=keystore.jks
+          storePassword=$KEYSTORE_PASSWORD
+          keyAlias=$KEY_ALIAS
+          keyPassword=$KEY_PASSWORD
+          EOF
+          echo "NPAC_KEYSTORE_PROPERTIES=$RUNNER_TEMP/signing/keystore.properties" >> "$GITHUB_ENV"
+
+      - name: Check formatting and run unit tests
+        run: ./gradlew :app:ktfmtCheck :app:testDebugUnitTest --no-daemon
+
+      - name: Build the signed release
+        run: ./gradlew :app:assembleRelease :app:bundleRelease --no-daemon
+
+      - name: Name the artifacts after the version
+        id: artifacts
+        run: |
+          version="${{ inputs.tag || github.ref_name }}"
+          version="${version#v}"
+          mkdir -p artifacts
+          cp app/build/outputs/apk/release/app-release.apk "artifacts/npac-$version.apk"
+          cp app/build/outputs/bundle/release/app-release.aab "artifacts/npac-$version.aab"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          ( cd artifacts && sha256sum ./* > SHA256SUMS.txt )
+
+      # This version's section of the changelog, so the release page says what changed rather
+      # than listing commit subjects. Falls back to generated notes when there is no section.
+      - name: Take the notes from the changelog
+        id: notes
+        run: |
+          version="${{ steps.artifacts.outputs.version }}"
+          awk -v v="## $version" '
+            $0 == v {found=1; next}
+            found && /^## / {exit}
+            found {print}
+          ' CHANGELOG.md > notes.md
+          if [ -s notes.md ]; then echo "have_notes=true" >> "$GITHUB_OUTPUT"; fi
+
+      # A pre-release tag carries a hyphen, per semver. Marking it keeps a beta out of the
+      # "latest release" slot that installers and update checkers follow.
+      - name: Publish the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tag="${{ inputs.tag || github.ref_name }}"
+          args=(--title "$tag" --verify-tag)
+          case "$tag" in *-*) args+=(--prerelease) ;; esac
+          if [ "${{ steps.notes.outputs.have_notes }}" = "true" ]; then
+            args+=(--notes-file notes.md)
+          else
+            args+=(--generate-notes)
+          fi
+          # The .aab is here for the record; only the .apk is installable directly.
+          gh release create "$tag" "${args[@]}" \
+            artifacts/npac-*.apk artifacts/npac-*.aab artifacts/SHA256SUMS.txt
